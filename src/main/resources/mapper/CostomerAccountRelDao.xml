@@ -5,6 +5,7 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.CostomerAccountRelEntity" id="costomerAccountRelMap">
+        <result property="id" column="id"/>
         <result property="costomerId" column="costomer_id"/>
         <result property="accountNo" column="account_no"/>
         <result property="accountOpenBank" column="account_open_bank"/>

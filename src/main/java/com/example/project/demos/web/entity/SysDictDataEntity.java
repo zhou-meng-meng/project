@@ -23,23 +23,28 @@ public class SysDictDataEntity implements Serializable {
 	 * 字典编码
 	 */
 	@TableId
-	private Long dictCode;
+	private Long id;
+
 	/**
-	 * 字典排序
+	 * 字典类型
 	 */
-	private Integer dictSort;
+	private String dictType;
+
+
 	/**
-	 * 字典标签
+	 * 字典编码
 	 */
-	private String dictLabel;
+	private String dictCode;
+
 	/**
 	 * 字典键值
 	 */
 	private String dictValue;
 	/**
-	 * 字典类型
+	 * 字典排序
 	 */
-	private String dictType;
+	private Integer dictSort;
+
 	/**
 	 * 是否默认（Y是 N否）
 	 */

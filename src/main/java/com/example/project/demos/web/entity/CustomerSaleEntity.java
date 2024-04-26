@@ -19,11 +19,12 @@ import java.util.Date;
 public class CustomerSaleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@TableId
+	private Long id;
 	/**
 	 * 客户编号
 	 */
-	@TableId
-	private String id;
+	private String code;
 	/**
 	 * 客户名称
 	 */

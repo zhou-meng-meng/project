@@ -19,10 +19,10 @@ import java.util.Date;
 public class SysRoleMenuEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private Long id;
 	/**
 	 * 角色ID
 	 */
-	@TableId
 	private String roleId;
 	/**
 	 * 菜单ID

@@ -23,7 +23,7 @@ public class SysDictTypeEntity implements Serializable {
 	 * 字典主键
 	 */
 	@TableId
-	private Long dictId;
+	private Long id;
 	/**
 	 * 字典名称
 	 */

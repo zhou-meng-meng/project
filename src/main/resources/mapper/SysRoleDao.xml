@@ -5,6 +5,7 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysRoleEntity" id="sysRoleMap">
+        <result property="id" column="id"/>
         <result property="roleId" column="role_id"/>
         <result property="roleName" column="role_name"/>
         <result property="roleSort" column="role_sort"/>

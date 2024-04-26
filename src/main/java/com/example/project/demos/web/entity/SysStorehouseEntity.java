@@ -20,10 +20,14 @@ public class SysStorehouseEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 仓库编码
+	 * 主键
 	 */
 	@TableId
-	private String id;
+	private Long id;
+	/**
+	 * 仓库编码
+	 */
+	private String code;
 	/**
 	 * 仓库名称
 	 */

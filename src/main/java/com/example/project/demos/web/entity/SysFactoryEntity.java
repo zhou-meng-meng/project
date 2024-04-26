@@ -20,10 +20,14 @@ public class SysFactoryEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 厂区编号
+	 * 主键
 	 */
 	@TableId
-	private String id;
+	private Long id;
+	/**
+	 * 厂区编号
+	 */
+	private String code;
 	/**
 	 * 厂区名称
 	 */

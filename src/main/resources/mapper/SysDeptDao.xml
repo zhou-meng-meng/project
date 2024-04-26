@@ -5,6 +5,7 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysDeptEntity" id="sysDeptMap">
+        <result property="id" column="id"/>
         <result property="deptId" column="dept_id"/>
         <result property="parentId" column="parent_id"/>
         <result property="deptName" column="dept_name"/>

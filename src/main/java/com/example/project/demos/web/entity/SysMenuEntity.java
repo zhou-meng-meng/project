@@ -20,9 +20,13 @@ public class SysMenuEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 菜单ID
+	 * 主键
 	 */
 	@TableId
+	private Long id;
+	/**
+	 * 菜单ID
+	 */
 	private String menuId;
 	/**
 	 * 菜单名称

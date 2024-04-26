@@ -5,6 +5,7 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysUserRoleEntity" id="sysUserRoleMap">
+        <result property="id" column="id"/>
         <result property="userLogin" column="user_login"/>
         <result property="roleId" column="role_id"/>
     </resultMap>

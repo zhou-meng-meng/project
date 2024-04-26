@@ -23,6 +23,11 @@ public class SysDeptEntity implements Serializable {
 	 * 部门id
 	 */
 	@TableId
+	private Long id;
+
+	/**
+	 * 部门id
+	 */
 	private String deptId;
 	/**
 	 * 父部门id

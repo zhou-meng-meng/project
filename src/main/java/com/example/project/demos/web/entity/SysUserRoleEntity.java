@@ -19,10 +19,11 @@ import java.util.Date;
 public class SysUserRoleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@TableId
+	private Long id;
 	/**
 	 * 用户ID
 	 */
-	@TableId
 	private String userLogin;
 	/**
 	 * 角色ID

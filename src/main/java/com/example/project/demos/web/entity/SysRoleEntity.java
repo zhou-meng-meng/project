@@ -20,9 +20,13 @@ public class SysRoleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 角色ID
+	 * 主键
 	 */
 	@TableId
+	private Long id;
+	/**
+	 * 角色ID
+	 */
 	private String roleId;
 	/**
 	 * 角色名称

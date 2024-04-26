@@ -5,9 +5,9 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysDictDataEntity" id="sysDictDataMap">
+        <result property="id" column="id"/>
         <result property="dictCode" column="dict_code"/>
         <result property="dictSort" column="dict_sort"/>
-        <result property="dictLabel" column="dict_label"/>
         <result property="dictValue" column="dict_value"/>
         <result property="dictType" column="dict_type"/>
         <result property="isDefault" column="is_default"/>

@@ -6,6 +6,7 @@
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysStorehouseEntity" id="sysStorehouseMap">
         <result property="id" column="id"/>
+        <result property="code" column="code"/>
         <result property="name" column="name"/>
         <result property="address" column="address"/>
         <result property="manage" column="manage"/>

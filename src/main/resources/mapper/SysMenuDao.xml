@@ -5,6 +5,7 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysMenuEntity" id="sysMenuMap">
+        <result property="id" column="id"/>
         <result property="menuId" column="menu_id"/>
         <result property="menuName" column="menu_name"/>
         <result property="parentId" column="parent_id"/>

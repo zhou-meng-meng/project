@@ -5,7 +5,7 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.SysDictTypeEntity" id="sysDictTypeMap">
-        <result property="dictId" column="dict_id"/>
+        <result property="id" column="id"/>
         <result property="dictName" column="dict_name"/>
         <result property="dictType" column="dict_type"/>
         <result property="status" column="status"/>
