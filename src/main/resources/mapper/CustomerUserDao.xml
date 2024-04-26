@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.project.demos.web.dao.CustomerUserDao">
+
+    <resultMap type="com.example.project.demos.web.entity.CustomerUser" id="CustomerUserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="customerName" column="customer_name" jdbcType="VARCHAR"/>
+        <result property="customerAddress" column="customer_address" jdbcType="VARCHAR"/>
+        <result property="customerTel" column="customer_tel" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="CustomerUserMap" >
+        select    id, customer_name, customer_address, customer_tel  from customer_user where  1=1
+            <if test="user.customerName != null and user.customerName != ''">
+                and customer_name    like concat('%', #{user.customerName}, '%')
+            </if>
+            <if test="user.customerAddress != null and user.customerAddress != ''">
+                and customer_address  like concat('%', #{user.customerAddress}, '%')
+            </if>
+            order  by  id
+           limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)  from customer_user  where  1=1
+            <if test="customerName != null and customerName != ''">
+                and customer_name like concat('%', #{customerName}, '%')
+            </if>
+            <if test="customerAddress != null and customerAddress != ''">
+                and customer_address like concat('%', #{customerAddress}, '%')
+            </if>
+    </select>
+
+</mapper>
+
