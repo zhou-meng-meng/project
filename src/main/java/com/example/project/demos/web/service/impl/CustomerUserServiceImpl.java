@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageImpl;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 客户用户表(CustomerUser)表服务实现类
