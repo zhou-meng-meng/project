@@ -1,4 +1,4 @@
-package com.example.project.demos.web.dto.customerUser;
+package com.example.project.demos.web.dto.sysDictType;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,18 +7,21 @@ import lombok.Data;
 public class QueryByPageDTO {
 
     /**
-     * 客户ID
+     * 字典名称
      */
-    private String customerId;
+    @ApiModelProperty(value = "字典名称")
+    private String dictName;
     /**
-     * 客户名称
+     * 字典类型
      */
-    private String customerName;
+    @ApiModelProperty(value = "字典类型")
+    private String dictType;
 
     /**
-     * 客户地址
+     * 状态（0正常 1停用）
      */
-    private String customerAddress;
+    @ApiModelProperty(value = "状态（0正常 1停用）")
+    private String status;
 
     /**
      * 翻页数据起始位置:1

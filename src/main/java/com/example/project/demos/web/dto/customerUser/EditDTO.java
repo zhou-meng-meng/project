@@ -1,9 +1,12 @@
-package com.example.project.demos.web.dto.list;
+package com.example.project.demos.web.dto.customerUser;
 
 import lombok.Data;
 
 @Data
-public class CustomerUserInfo {
+public class EditDTO {
+    /**
+     * ID
+     */
     private Long id;
     /**
      * 客户ID

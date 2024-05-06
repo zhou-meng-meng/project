@@ -1,8 +1,14 @@
 package com.example.project.demos.web.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.project.demos.web.dto.list.SysDictTypeInfo;
+import com.example.project.demos.web.dto.sysDictType.QueryByPageDTO;
 import com.example.project.demos.web.entity.SysDictTypeEntity;
-import com.example.project.demos.web.service.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * 字典类型表
@@ -12,6 +18,14 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2024-04-24 13:42:58
  */
 @Mapper
-public interface SysDictTypeDao extends BaseMapperPlus<SysDictTypeDao,SysDictTypeEntity> {
-	
+public interface SysDictTypeDao extends BaseMapper<SysDictTypeEntity> {
+    List<SysDictTypeInfo> queryAllByLimit(@Param("type") SysDictTypeEntity sysDictTypeEntity, @Param("pageable") Pageable pageable);
+
+    /**
+     * 统计总行数
+     *
+     * @param queryByPageDTO 查询条件
+     * @return 总行数
+     */
+    int count(QueryByPageDTO queryByPageDTO);
 }

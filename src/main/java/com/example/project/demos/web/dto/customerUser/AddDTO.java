@@ -1,10 +1,9 @@
-package com.example.project.demos.web.dto.list;
+package com.example.project.demos.web.dto.customerUser;
 
 import lombok.Data;
 
 @Data
-public class CustomerUserInfo {
-    private Long id;
+public class AddDTO {
     /**
      * 客户ID
      */

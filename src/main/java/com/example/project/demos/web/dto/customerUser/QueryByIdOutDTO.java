@@ -1,20 +1,11 @@
-package com.example.project.demos.web.entity;
+package com.example.project.demos.web.dto.customerUser;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.io.Serializable;
-
-/**
- * 客户用户表(CustomerUser)实体类
- *
- * @author makejava
- * @since 2024-02-26 20:37:53
- */
 @Data
-@TableName("customer_user")
-public class CustomerUser implements Serializable {
+public class QueryByIdOutDTO {
+
     private static final long serialVersionUID = -89026850526790880L;
     /**
      * ID
@@ -37,6 +28,15 @@ public class CustomerUser implements Serializable {
      */
     private String customerTel;
 
+    /**
+     * 操作结果编码:null
+     */
+    @ApiModelProperty(value = "操作结果编码")
+    private String errorCode;
 
+    /**
+     * 操作结果信息:null
+     */
+    @ApiModelProperty(value = "操作结果信息")
+    private String errorMsg;
 }
-

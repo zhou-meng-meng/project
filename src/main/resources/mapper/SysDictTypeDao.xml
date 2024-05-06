@@ -16,5 +16,57 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <sql id="selectSysDictTypeList">
+        select id, dict_name, dict_type, status, create_by, create_time, update_by, update_time, remark,  from sys_dict_type
+    </sql>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultType="com.example.project.demos.web.dto.list.SysDictTypeInfo" >
+        SELECT
+        t.id,
+        t.dict_type,
+        t.dict_name,
+        t.`status`,
+        d.dict_value AS statusName,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM
+        sys_dict_type t	LEFT JOIN sys_dict_data d ON t.`status` = d.dict_code 	AND d.dict_type = 'status'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        WHERE	1 = 1
+        <if test="type.dictName != null and type.dictName != ''">
+            AND  t.dict_type like    like concat('%', #{type.dictName}, '%')
+        </if>
+        <if test="type.dictType != null and type.dictType != ''">
+            and  t.dict_type like   like concat('%', #{type.dictType}, '%')
+        </if>
+        <if test="type.status != null and type.status != ''">
+            and  t.`status` =  =#{type.status}
+        </if>
+        order  by  id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM  sys_dict_type t
+        WHERE	1 = 1
+        <if test="dictName != null and dictName != ''">
+            AND  t.dict_type like    like concat('%', #{dictName}, '%')
+        </if>
+        <if test="dictType != null and dictType != ''">
+            and  t.dict_type like   like concat('%', #{dictType}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            and  t.`status` =  =#{status}
+        </if>
+    </select>
 
 </mapper>

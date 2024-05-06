@@ -1,5 +1,6 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.customerUser.QueryByIdOutDTO;
 import com.example.project.demos.web.dto.customerUser.QueryByPageDTO;
 import com.example.project.demos.web.dto.customerUser.QueryByPageOutDTO;
 import com.example.project.demos.web.entity.CustomerUser;
@@ -19,7 +20,7 @@ public interface CustomerUserService {
      * @param id 主键
      * @return 实例对象
      */
-    CustomerUser queryById(Long id);
+    QueryByIdOutDTO queryById(Long id);
 
     /**
      * 分页查询
@@ -48,7 +49,7 @@ public interface CustomerUserService {
     /**
      * 通过主键删除数据
      *
-     * @param customerId 主键
+     * @param id 主键
      * @return 是否成功
      */
     boolean deleteById(Long id);

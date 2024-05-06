@@ -1,7 +1,9 @@
 package com.example.project.demos.web.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.project.demos.web.dto.customerUser.QueryByIdOutDTO;
 import com.example.project.demos.web.dto.customerUser.QueryByPageDTO;
 import com.example.project.demos.web.dto.customerUser.QueryByPageOutDTO;
 import com.example.project.demos.web.dto.list.CustomerUserInfo;
@@ -39,16 +41,30 @@ public class CustomerUserServiceImpl implements CustomerUserService {
      * @return 实例对象
      */
     @Override
-    public CustomerUser queryById(Long id) {
-        return this.customerUserDao.selectById(id);
+    public QueryByIdOutDTO queryById(Long id) {
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
+        try{
+            CustomerUser customerUser = this.customerUserDao.selectById(id);
+            outDTO = BeanUtil.copyProperties(customerUser,QueryByIdOutDTO.class);
+        }catch(Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
         log.info(queryByPageDTO.toString());
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
-        String code= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
-        String msg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
             long total = this.customerUserDao.count(queryByPageDTO);
@@ -69,11 +85,11 @@ public class CustomerUserServiceImpl implements CustomerUserService {
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
-            code = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
-            msg = e.getMessage();
+            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errortMsg = e.getMessage();
         }
-        outDTO.setCode(code);
-        outDTO.setMsg(msg);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
 

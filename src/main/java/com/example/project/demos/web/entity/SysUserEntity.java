@@ -25,6 +25,10 @@ public class SysUserEntity implements Serializable {
 	@TableId
 	private Long id;
 	/**
+	 * 用户工号
+	 */
+	private String userId;
+	/**
 	 * 用户英文登录名
 	 */
 	private String userLogin;
@@ -60,6 +64,7 @@ public class SysUserEntity implements Serializable {
 	 * 密码
 	 */
 	private String password;
+	private Date lastPasswordDate;
 	/**
 	 * 帐号状态（0正常 1停用）
 	 */

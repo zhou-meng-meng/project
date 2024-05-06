@@ -1,12 +1,12 @@
 package com.example.project.demos.web.controller;
 
-import com.example.project.demos.web.dto.customerUser.QueryByPageDTO;
-import com.example.project.demos.web.dto.customerUser.QueryByPageOutDTO;
+import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.dto.customerUser.*;
 import com.example.project.demos.web.entity.CustomerUser;
+import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.CustomerUserService;
-import com.example.project.demos.web.utils.R;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -19,6 +19,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("customerUser")
+@Api(tags="客户用户测试表")
 public class CustomerUserController extends BaseController{
     /**
      * 服务对象
@@ -33,6 +34,7 @@ public class CustomerUserController extends BaseController{
      * @return 查询结果
      */
     @PostMapping("/queryCustomerList")
+    @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
         QueryByPageOutDTO outDTO = this.customerUserService.queryByPage(queryByPageDTO);
         return outDTO;
@@ -41,45 +43,79 @@ public class CustomerUserController extends BaseController{
     /**
      * 通过主键查询单条数据
      *
-     * @param id 主键
+     * @param dto 主键
      * @return 单条数据
      */
-    @GetMapping("{id}")
-    public ResponseEntity<CustomerUser> queryById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(this.customerUserService.queryById(id));
+    @PostMapping("/queryById")
+    @ApiOperation("通过主键查询单条数据")
+    public QueryByIdOutDTO queryById(@RequestBody QueryByIdDTO dto) {
+        QueryByIdOutDTO outDTO = this.customerUserService.queryById(dto.getId());
+        return outDTO;
     }
 
     /**
      * 新增数据
      *
-     * @param customerUser 实体
+     * @param dto 实体
      * @return 新增结果
      */
     @PostMapping("/add")
-    public R<Void> add(@RequestBody CustomerUser customerUser) {
-        return toAjax(customerUserService.insert(customerUser));
+    @ApiOperation("新增数据")
+    public AddOutDTO add(@RequestBody AddDTO dto) {
+        CustomerUser customerUser = BeanUtil.copyProperties(dto,CustomerUser.class);
+        boolean f = customerUserService.insert(customerUser);
+        AddOutDTO outDTO = new AddOutDTO();
+        if(f){
+            outDTO.setErrorCode(ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode());
+            outDTO.setErrorMsg(ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc());
+        }else{
+            outDTO.setErrorCode(ErrorCodeEnums.SYS_FAIL_FLAG.getCode());
+            outDTO.setErrorMsg(ErrorCodeEnums.SYS_FAIL_FLAG.getDesc());
+        }
+        return outDTO;
     }
 
     /**
      * 编辑数据
      *
-     * @param customerUser 实体
+     * @param dto 实体
      * @return 编辑结果
      */
     @PostMapping("/edit")
-    public R<Void> edit(@RequestBody CustomerUser customerUser) {
-        return toAjax(this.customerUserService.update(customerUser));
+    @ApiOperation("编辑数据")
+    public EditOutDTO edit(@RequestBody EditDTO dto) {
+        CustomerUser customerUser = BeanUtil.copyProperties(dto,CustomerUser.class);
+        boolean f = customerUserService.update(customerUser);
+        EditOutDTO outDTO = new EditOutDTO();
+        if(f){
+            outDTO.setErrorCode(ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode());
+            outDTO.setErrorMsg(ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc());
+        }else{
+            outDTO.setErrorCode(ErrorCodeEnums.SYS_FAIL_FLAG.getCode());
+            outDTO.setErrorMsg(ErrorCodeEnums.SYS_FAIL_FLAG.getDesc());
+        }
+        return outDTO;
     }
 
     /**
      * 删除数据
      *
-     * @param id 主键
+     * @param dto 主键
      * @return 删除是否成功
      */
-    @DeleteMapping("/{id}")
-    public R<Void> deleteById(@PathVariable("id") Long id) {
-        return toAjax(this.customerUserService.deleteById(id));
+    @PostMapping("/deleteById")
+    @ApiOperation("根据ID删除数据")
+    public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
+        boolean f = customerUserService.deleteById(dto.getId());
+        DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
+        if(f){
+            outDTO.setErrorCode(ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode());
+            outDTO.setErrorMsg(ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc());
+        }else{
+            outDTO.setErrorCode(ErrorCodeEnums.SYS_FAIL_FLAG.getCode());
+            outDTO.setErrorMsg(ErrorCodeEnums.SYS_FAIL_FLAG.getDesc());
+        }
+        return outDTO;
     }
 
 }

@@ -25,7 +25,6 @@ public class CostomerAccountRelEntity implements Serializable {
 	/**
 	 * 客户ID
 	 */
-	@TableId
 	private String costomerId;
 	/**
 	 * 客户账号

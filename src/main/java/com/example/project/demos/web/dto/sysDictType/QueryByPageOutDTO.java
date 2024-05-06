@@ -1,6 +1,6 @@
-package com.example.project.demos.web.dto.customerUser;
+package com.example.project.demos.web.dto.sysDictType;
 
-import com.example.project.demos.web.dto.list.CustomerUserInfo;
+import com.example.project.demos.web.dto.list.SysDictTypeInfo;
 import com.example.project.demos.web.entity.CustomerUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class QueryByPageOutDTO {
     @ApiModelProperty(value = "总数 ")
     private Integer turnPageTotalNum;
 
-    private List<CustomerUser> customerUserList;
+    private List<SysDictTypeInfo> sysDictTypeInfoList;
 
     /**
      * 操作结果编码:null

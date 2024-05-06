@@ -4,6 +4,7 @@
 
     <resultMap type="com.example.project.demos.web.entity.CustomerUser" id="CustomerUserMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="customerId" column="customer_id" jdbcType="VARCHAR"/>
         <result property="customerName" column="customer_name" jdbcType="VARCHAR"/>
         <result property="customerAddress" column="customer_address" jdbcType="VARCHAR"/>
         <result property="customerTel" column="customer_tel" jdbcType="VARCHAR"/>
@@ -12,10 +13,13 @@
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="CustomerUserMap" >
-        select    id, customer_name, customer_address, customer_tel  from customer_user where  1=1
-            <if test="user.customerName != null and user.customerName != ''">
-                and customer_name    like concat('%', #{user.customerName}, '%')
+        select    id, customer_id,customer_name, customer_address, customer_tel  from customer_user where  1=1
+            <if test="user.customerId != null and user.customerId != ''">
+                and customer_id    like concat('%', #{customerId}, '%')
             </if>
+        <if test="user.customerName != null and user.customerName != ''">
+            and customer_name    like concat('%', #{user.customerName}, '%')
+        </if>
             <if test="user.customerAddress != null and user.customerAddress != ''">
                 and customer_address  like concat('%', #{user.customerAddress}, '%')
             </if>
@@ -26,6 +30,9 @@
     <!--统计总行数-->
     <select id="count" resultType="java.lang.Long">
         select count(1)  from customer_user  where  1=1
+            <if test="customerId != null and customerId != ''">
+                and customer_id    like concat('%', #{customerId}, '%')
+            </if>
             <if test="customerName != null and customerName != ''">
                 and customer_name like concat('%', #{customerName}, '%')
             </if>

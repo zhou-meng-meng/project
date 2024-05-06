@@ -19,5 +19,29 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <!--列表查询-->
+    <select id="queryList" parameterType="java.lang.String" resultType="com.example.project.demos.web.dto.list.SysDictDataInfo">
+        SELECT
+            t.id,
+            t.dict_code,
+            t.dict_sort,
+            t.dict_value,
+            t.dict_type,
+            t.is_default,
+            t.STATUS,
+            d.dict_value AS statusName,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        from  sys_dict_data  t
+                  LEFT JOIN sys_dict_data d ON t.`status` = d.dict_code  AND d.dict_type = 'status'
+                  LEFT JOIN sys_user u ON u.user_login = t.create_by
+                  LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        where  t.dict_type = #{type}  order   by t.dict_sort asc
+    </select>
 
 </mapper>
