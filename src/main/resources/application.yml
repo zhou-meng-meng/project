@@ -4,10 +4,15 @@ spring:
   application:
     name: project
   datasource:
-    url: jdbc:mysql://localhost:3306/hld?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+    url: jdbc:mysql://120.27.120.58:3306/report?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: hengfeng
-    password: hengfeng
+    username: report
+    password: report
+
+    #url: jdbc:mysql://localhost:3306/hld?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #username: hengfeng
+    #password: hengfeng
   redis:
     host: 127.0.0.1
     port: 6379
