@@ -66,13 +66,10 @@ public class SysUserEntity implements Serializable {
 	private String password;
 	private Date lastPasswordDate;
 	/**
-	 * 帐号状态（0正常 1停用）
+	 * 帐号状态（0正常 1离职）
 	 */
 	private String status;
-	/**
-	 * 删除标志（0代表存在 2代表删除）
-	 */
-	private String delFlag;
+
 	/**
 	 * 最后登录IP
 	 */
@@ -81,10 +78,6 @@ public class SysUserEntity implements Serializable {
 	 * 最后登录时间
 	 */
 	private Date loginDate;
-	/**
-	 * 识别名
-	 */
-	private String distinguishedName;
 	/**
 	 * 显示顺序
 	 */
@@ -97,10 +90,7 @@ public class SysUserEntity implements Serializable {
 	 * 紧急联系人电话
 	 */
 	private String urgentPhone;
-	/**
-	 * 所属工厂
-	 */
-	private String factoryId;
+
 	/**
 	 * 入职日期
 	 */

@@ -1,7 +1,7 @@
 package com.example.project.demos.web.controller;
 
-import com.example.project.demos.web.dto.sysDictType.*;
-import com.example.project.demos.web.service.SysDictTypeService;
+import com.example.project.demos.web.dto.sysUser.*;
+import com.example.project.demos.web.service.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * 数据字典类型表(sys_dict_type)表控制层
+ * 用户维护表(sys_user)表控制层
  *
  * @author makejava
  * @since 2024-02-26 20:37:53
  */
 @RestController
-@RequestMapping("sysDictType")
-@Api(tags="数据字典类型表")
-public class SysDictTypeController extends BaseController{
+@RequestMapping("sysUser")
+@Api(tags="用户维护表")
+public class SysUserController extends BaseController{
     /**
      * 服务对象
      */
     @Resource
-    private SysDictTypeService sysDictTypeService;
+    private SysUserService sysUserService;
 
     /**
      * 分页查询
@@ -33,10 +33,10 @@ public class SysDictTypeController extends BaseController{
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    @PostMapping("/querySysDictTypeList")
+    @PostMapping("/querySysUserList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
-        QueryByPageOutDTO outDTO = this.sysDictTypeService.queryByPage(queryByPageDTO);
+        QueryByPageOutDTO outDTO = this.sysUserService.queryByPage(queryByPageDTO);
         return outDTO;
     }
 
@@ -49,7 +49,7 @@ public class SysDictTypeController extends BaseController{
     @PostMapping("/queryById")
     @ApiOperation("通过主键查询单条数据")
     public QueryByIdOutDTO queryById(@RequestBody QueryByIdDTO dto) {
-        QueryByIdOutDTO outDTO = this.sysDictTypeService.queryById(dto.getId());
+        QueryByIdOutDTO outDTO = this.sysUserService.queryById(dto.getId());
         return outDTO;
     }
 
@@ -62,7 +62,7 @@ public class SysDictTypeController extends BaseController{
     @PostMapping("/add")
     @ApiOperation("新增数据")
     public AddOutDTO add(@RequestBody AddDTO dto) {
-        AddOutDTO outDTO = sysDictTypeService.insert(dto);
+        AddOutDTO outDTO = sysUserService.insert(dto);
         return outDTO;
     }
 
@@ -75,7 +75,7 @@ public class SysDictTypeController extends BaseController{
     @PostMapping("/edit")
     @ApiOperation("编辑数据")
     public EditOutDTO edit(@RequestBody EditDTO dto) {
-        EditOutDTO outDTO = sysDictTypeService.update(dto);
+        EditOutDTO outDTO = sysUserService.update(dto);
         return outDTO;
     }
 
@@ -88,7 +88,7 @@ public class SysDictTypeController extends BaseController{
     @PostMapping("/deleteById")
     @ApiOperation("根据ID删除数据")
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
-        DeleteByIdOutDTO outDTO = sysDictTypeService.deleteById(dto);
+        DeleteByIdOutDTO outDTO = sysUserService.deleteById(dto);
         return outDTO;
     }
 

@@ -13,6 +13,10 @@ public enum ErrorCodeEnums {
 
     SYS_SUCCESS_FLAG("000000","操作成功"),
     SYS_FAIL_FLAG("999999","操作失败"),
+
+    LOGIN_ERROR("000001","用户名或密码输入错误"),
+
+
     /**
      * D4错误码
      */

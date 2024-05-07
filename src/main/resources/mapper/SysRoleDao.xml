@@ -52,11 +52,11 @@
     <select id="count" resultType="java.lang.Integer">
         SELECT  count(1)  FROM	sys_role t
         where 1=1
-        <if test="role.roleId != null and role.roleId != ''">
-            and t.role_id    like concat('%', #{role.roleId}, '%')
+        <if test="roleId != null and roleId != ''">
+            and t.role_id    like concat('%', #{roleId}, '%')
         </if>
-        <if test="role.roleName != null and role.roleName != ''">
-            and t.role_name    like concat('%', #{role.roleName}, '%')
+        <if test="role.roleName != null and roleName != ''">
+            and t.role_name    like concat('%', #{roleName}, '%')
         </if>
     </select>
 

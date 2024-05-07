@@ -18,14 +18,11 @@
         <result property="password" column="password"/>
         <result property="lastPasswordDate" column="last_password_date"/>
         <result property="status" column="status"/>
-        <result property="delFlag" column="del_flag"/>
         <result property="loginIp" column="login_ip"/>
         <result property="loginDate" column="login_date"/>
-        <result property="distinguishedName" column="distinguished_name"/>
         <result property="orderNum" column="order_num"/>
         <result property="urgentName" column="urgent_name"/>
         <result property="urgentPhone" column="urgent_phone"/>
-        <result property="factoryId" column="factory_id"/>
         <result property="entryDate" column="entry_date"/>
         <result property="leaveDate" column="leave_date"/>
         <result property="createBy" column="create_by"/>
@@ -34,6 +31,126 @@
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
     </resultMap>
+
+    <select id="selectSysUserInfoListByPage"  resultType="com.example.project.demos.web.dto.list.SysUserInfo">
+        SELECT
+            t.id,
+            t.user_id,
+            t.user_login,
+            t.user_name,
+            t.user_type,
+            da2.dict_value userTypeName,
+            t.dept_id,
+            t.email,
+            t.weChat_no,
+            t.phone_no,
+            t.sex,
+            da.dict_value sexName,
+            t.last_password_date,
+            t.STATUS,
+            da1.dict_value as statusName,
+            t.login_ip,
+            t.login_date,
+            t.order_num,
+            t.urgent_name,
+            t.urgent_phone,
+            t.entry_date,
+            t.leave_date,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM   sys_user t
+                LEFT JOIN sys_dict_data da ON da.dict_code = t.sex and da.dict_type = 'sex'
+                LEFT JOIN sys_dict_data da1 ON da1.dict_code = t.`status` and da1.dict_type = 'user_status'
+                LEFT JOIN sys_dict_data da2 ON da2.dict_code = t.user_type and da2.dict_type = 'user_type'
+                LEFT JOIN sys_user u ON u.user_login = t.create_by
+                LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        where 1=1
+        <if test="user.userId != null and user.userId != ''">
+            and t.user_id    like concat('%', #{user.userId}, '%')
+        </if>
+        <if test="user.userLogin != null and user.userLogin != ''">
+            and t.user_login    like concat('%', #{user.userLogin}, '%')
+        </if>
+        <if test="user.userName != null and user.userName != ''">
+            and t.user_name    like concat('%', #{user.userName}, '%')
+        </if>
+        <if test="user.userType != null and user.userType != ''">
+            and t.user_type   = #{user.userType}
+        </if>
+        <if test="user.deptId != null and user.deptId != ''">
+            and t.dept_id   = #{user.deptId}
+        </if>
+        order  by  t.user_id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer">
+        SELECT  count(1)    FROM   sys_user t
+        where 1=1
+        <if test="userId != null and  userId != ''">
+            and t.user_id    like concat('%', #{ userId}, '%')
+        </if>
+        <if test=" userLogin != null and  userLogin != ''">
+            and t.user_login    like concat('%', #{user.userLogin}, '%')
+        </if>
+        <if test=" userName != null and  userName != ''">
+            and t.user_name    like concat('%', #{ userName}, '%')
+        </if>
+        <if test=" userType != null and  userType != ''">
+            and t.user_type   = #{ userType}
+        </if>
+        <if test=" deptId != null and  deptId != ''">
+            and t.dept_id   = #{deptId}
+        </if>
+        <if test=" sex != null and  sex != ''">
+            and t.sex   = #{sex}
+        </if>
+    </select>
+
+    <select id="selectSysUserInfoById"  resultType="com.example.project.demos.web.dto.list.SysUserInfo">
+        SELECT
+        t.id,
+        t.user_id,
+        t.user_login,
+        t.user_name,
+        t.user_type,
+        da2.dict_value userTypeName,
+        t.dept_id,
+        t.email,
+        t.weChat_no,
+        t.phone_no,
+        t.sex,
+        da.dict_value sexName,
+        t.last_password_date,
+        t.STATUS,
+        da1.dict_value as statusName,
+        t.login_ip,
+        t.login_date,
+        t.order_num,
+        t.urgent_name,
+        t.urgent_phone,
+        t.entry_date,
+        t.leave_date,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM   sys_user t
+        LEFT JOIN sys_dict_data da ON da.dict_code = t.sex and da.dict_type = 'sex'
+        LEFT JOIN sys_dict_data da1 ON da1.dict_code = t.`status` and da1.dict_type = 'user_status'
+        LEFT JOIN sys_dict_data da2 ON da2.dict_code = t.user_type and da2.dict_type = 'user_type'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        where  id = #{id}
+    </select>
 
 
 </mapper>

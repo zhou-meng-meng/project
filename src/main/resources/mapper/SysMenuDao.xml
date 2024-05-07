@@ -60,11 +60,11 @@
     <select id="count" resultType="java.lang.Integer" >
         SELECT  count(1)  FROM	sys_menu t
         where  1=1
-        <if test="menu.menuId != null and menu.menuId != ''">
-            and t.menu_id    like concat('%', #{menu.menuId}, '%')
+        <if test="menuId != null and menuId != ''">
+            and t.menu_id    like concat('%', #{menuId}, '%')
         </if>
-        <if test="menu.menuName != null and menu.menuName != ''">
-            and t.menu_name    like concat('%', #{menu.menuName}, '%')
+        <if test="menuName != null and menuName != ''">
+            and t.menu_name    like concat('%', #{menuName}, '%')
         </if>
     </select>
 

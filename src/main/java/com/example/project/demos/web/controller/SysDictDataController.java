@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  * @since 2024-02-26 20:37:53
  */
 @RestController
-@RequestMapping("sysDacData")
+@RequestMapping("sysDictData")
 @Api(tags="数据字典数值表")
 public class SysDictDataController extends BaseController{
     /**
