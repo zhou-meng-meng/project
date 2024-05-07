@@ -18,5 +18,46 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <select id="selectSysRoleInfoListByPage" resultType="com.example.project.demos.web.dto.list.SysRoleInfo">
+        SELECT
+            t.id,
+            t.role_id,
+            t.role_name,
+            t.role_sort,
+            t.STATUS,
+            d.dict_value AS statusName,
+            t.del_flag,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	sys_role t
+            LEFT JOIN sys_dict_data d ON t.`status` = d.dict_code 	AND d.dict_type = 'status'
+            LEFT JOIN sys_user u ON u.user_login = t.create_by
+            LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+            where 1=1
+        <if test="role.roleId != null and role.roleId != ''">
+            and t.role_id    like concat('%', #{role.roleId}, '%')
+        </if>
+        <if test="role.roleName != null and role.roleName != ''">
+            and t.role_name    like concat('%', #{role.roleName}, '%')
+        </if>
+        order  by  t.role_id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT  count(1)  FROM	sys_role t
+        where 1=1
+        <if test="role.roleId != null and role.roleId != ''">
+            and t.role_id    like concat('%', #{role.roleId}, '%')
+        </if>
+        <if test="role.roleName != null and role.roleName != ''">
+            and t.role_name    like concat('%', #{role.roleName}, '%')
+        </if>
+    </select>
 
 </mapper>

@@ -22,5 +22,50 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <select id="selectSysMenuInfoListByPage" resultType="com.example.project.demos.web.dto.list.SysMenuInfo" >
+        SELECT
+            t.id,
+            t.menu_id,
+            t.menu_name,
+            t.parent_id,
+            m.menu_name as parentName,
+            t.order_num,
+            t.path,
+            t.visible,
+            t.STATUS,
+            d.dict_value AS statusName,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	sys_menu t
+                    LEFT JOIN sys_dict_data d ON t.`status` = d.dict_code  AND d.dict_type = 'status'
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    left join sys_menu  m  on   t.parent_id = m.menu_id
+            where  1=1
+            <if test="menu.menuId != null and menu.menuId != ''">
+                and t.menu_id    like concat('%', #{menu.menuId}, '%')
+            </if>
+            <if test="menu.menuName != null and menu.menuName != ''">
+                and t.menu_name    like concat('%', #{menu.menuName}, '%')
+            </if>
+            order  by t.menu_id,
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer" >
+        SELECT  count(1)  FROM	sys_menu t
+        where  1=1
+        <if test="menu.menuId != null and menu.menuId != ''">
+            and t.menu_id    like concat('%', #{menu.menuId}, '%')
+        </if>
+        <if test="menu.menuName != null and menu.menuName != ''">
+            and t.menu_name    like concat('%', #{menu.menuName}, '%')
+        </if>
+    </select>
 
 </mapper>

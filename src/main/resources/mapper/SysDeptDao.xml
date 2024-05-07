@@ -12,9 +12,7 @@
         <result property="orderNum" column="order_num"/>
         <result property="leader" column="leader"/>
         <result property="phoneNo" column="phone_no"/>
-        <result property="email" column="email"/>
         <result property="status" column="status"/>
-        <result property="delFlag" column="del_flag"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -22,5 +20,76 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <select id="selectSysDeptInfoListByPage" resultType="com.example.project.demos.web.dto.list.SysDeptInfo">
+        SELECT
+        t.id,
+        t.dept_id,
+        t.dept_name,
+        t.parent_id,
+        d.dept_name as parentName,
+        t.order_num,
+        t.leader,
+        u2.user_name as leaderName,
+        t.phone_no,
+        t.STATUS,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	sys_dept t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.leader
+        left join sys_dept  d  on  d.dept_id  = t.parent_id
+        where  1=1
+        <if test="dept.deptId != null and dept.deptId != ''">
+            and t.dept_id    like concat('%', #{dept.deptId}, '%')
+        </if>
+        <if test="dept.deptName != null and dept.deptName != ''">
+            and t.dept_name    like concat('%', #{dept.deptName}, '%')
+        </if>
+        order  by  t.dept_id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)  FROM	sys_dept t  where  1=1
+        <if test="dept.deptId != null and dept.deptId != ''">
+            and t.dept_id    like concat('%', #{dept.deptId}, '%')
+        </if>
+        <if test="dept.deptName != null and dept.deptName != ''">
+            and t.dept_name    like concat('%', #{dept.deptName}, '%')
+        </if>
+    </select>
+
+    <select id="selectSysDeptInfoById" resultType="com.example.project.demos.web.dto.list.SysDeptInfo">
+        SELECT
+            t.id,
+            t.dept_id,
+            t.dept_name,
+            t.parent_id,
+            d.dept_name as parentName,
+            t.order_num,
+            t.leader,
+            u2.user_name as leaderName,
+            t.phone_no,
+            t.STATUS,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	sys_dept t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.leader
+                    left join sys_dept  d  on  d.dept_id  = t.parent_id
+        where   id = #{id}
+    </select>
 
 </mapper>

@@ -17,5 +17,74 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <select id="selectSysFactoryInfoListByPage" resultType="com.example.project.demos.web.dto.list.SysFactoryInfo">
+        SELECT
+            t.id,
+            t.CODE,
+            t.NAME,
+            t.address,
+            t.manage,
+            u2.user_name as manageName,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	sys_factory t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.manage
+                where  1=1
+        <if test="factory.code != null and factory.code != ''">
+            and t.code    like concat('%', #{factory.code}, '%')
+        </if>
+        <if test="factory.name != null and factory.name != ''">
+            and t.name    like concat('%', #{factory.name}, '%')
+        </if>
+        <if test="factory.address != null and factory.address != ''">
+            and t.address    like concat('%', #{factory.address}, '%')
+        </if>
+        order  by  t.CODE
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM	sys_factory t
+        where  1=1
+        <if test="factory.code != null and factory.code != ''">
+            and t.code    like concat('%', #{factory.code}, '%')
+        </if>
+        <if test="factory.name != null and factory.name != ''">
+            and t.name    like concat('%', #{factory.name}, '%')
+        </if>
+        <if test="factory.address != null and factory.address != ''">
+            and t.address    like concat('%', #{factory.address}, '%')
+        </if>
+    </select>
+
+    <select id="selectSysFactoryInfoById" resultType="com.example.project.demos.web.dto.list.SysFactoryInfo">
+        SELECT
+        t.id,
+        t.CODE,
+        t.NAME,
+        t.address,
+        t.manage,
+        u2.user_name as manageName,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	sys_factory t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.manage
+        where   id = #{id}
+    </select>
 
 </mapper>

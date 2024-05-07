@@ -47,7 +47,7 @@ public class SysStorehouseEntity implements Serializable {
 	/**
 	 * 所属工厂编码
 	 */
-	private String factoryId;
+	private String factoryCode;
 	/**
 	 * 创建人
 	 */

@@ -49,18 +49,12 @@ public class SysDeptEntity implements Serializable {
 	 * 联系电话
 	 */
 	private String phoneNo;
-	/**
-	 * 邮箱
-	 */
-	private String email;
+
 	/**
 	 * 部门状态（0正常 1停用）
 	 */
 	private String status;
-	/**
-	 * 删除标志（0代表存在 2代表删除）
-	 */
-	private String delFlag;
+
 	/**
 	 * 创建者
 	 */

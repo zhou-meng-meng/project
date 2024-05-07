@@ -71,7 +71,7 @@ public class SysDictDataServiceImpl  implements SysDictDataService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
-            sysDictDataEntity.setCreateBy("zhangsan");
+            sysDictDataEntity.setCreateBy("zhangyunning");
             sysDictDataEntity.setCreateTime(new Date());
             int i = sysDictDataDao.insert(sysDictDataEntity);
         }catch (Exception e){
@@ -91,7 +91,7 @@ public class SysDictDataServiceImpl  implements SysDictDataService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
-            sysDictDataEntity.setCreateBy("lisi");
+            sysDictDataEntity.setCreateBy("zhangyunning");
             sysDictDataEntity.setUpdateTime(new Date());
             int i = sysDictDataDao.updateById(sysDictDataEntity);
         }catch (Exception e){

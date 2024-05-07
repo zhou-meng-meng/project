@@ -17,9 +17,9 @@
             <if test="user.customerId != null and user.customerId != ''">
                 and customer_id    like concat('%', #{customerId}, '%')
             </if>
-        <if test="user.customerName != null and user.customerName != ''">
-            and customer_name    like concat('%', #{user.customerName}, '%')
-        </if>
+            <if test="user.customerName != null and user.customerName != ''">
+                and customer_name    like concat('%', #{user.customerName}, '%')
+            </if>
             <if test="user.customerAddress != null and user.customerAddress != ''">
                 and customer_address  like concat('%', #{user.customerAddress}, '%')
             </if>
