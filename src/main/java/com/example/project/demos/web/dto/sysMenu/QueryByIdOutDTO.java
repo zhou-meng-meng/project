@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.sysMenu;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -59,6 +60,33 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "菜单使用状态（0正常 1停用）")
     private String status;
+
+    /**
+     * 创建者
+     */
+    @ApiModelProperty(value = "创建者")
+    private String createBy;
+    @ApiModelProperty(value = "创建人名称")
+    private String createByName;
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+    /**
+     * 更新者
+     */
+    @ApiModelProperty(value = "修改人")
+    private String updateBy;
+    @ApiModelProperty(value = "修改人名称")
+    private String updateByName;
+    /**
+     * 更新时间
+     */
+    @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
 
     /**
      * 备注

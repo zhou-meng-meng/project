@@ -61,28 +61,11 @@ public class EditDTO {
     private String sex;
 
     /**
-     * 密码
-     */
-    @ApiModelProperty(value = "密码")
-    private String password;
-    @ApiModelProperty(value = "上次修改密码日期")
-    private Date lastPasswordDate;
-    /**
      * 帐号状态（0正常 1离职）
      */
     @ApiModelProperty(value = "帐号状态（0正常 1离职）")
     private String status;
 
-    /**
-     * 最后登录IP
-     */
-    @ApiModelProperty(value = "最后登录IP")
-    private String loginIp;
-    /**
-     * 最后登录时间
-     */
-    @ApiModelProperty(value = "最后登录时间")
-    private Date loginDate;
     /**
      * 显示顺序
      */

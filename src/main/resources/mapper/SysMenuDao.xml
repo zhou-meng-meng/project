@@ -53,7 +53,7 @@
             <if test="menu.menuName != null and menu.menuName != ''">
                 and t.menu_name    like concat('%', #{menu.menuName}, '%')
             </if>
-            order  by t.menu_id,
+            order  by t.menu_id
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

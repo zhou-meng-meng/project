@@ -10,7 +10,7 @@
         <result property="menuId" column="menu_id"/>
     </resultMap>
 
-    <select id="queryMenuListByRoleId" resultMap="sysRoleMenuMap">
+    <select id="queryMenuListByRoleId" resultType="java.lang.String">
         select menu_id  from sys_role_menu where role_id =#{roleId}
     </select>
 

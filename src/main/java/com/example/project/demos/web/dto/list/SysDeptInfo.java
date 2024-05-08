@@ -2,6 +2,7 @@ package com.example.project.demos.web.dto.list;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -83,6 +84,7 @@ public class SysDeptInfo implements Serializable {
 	 * 创建时间
 	 */
 	@ApiModelProperty(value = "创建时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
 	/**
 	 * 更新者
@@ -95,6 +97,7 @@ public class SysDeptInfo implements Serializable {
 	 * 更新时间
 	 */
 	@ApiModelProperty(value = "更新时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
 	/**
 	 * 备注

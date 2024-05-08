@@ -149,10 +149,10 @@
         LEFT JOIN sys_dict_data da2 ON da2.dict_code = t.user_type and da2.dict_type = 'user_type'
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        where  id = #{id}
+        where  t.id = #{id}
     </select>
 
-    <select id="selectUserForLogin" resultMap="sysUserMap">
+    <select id="selectUserForLogin" resultType="com.example.project.demos.web.dto.list.SysUserInfo">
         SELECT
             t.id,
             t.user_id,
@@ -164,6 +164,7 @@
             t.weChat_no,
             t.phone_no,
             t.sex,
+            t.password,
             t.last_password_date,
             t.STATUS,
             t.login_ip,

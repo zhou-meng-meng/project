@@ -57,11 +57,11 @@
 
     <select id="count" resultType="java.lang.Integer">
         SELECT count(1)  FROM	sys_dept t  where  1=1
-        <if test="dept.deptId != null and dept.deptId != ''">
-            and t.dept_id    like concat('%', #{dept.deptId}, '%')
+        <if test="deptId != null and deptId != ''">
+            and t.dept_id    like concat('%', #{deptId}, '%')
         </if>
-        <if test="dept.deptName != null and dept.deptName != ''">
-            and t.dept_name    like concat('%', #{dept.deptName}, '%')
+        <if test="deptName != null and deptName != ''">
+            and t.dept_name    like concat('%', #{deptName}, '%')
         </if>
     </select>
 

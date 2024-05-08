@@ -47,8 +47,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            SysUserEntity SysUserEntity = this.sysUserDao.selectById(id);
-            outDTO = BeanUtil.copyProperties(SysUserEntity, QueryByIdOutDTO.class);
+            SysUserInfo sysUserInfo = this.sysUserDao.selectSysUserInfoById(id);
+            outDTO = BeanUtil.copyProperties(sysUserInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -236,7 +236,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             String encodePWD = DigestUtils.md5DigestAsHex(oldPwd.getBytes());
             log.info("encodePWD:"+encodePWD);
             //判断用户密码是否正确
-            int i = sysUserDao.selectUserByPwd(dto.getId(),oldPwd);
+            int i = sysUserDao.selectUserByPwd(dto.getId(),encodePWD);
             if(i == 0 ){
                 log.info("输入原密码错误");
                 errorCode= ErrorCodeEnums.PWD_INITE_ERROR.getCode();
