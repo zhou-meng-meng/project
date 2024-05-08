@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.MaterialInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.MaterialInfoEntity" id="materialInfoMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="model" column="model"/>
+        <result property="type" column="type"/>
+        <result property="supplyerCode" column="supplyer_code"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectMaterialInfoListByPage" resultType="com.example.project.demos.web.dto.list.MaterialInfo">
+        SELECT
+        t.id,
+        t.CODE,
+        t.NAME,
+        t.model,
+        d.dict_value as modelName,
+        t.type,
+        d1.dict_value as typeName,
+        t.supplyer_code,
+        s.name as supplyerName,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	material_info t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        left join customer_supply   s  on  s.code = t.supplyer_code
+        left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
+        left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
+        where  1=1
+        <if test="info.code != null and info.code != ''">
+            and t.code    like concat('%', #{info.code}, '%')
+        </if>
+        <if test="info.name != null and info.name != ''">
+            and t.name    like concat('%', #{info.name}, '%')
+        </if>
+        <if test="info.type != null and info.type != ''">
+            and t.type    =#{info.type}
+        </if>
+        <if test="supplyerName != null and supplyerName != ''">
+            and s.name    like concat('%', #{supplyerName}, '%')
+        </if>
+        order  by  t.CODE
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM	material_info t
+        where  1=1
+        <if test="code != null and code != ''">
+            and t.code    like concat('%', #{code}, '%')
+        </if>
+        <if test="name != null and name != ''">
+            and t.name    like concat('%', #{name}, '%')
+        </if>
+        <if test="type != null and type != ''">
+            and t.type    =#{type}
+        </if>
+        <if test="supplyerName != null and supplyerName != ''">
+            and s.name    like concat('%', #{supplyerName}, '%')
+        </if>
+    </select>
+
+    <select id="selectMaterialInfoById" resultType="com.example.project.demos.web.dto.list.MaterialInfo">
+        SELECT
+            t.id,
+            t.CODE,
+            t.NAME,
+            t.model,
+            d.dict_value as modelName,
+            t.type,
+            d1.dict_value as typeName,
+            t.supplyer_code,
+            s.name as supplyerName,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	material_info t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    left join customer_supply   s  on  s.code = t.supplyer_code
+                    left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
+                    left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
+        where   t.id = #{id}
+    </select>
+
+</mapper>
