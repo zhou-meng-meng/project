@@ -2,7 +2,7 @@ server:
   port: 8090
 spring:
   application:
-    name: project
+    name: hld-wms
   datasource:
     url: jdbc:mysql://120.27.120.58:3306/report?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,6 +22,13 @@ spring:
 #    password:
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
+
+# 日志配置
+bingove:
+  logback:
+    path: /home/wms/app/logs
+#    path: /data/app/logs
 logging:
+  config: classpath:logback-spring.xml
   level:
     com.example.project.demos.web.dao: debug
