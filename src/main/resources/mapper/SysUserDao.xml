@@ -152,5 +152,41 @@
         where  id = #{id}
     </select>
 
+    <select id="selectUserForLogin" resultMap="sysUserMap">
+        SELECT
+            t.id,
+            t.user_id,
+            t.user_login,
+            t.user_name,
+            t.user_type,
+            t.dept_id,
+            t.email,
+            t.weChat_no,
+            t.phone_no,
+            t.sex,
+            t.last_password_date,
+            t.STATUS,
+            t.login_ip,
+            t.login_date,
+            t.order_num,
+            t.urgent_name,
+            t.urgent_phone,
+            t.entry_date,
+            t.leave_date,
+            t.create_by,
+            t.create_time,
+            t.update_by,
+            t.update_time,
+            t.remark
+        FROM   sys_user t
+        where  t.password = #{password} and ( t.user_id = #{userLogin} or t.user_login =#{userLogin} )
+    </select>
+
+    <!--重置密码时 判断输入的原密码是否正确-->
+    <select id="selectUserByPwd" resultType="java.lang.Integer">
+        select count(1) from sys_user  t
+        where t.id = #{id}  and  t.password = #{password}
+    </select>
+
 
 </mapper>
