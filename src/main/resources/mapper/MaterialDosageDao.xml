@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.MaterialDosageDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.MaterialDosageEntity" id="materialDosageMap">
+        <result property="id" column="id"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="dutyDate" column="duty_date"/>
+        <result property="dutyCode" column="duty_code"/>
+        <result property="machineCode" column="machine_code"/>
+        <result property="stockBillNo" column="stock_bill_no"/>
+        <result property="billNo" column="bill_no"/>
+        <result property="grindingWeight" column="grinding_weight"/>
+        <result property="machineWeight" column="machine_weight"/>
+        <result property="differentWeight" column="different_weight"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectMaterialDosageInfoListByPage" resultType="com.example.project.demos.web.dto.list.MaterialDosageInfo">
+        SELECT
+            t.id,
+            t.factory_code,
+            f.`name` as factoryName,
+            t.duty_date,
+            t.duty_code,
+            d.dict_value as dutyName,
+            t.machine_code,
+            t.stock_bill_no,
+            t.bill_no,
+            t.grinding_weight,
+            t.machine_weight,
+            different_weight,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	material_dosage t
+                    left join  sys_factory  f on  f.code = t.factory_code
+                    left join  sys_dict_data   d on  d.dict_code = t.duty_code  and   d.dict_type = 'duty'
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+         where 1=1
+        <if test="info.factoryCode != null and info.factoryCode != ''">
+            and t.factory_code    = #{info.factoryCode}
+        </if>
+        <if test="info.beginDate != null and info.beginDate != ''">
+            and t.duty_date   <![CDATA[ >= ]]> #{info.beginDate}
+        </if>
+        <if test="info.endDate != null and info.endDate != ''">
+            and t.duty_date   <![CDATA[ <= ]]> #{info.endDate}
+        </if>
+        <if test="info.dutyCode != null and info.dutyCode != ''">
+            and t.duty_code   =#{info.dutyCode}
+        </if>
+        <if test="info.machineCode != null and info.machineCode != ''">
+            and t.machine_code    =#{info.machineCode}
+        </if>
+        <if test="info.billNo != null and info.billNo != ''">
+            and t.bill_no    like concat('%', #{info.billNo}, '%')
+        </if>
+        <if test="info.stockBillNo != null and info.stockBillNo != ''">
+            and t.stock_bill_no    like concat('%', #{info.stockBillNo}, '%')
+        </if>
+        order  by t.factory_code, t.duty_date
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT  count(1)   FROM	material_dosage t   where 1=1
+        <if test="factoryCode != null and factoryCode != ''">
+            and t.factory_code    = #{factoryCode}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.duty_date   <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.duty_date   <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="dutyCode != null and dutyCode != ''">
+            and t.duty_code   =#{dutyCode}
+        </if>
+        <if test="machineCode != null and machineCode != ''">
+            and t.machine_code    =#{machineCode}
+        </if>
+        <if test="billNo != null and billNo != ''">
+            and t.bill_no    like concat('%', #{billNo}, '%')
+        </if>
+        <if test="stockBillNo != null and stockBillNo != ''">
+            and t.stock_bill_no    like concat('%', #{stockBillNo}, '%')
+        </if>
+    </select>
+
+
+
+</mapper>
