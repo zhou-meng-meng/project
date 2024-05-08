@@ -14,8 +14,9 @@ spring:
     #username: hengfeng
     #password: hengfeng
   redis:
-    host: 127.0.0.1
+    host: 120.27.120.58
     port: 6379
+    password: hld
   jpa:
     show-sql: true
 #    password:
