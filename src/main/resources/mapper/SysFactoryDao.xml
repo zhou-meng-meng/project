@@ -10,6 +10,7 @@
         <result property="name" column="name"/>
         <result property="address" column="address"/>
         <result property="manage" column="manage"/>
+        <result property="manageTel" column="manage_tel"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -24,6 +25,7 @@
             t.NAME,
             t.address,
             t.manage,
+            t.manage_tel,
             u2.user_name as manageName,
             t.create_by,
             u.user_name AS createByName,
@@ -72,6 +74,7 @@
         t.NAME,
         t.address,
         t.manage,
+        t.manage_tel,
         u2.user_name as manageName,
         t.create_by,
         u.user_name AS createByName,

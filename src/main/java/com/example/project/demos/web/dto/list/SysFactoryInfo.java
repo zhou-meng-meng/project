@@ -45,6 +45,11 @@ public class SysFactoryInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "厂区负责人")
 	private String manage;
+	/**
+	 * 厂区负责人电话
+	 */
+	@ApiModelProperty(value = "厂区负责人电话")
+	private String manageTel;
 
 	@ApiModelProperty(value = "厂区负责人姓名")
 	private String manageName;

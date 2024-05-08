@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
+import java.net.InetAddress;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -167,54 +168,69 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         //是否初始密码     密码是否过期
         String isInitePwd = SysEnums.SYS_YES_FLAG.getCode();
         String isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
-        log.info("用户登录-userLogin开始");
-        String userLogin = dto.getUserLogin();
-        String password = dto.getPassword();
-        log.info("userLogin:"+userLogin);
-        log.info("password:"+password);
-        log.info("对密码进行md5处理");
-        String encodePWD = DigestUtils.md5DigestAsHex(password.getBytes());
-        log.info("encodePWD:"+encodePWD);
-        log.info("开始查找用户信息");
-        SysUserInfo info = sysUserDao.selectUserForLogin(userLogin,encodePWD);
-        if(ObjectUtil.isNull(info)){
-            log.info("未查到用户信息");
-            errorCode= ErrorCodeEnums.LOGIN_ERROR.getCode();
-            errortMsg= ErrorCodeEnums.LOGIN_ERROR.getDesc();
-        }else{
-            outDTO = BeanUtil.copyProperties(info,UserLoginOutDTO.class);
-            log.info("判断该用户密码是不是初始密码");
-            String pwd = info.getPassword();
-            log.info("用户密码:"+pwd);
-            if(pwd.equals(Constants.INITE_PWD_ENCODE)){
-                log.info("是初始化密码，需要重置");
-                isInitePwd = SysEnums.SYS_YES_FLAG.getCode();
+        try{
+            log.info("用户登录-userLogin开始");
+            String userLogin = dto.getUserLogin();
+            String password = dto.getPassword();
+            log.info("userLogin:"+userLogin);
+            log.info("password:"+password);
+            log.info("对密码进行md5处理");
+            String encodePWD = DigestUtils.md5DigestAsHex(password.getBytes());
+            log.info("encodePWD:"+encodePWD);
+            log.info("开始查找用户信息");
+            SysUserInfo info = sysUserDao.selectUserForLogin(userLogin,encodePWD);
+            if(ObjectUtil.isNull(info)){
+                log.info("未查到用户信息");
+                errorCode= ErrorCodeEnums.LOGIN_ERROR.getCode();
+                errortMsg= ErrorCodeEnums.LOGIN_ERROR.getDesc();
             }else{
-                log.info("不是初始化密码，判断有效期");
-                isInitePwd = SysEnums.SYS_NO_FLAG.getCode();
-                Date lastPasswordDate = info.getLastPasswordDate();
-                int days = DateUtils.differentDaysByMillisecond(lastPasswordDate,date);
-                log.info("密码过期天数:"+days);
-                if(days > Constants.OVERDUE_PWD_DAYS){
-                    log.info("密码已过期");
-                    isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
+                outDTO = BeanUtil.copyProperties(info,UserLoginOutDTO.class);
+                log.info("判断该用户密码是不是初始密码");
+                String pwd = info.getPassword();
+                log.info("用户密码:"+pwd);
+                if(pwd.equals(Constants.INITE_PWD_ENCODE)){
+                    log.info("是初始化密码，需要重置");
+                    isInitePwd = SysEnums.SYS_YES_FLAG.getCode();
                 }else{
-                    log.info("密码未过期，查询用户其他信息");
-                    isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
-                    //查询其角色信息
-                    SysUserRoleInfo userRoleInfo = sysUserRoleService.selectRoleInfoByUserLogin(userLogin);
-                    if(ObjectUtil.isNotNull(userRoleInfo)){
-                        //根据角色查询其权限菜单
-                        String roleId = userRoleInfo.getRoleId();
-                        log.info("roleId:"+roleId);
-                        List<String> menuList = sysRoleMenuService.queryMenuListByRoleId(roleId);
-                        outDTO.setMenuList(menuList);
+                    log.info("不是初始化密码，判断有效期");
+                    isInitePwd = SysEnums.SYS_NO_FLAG.getCode();
+                    Date lastPasswordDate = info.getLastPasswordDate();
+                    int days = DateUtils.differentDaysByMillisecond(lastPasswordDate,date);
+                    log.info("密码过期天数:"+days);
+                    if(days > Constants.OVERDUE_PWD_DAYS){
+                        log.info("密码已过期");
+                        isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
                     }else{
-                        log.info("userRoleInfo is null");
+                        log.info("密码未过期，查询用户其他信息");
+                        isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
+                        //查询其角色信息
+                        SysUserRoleInfo userRoleInfo = sysUserRoleService.selectRoleInfoByUserLogin(userLogin);
+                        if(ObjectUtil.isNotNull(userRoleInfo)){
+                            //根据角色查询其权限菜单
+                            String roleId = userRoleInfo.getRoleId();
+                            log.info("roleId:"+roleId);
+                            List<String> menuList = sysRoleMenuService.queryMenuListByRoleId(roleId);
+                            outDTO.setMenuList(menuList);
+                        }else{
+                            log.info("userRoleInfo is null");
+                        }
+                        //修改当前登录IP和登录时间
+                        InetAddress inetAddress = InetAddress.getLocalHost();
+                        String ipAddress = inetAddress.getHostAddress();
+                        SysUserEntity entity = new SysUserEntity();
+                        entity.setId(info.getId());
+                        entity.setLoginIp(ipAddress);
+                        entity.setLoginDate(date);
+                        sysUserDao.updateById(entity);
                     }
                 }
             }
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
         }
+
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         outDTO.setIsInitePwd(isInitePwd);

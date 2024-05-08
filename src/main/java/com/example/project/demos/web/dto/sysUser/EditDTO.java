@@ -34,6 +34,12 @@ public class EditDTO {
     private String userType;
 
     /**
+     * 角色编码
+     */
+    @ApiModelProperty(value = "角色编码")
+    private String roleId;
+
+    /**
      * 部门ID
      */
     @ApiModelProperty(value = "部门ID")

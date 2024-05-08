@@ -78,12 +78,29 @@ public class SysUserInfo implements Serializable {
 
 	@ApiModelProperty(value = "用户性别（0男 1女 2未知）")
 	private String sexName;
+
+	/**
+	 * 角色编码
+	 */
+	@ApiModelProperty(value = "角色编码")
+	private String roleId;
+
+	@ApiModelProperty(value = "角色名称")
+	private String roleName;
+
+	/**
+	 * 角色单价权限 Y-是;N-否
+	 */
+	@ApiModelProperty(value = "角色单价权限 Y-是;N-否")
+	private String isPriceEdit;
+
 	/**
 	 * 密码
 	 */
 	@ApiModelProperty(value = "密码")
 	private String password;
 	@ApiModelProperty(value = "上次修改密码日期")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date lastPasswordDate;
 	/**
 	 * 帐号状态（0正常 1离职）

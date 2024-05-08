@@ -32,6 +32,11 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "厂区负责人")
     private String manage;
+    /**
+     * 厂区负责人电话
+     */
+    @ApiModelProperty(value = "厂区负责人电话")
+    private String manageTel;
 
     /**
      * 备注

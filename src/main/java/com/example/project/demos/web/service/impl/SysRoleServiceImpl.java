@@ -6,10 +6,12 @@ import com.example.project.demos.web.dto.list.SysRoleInfo;
 import com.example.project.demos.web.dto.sysRole.*;
 import com.example.project.demos.web.entity.SysRoleEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.service.SysRoleMenuService;
 import com.example.project.demos.web.service.SysRoleService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,10 @@ import java.util.List;
 
 @Slf4j
 @Service("sysRoleService")
-public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> implements SysRoleService {
+public class SysRoleServiceImpl  implements SysRoleService {
 
+    @Autowired
+    private SysRoleMenuService sysRoleMenuService;
     @Resource
     private SysRoleDao sysRoleDao;
     @Override
@@ -34,6 +38,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
         try{
             SysRoleEntity sysRoleEntity = this.sysRoleDao.selectById(id);
             outDTO = BeanUtil.copyProperties(sysRoleEntity, QueryByIdOutDTO.class);
+            //获取权限菜单集合
+            List<String> list = sysRoleMenuService.queryMenuListByRoleId(sysRoleEntity.getRoleId());
+            outDTO.setMenuList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -91,6 +98,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
             sysRoleEntity.setCreateBy("zhangyunning");
             sysRoleEntity.setCreateTime(new Date());
             int i = sysRoleDao.insert(sysRoleEntity);
+            //插入角色菜单权限表
+            sysRoleMenuService.insertBatch(dto.getRoleId(),dto.getMenuList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -108,9 +117,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             SysRoleEntity sysRoleEntity = BeanCopyUtils.copy(dto,SysRoleEntity.class);
-            sysRoleEntity.setCreateBy("zhangyunning");
+            sysRoleEntity.setUpdateBy("zhangyunning");
             sysRoleEntity.setUpdateTime(new Date());
             int i = sysRoleDao.updateById(sysRoleEntity);
+            //先删除原角色菜单对应集合
+            int j = sysRoleMenuService.deleteByRoleId(dto.getRoleId());
+            //插入角色菜单权限表
+            sysRoleMenuService.insertBatch(dto.getRoleId(),dto.getMenuList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -128,6 +141,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             int i = sysRoleDao.deleteById(dto.getId());
+            //删除角色对应菜单关系表
+            SysRoleEntity sysRoleEntity = this.sysRoleDao.selectById(dto.getId());
+            int j = sysRoleMenuService.deleteByRoleId(sysRoleEntity.getRoleId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

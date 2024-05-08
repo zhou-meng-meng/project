@@ -40,6 +40,11 @@ public class SysFactoryEntity implements Serializable {
 	 * 厂区负责人
 	 */
 	private String manage;
+
+	/**
+	 * 厂区负责人电话
+	 */
+	private String manageTel;
 	/**
 	 * 创建人
 	 */

@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.sysUser;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -51,6 +52,7 @@ public class UserLoginOutDTO {
     private String sex;
 
     @ApiModelProperty(value = "上次修改密码日期")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastPasswordDate;
     /**
      * 帐号状态（0正常 1离职）
@@ -60,6 +62,22 @@ public class UserLoginOutDTO {
 
     @ApiModelProperty(value = "帐号状态（0正常 1离职）")
     private String statusName;
+
+    /**
+     * 角色编码
+     */
+    @ApiModelProperty(value = "角色编码")
+    private String roleId;
+
+    @ApiModelProperty(value = "角色名称")
+    private String roleName;
+
+    /**
+     * 角色单价权限 Y-是;N-否
+     */
+    @ApiModelProperty(value = "角色单价权限 Y-是;N-否")
+    private String isPriceEdit;
+
     /**
      * 最后登录IP
      */
@@ -69,6 +87,7 @@ public class UserLoginOutDTO {
      * 最后登录时间
      */
     @ApiModelProperty(value = "最后登录时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date loginDate;
 
     /**

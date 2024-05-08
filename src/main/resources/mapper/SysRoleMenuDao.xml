@@ -14,4 +14,8 @@
         select menu_id  from sys_role_menu where role_id =#{roleId}
     </select>
 
+    <delete id="deleteByRoleId">
+        delete from  sys_role_menu  where  role_id = #{roleId}
+    </delete>
+
 </mapper>

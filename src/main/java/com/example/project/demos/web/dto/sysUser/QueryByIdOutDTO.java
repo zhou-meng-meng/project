@@ -37,6 +37,16 @@ public class QueryByIdOutDTO {
     private String userType;
     @ApiModelProperty(value = "用户类型（（0-总公司;1-厂区;2-仓库））")
     private String userTypeName;
+
+    /**
+     * 角色编码
+     */
+    @ApiModelProperty(value = "角色编码")
+    private String roleId;
+
+    @ApiModelProperty(value = "角色名称")
+    private String roleName;
+
     /**
      * 部门ID
      */

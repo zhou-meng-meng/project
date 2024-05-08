@@ -16,5 +16,9 @@ import java.util.Map;
 public interface SysRoleMenuService  {
     List<String> queryMenuListByRoleId(String roleId);
 
+    boolean insertBatch(String roleId,List<String> menuList);
+
+    int deleteByRoleId(String roleId);
+
 }
 

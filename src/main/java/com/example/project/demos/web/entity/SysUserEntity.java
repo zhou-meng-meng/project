@@ -2,6 +2,7 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -40,6 +41,12 @@ public class SysUserEntity implements Serializable {
 	 * 用户类型（00系统用户）
 	 */
 	private String userType;
+
+	/**
+	 * 角色编码
+	 */
+	private String roleId;
+
 	/**
 	 * 部门ID
 	 */
