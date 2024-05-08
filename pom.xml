@@ -177,7 +177,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.example.project.ProjectApplication</mainClass>
-                    <skip>true</skip>
+<!--                    <skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>
@@ -189,6 +189,7 @@
                 </executions>
             </plugin>
         </plugins>
+        <finalName>hld-wms-${version}</finalName>
     </build>
 
 
