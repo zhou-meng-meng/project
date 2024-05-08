@@ -36,7 +36,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
@@ -71,7 +71,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
@@ -92,7 +92,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             int i = sysDictTypeDao.insert(sysDictTypeEntity);
         }catch (Exception e){
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
@@ -112,7 +112,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             int i = sysDictTypeDao.updateById(sysDictTypeEntity);
         }catch (Exception e){
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
@@ -129,7 +129,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             int i = sysDictTypeDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);

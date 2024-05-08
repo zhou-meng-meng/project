@@ -6,9 +6,17 @@ import com.example.project.demos.web.service.SysRoleMenuService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import javax.annotation.Resource;
+import java.util.List;
+
 
 @Service("sysRoleMenuService")
-public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuDao, SysRoleMenuEntity> implements SysRoleMenuService {
+public class SysRoleMenuServiceImpl  implements SysRoleMenuService {
 
-
+    @Resource
+    SysRoleMenuDao sysRoleMenuDao;
+    @Override
+    public List<String> queryMenuListByRoleId(String roleId) {
+        return sysRoleMenuDao.queryMenuListByRoleId(roleId);
+    }
 }

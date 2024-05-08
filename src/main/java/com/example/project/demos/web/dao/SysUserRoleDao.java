@@ -1,5 +1,7 @@
 package com.example.project.demos.web.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.project.demos.web.dto.list.SysUserRoleInfo;
 import com.example.project.demos.web.entity.SysUserRoleEntity;
 import com.example.project.demos.web.service.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,6 +14,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2024-04-24 13:42:58
  */
 @Mapper
-public interface SysUserRoleDao extends BaseMapperPlus<SysUserRoleDao,SysUserRoleEntity> {
-	
+public interface SysUserRoleDao extends BaseMapper<SysUserRoleEntity> {
+    SysUserRoleInfo selectRoleInfoByUserLogin(String userLogin);
 }

@@ -81,4 +81,13 @@ public interface Constants {
      */
     String REPEAT_SUBMIT_KEY = "repeat_submit:";
 
+    /**
+     * 初始密码加密
+     */
+    String INITE_PWD_ENCODE = "e10adc3949ba59abbe56e057f20f883e";
+
+    /**
+     * 密码过期天数
+     */
+    int OVERDUE_PWD_DAYS = 60;
 }

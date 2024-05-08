@@ -1,15 +1,13 @@
 package com.example.project.demos.web.dto.sysUser;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
-public class QueryByIdOutDTO {
-
-    private static final long serialVersionUID = -89026850526790880L;
+public class UserLoginOutDTO {
     /**
      * 主键
      */
@@ -45,34 +43,13 @@ public class QueryByIdOutDTO {
 
     @ApiModelProperty(value = "部门名称")
     private String deptName;
-    /**
-     * 用户邮箱
-     */
-    @ApiModelProperty(value = "用户邮箱")
-    private String email;
-    /**
-     * 微信号
-     */
-    @ApiModelProperty(value = "微信号")
-    private String wechatNo;
-    /**
-     * 手机号码
-     */
-    @ApiModelProperty(value = "手机号码")
-    private String phoneNo;
+
     /**
      * 用户性别（0男 1女 2未知）
      */
     @ApiModelProperty(value = "用户性别（0男 1女 2未知）")
     private String sex;
 
-    @ApiModelProperty(value = "用户性别（0男 1女 2未知）")
-    private String sexName;
-    /**
-     * 密码
-     */
-    @ApiModelProperty(value = "密码")
-    private String password;
     @ApiModelProperty(value = "上次修改密码日期")
     private Date lastPasswordDate;
     /**
@@ -93,64 +70,30 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "最后登录时间")
     private Date loginDate;
-    /**
-     * 显示顺序
-     */
-    @ApiModelProperty(value = "显示顺序")
-    private String orderNum;
-    /**
-     * 紧急联系人
-     */
-    @ApiModelProperty(value = "紧急联系人")
-    private String urgentName;
-    /**
-     * 紧急联系人电话
-     */
-    @ApiModelProperty(value = "紧急联系人电话")
-    private String urgentPhone;
-
-    /**
-     * 入职日期
-     */
-    @ApiModelProperty(value = "入职日期")
-    private Date entryDate;
-    /**
-     * 离职日期
-     */
-    @ApiModelProperty(value = "离职日期")
-    private Date leaveDate;
-    /**
-     * 创建者
-     */
-    @ApiModelProperty(value = "创建者")
-    private String createBy;
-    @ApiModelProperty(value = "创建人名称")
-    private String createByName;
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
-    /**
-     * 更新者
-     */
-    @ApiModelProperty(value = "修改人")
-    private String updateBy;
-    @ApiModelProperty(value = "修改人名称")
-    private String updateByName;
-    /**
-     * 更新时间
-     */
-    @ApiModelProperty(value = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
 
     /**
      * 备注
      */
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    /**
+     * 是否初始密码
+     */
+    @ApiModelProperty(value = "是否初始密码 y-是;N-否")
+    private String isInitePwd;
+
+    /**
+     * 密码是否过期
+     */
+    @ApiModelProperty(value = "密码是否过期 Y-是;N-否")
+    private String isOverDuePwd;
+
+    /**
+     * 权限菜单集合
+     */
+    @ApiModelProperty(value = "权限菜单集合")
+    private List<String> menuList;
 
     /**
      * 操作结果编码:null
@@ -163,4 +106,6 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "操作结果信息")
     private String errorMsg;
+
+
 }

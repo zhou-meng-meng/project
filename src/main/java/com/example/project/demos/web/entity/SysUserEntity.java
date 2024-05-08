@@ -64,6 +64,9 @@ public class SysUserEntity implements Serializable {
 	 * 密码
 	 */
 	private String password;
+	/**
+	 * 密码最后修改日期
+	 */
 	private Date lastPasswordDate;
 	/**
 	 * 帐号状态（0正常 1离职）

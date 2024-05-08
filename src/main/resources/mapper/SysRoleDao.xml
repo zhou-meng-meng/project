@@ -55,7 +55,7 @@
         <if test="roleId != null and roleId != ''">
             and t.role_id    like concat('%', #{roleId}, '%')
         </if>
-        <if test="role.roleName != null and roleName != ''">
+        <if test="roleName != null and roleName != ''">
             and t.role_name    like concat('%', #{roleName}, '%')
         </if>
     </select>

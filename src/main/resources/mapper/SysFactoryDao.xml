@@ -54,14 +54,14 @@
         SELECT count(1)
         FROM	sys_factory t
         where  1=1
-        <if test="factory.code != null and factory.code != ''">
-            and t.code    like concat('%', #{factory.code}, '%')
+        <if test="code != null and code != ''">
+            and t.code    like concat('%', #{code}, '%')
         </if>
-        <if test="factory.name != null and factory.name != ''">
-            and t.name    like concat('%', #{factory.name}, '%')
+        <if test="name != null and name != ''">
+            and t.name    like concat('%', #{name}, '%')
         </if>
-        <if test="factory.address != null and factory.address != ''">
-            and t.address    like concat('%', #{factory.address}, '%')
+        <if test="address != null and address != ''">
+            and t.address    like concat('%', #{address}, '%')
         </if>
     </select>
 
@@ -84,7 +84,7 @@
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         LEFT JOIN sys_user u2 ON u2.user_login = t.manage
-        where   id = #{id}
+        where   t.id = #{id}
     </select>
 
 </mapper>

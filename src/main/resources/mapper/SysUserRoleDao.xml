@@ -10,5 +10,10 @@
         <result property="roleId" column="role_id"/>
     </resultMap>
 
+    <select id="selectRoleInfoByUserLogin"  resultType="com.example.project.demos.web.dto.list.SysUserRoleInfo">
+        select t.id,t.user_login , t.role_id,r.role_name as roleName  from sys_user_role  t
+        left join sys_role   r  on  t.role_id = r.role_id
+        where t.user_login = #{userLogin}
+    </select>
 
 </mapper>

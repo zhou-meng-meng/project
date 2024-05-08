@@ -27,7 +27,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
     private SysRoleDao sysRoleDao;
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("数据字段类型queryById开始");
+        log.info("角色维护queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -37,18 +37,18 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryById结束");
+        log.info("角色维护queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("数据字段类型queryByPage开始");
+        log.info("角色维护queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -72,12 +72,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryByPage结束");
+        log.info("角色维护queryByPage结束");
         return outDTO;
     }
 
@@ -93,7 +93,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
             int i = sysRoleDao.insert(sysRoleEntity);
         }catch (Exception e){
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
@@ -113,7 +113,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
             int i = sysRoleDao.updateById(sysRoleEntity);
         }catch (Exception e){
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);
@@ -130,7 +130,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
             int i = sysRoleDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         outDTO.setErrorCode(errorCode);

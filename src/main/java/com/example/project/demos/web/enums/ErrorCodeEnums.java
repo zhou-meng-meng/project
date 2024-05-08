@@ -14,7 +14,10 @@ public enum ErrorCodeEnums {
     SYS_SUCCESS_FLAG("000000","操作成功"),
     SYS_FAIL_FLAG("999999","操作失败"),
 
-    LOGIN_ERROR("000001","用户名或密码输入错误"),
+    LOGIN_ERROR("000001","用户名或密码输入错误！"),
+    PWD_INITE("000002","当前密码为初始密码，请修改！"),
+    PWD_OVERDUE("000003","当前密码已过期，请修改！"),
+    PWD_INITE_ERROR("000004","输入的原密码错误，请重新输入"),
 
 
     /**

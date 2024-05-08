@@ -49,5 +49,9 @@ public interface SysUserService {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    UserLoginOutDTO userLogin(UserLoginDTO dto);
+
+    ResetPwdOutDTO restPwd(ResetPwdDTO dto);
 }
 

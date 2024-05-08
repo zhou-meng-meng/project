@@ -92,5 +92,27 @@ public class SysUserController extends BaseController{
         return outDTO;
     }
 
+    /**
+     * 用户登录
+     */
+    @PostMapping("/userLogin")
+    @ApiOperation("用户登录")
+    public UserLoginOutDTO userLogin(@RequestBody UserLoginDTO dto) {
+        UserLoginOutDTO outDTO = sysUserService.userLogin(dto);
+        return outDTO;
+    }
+
+    /**
+     * 重置密码操作
+     */
+    @PostMapping("/resetPwd")
+    @ApiOperation("重置密码操作")
+    public ResetPwdOutDTO resetPwd(@RequestBody ResetPwdDTO dto) {
+        ResetPwdOutDTO outDTO = sysUserService.restPwd(dto);
+        return outDTO;
+    }
+
+
+
 }
 

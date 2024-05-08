@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -49,11 +50,12 @@ public class SysRoleInfo implements Serializable {
     @ApiModelProperty(value = "主键")
     private String createBy;
     @ApiModelProperty(value = "创建人名称")
-    private String createName;
+    private String createByName;
     /**
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     /**
      * 更新者
@@ -61,11 +63,12 @@ public class SysRoleInfo implements Serializable {
     @ApiModelProperty(value = "更新者")
     private String updateBy;
     @ApiModelProperty(value = "修改人名称")
-    private String updateName;
+    private String updateByName;
     /**
      * 更新时间
      */
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
     /**
      * 备注
