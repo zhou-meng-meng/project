@@ -177,26 +177,4 @@ public class DateUtils {
         return list;
     }
 
-    public static void main(String[] args) {
-//
-//        System.out.println(DateUtils.getDate()+" "+12+":00:00");
-//        System.out.println( DateUtils.parseDate(DateUtils.getDate()+" "+12+":00:00"));
-//        System.out.println( DateUtil.year(DateUtil.date())+"-"+String.format("%02d",DateUtil.month(DateUtil.date())));
-//        System.out.println( DateUtil.beginOfWeek(DateUtil.date()));
-//        System.out.println( DateUtil.endOfWeek(DateUtil.date()));
-//        List<String> list=weekRange(DateUtil.date());
-//        list.stream().forEach(s-> System.out.println(s));
-//        int num=(int)ChineseNumberUtil.getNumber("一");
-//        System.out.println(list.get(num-1));
-//        System.out.println(Integer.parseInt(5L+""));
-
-        String str="(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{6,20}";
-//        String password="123456aA";
-//        String password="123456aA$";
-//        String password="a123456A?";
-        String password="a123456A?";
-//        String password="a123456aA#@";
-//        String password="123456aA!";
-        System.out.println(password.matches(str));
-    }
 }

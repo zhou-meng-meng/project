@@ -27,7 +27,7 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "开始日期")
     private String beginDate;
 
-    @ApiModelProperty(value = "开始日期")
+    @ApiModelProperty(value = "结束日期")
     private String endDate;
     /**
      * 班组 0-白班 1-中班 2-夜班
