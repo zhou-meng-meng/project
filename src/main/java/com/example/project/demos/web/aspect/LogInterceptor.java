@@ -81,7 +81,7 @@ public class LogInterceptor {
         //String token = httpServletRequest.getHeader(Constants.TOKEN);
         String token = this.getToken();
         //校验token TODO 暂注掉
-        this.checkToken(token, url,requestId);
+        //this.checkToken(token, url,requestId);
         // 执行原方法
         Object result = point.proceed();
         // 输出响应日志
