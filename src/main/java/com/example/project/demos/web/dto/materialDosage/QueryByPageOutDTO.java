@@ -18,6 +18,22 @@ public class QueryByPageOutDTO {
     private List<MaterialDosageInfo> materialDosageInfoList;
 
     /**
+     * 磨粉棒重量合计
+     */
+    @ApiModelProperty(value = "磨粉棒重量合计")
+    private Double grindingWeightToll;
+    /**
+     * 机器磅重量合计
+     */
+    @ApiModelProperty(value = "机器磅重量合计")
+    private Double machineWeightToll;
+    /**
+     * 差额（磨粉棒重量-机器磅重量）合计
+     */
+    @ApiModelProperty(value = "差额合计")
+    private Double differentWeightToll;
+
+    /**
      * 操作结果编码:null
      */
     @ApiModelProperty(value = "操作结果编码")

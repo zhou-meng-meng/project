@@ -52,6 +52,9 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Double grindingWeightToll = 0.00;
+        Double machineWeightToll = 0.00;
+        Double differentWeightToll = 0.00;
         try {
             //先用查询条件查询总条数
             long total = this.materialDosageDao.count(queryByPageDTO);
@@ -68,6 +71,12 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
                 List<MaterialDosageInfo> list = page.toList();
                 //出参赋值
                 outDTO.setMaterialDosageInfoList(list);
+                //计算三个合计
+                for(MaterialDosageInfo info : list){
+                    grindingWeightToll = grindingWeightToll + info.getGrindingWeight();
+                    machineWeightToll = machineWeightToll + info.getMachineWeight();
+                    differentWeightToll = differentWeightToll + info.getDifferentWeight();
+                }
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -75,6 +84,9 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        outDTO.setGrindingWeightToll(grindingWeightToll);
+        outDTO.setMachineWeightToll(machineWeightToll);
+        outDTO.setDifferentWeightToll(differentWeightToll);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         log.info("数据字段类型queryByPage结束");

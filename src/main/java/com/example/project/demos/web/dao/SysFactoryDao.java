@@ -21,6 +21,9 @@ import java.util.List;
 public interface SysFactoryDao extends BaseMapper<SysFactoryEntity> {
     List<SysFactoryInfo> selectSysFactoryInfoListByPage(@Param("factory") SysFactoryEntity sysFactoryEntity, @Param("pageable") Pageable pageable);
 
+    //不分页
+    List<SysFactoryInfo> selectSysFactoryInfoList(@Param("factory") SysFactoryEntity sysFactoryEntity);
+
     /**
      * 统计总行数
      *

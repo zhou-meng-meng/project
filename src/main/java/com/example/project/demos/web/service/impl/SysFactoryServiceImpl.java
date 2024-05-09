@@ -27,7 +27,7 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
     
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("数据字段类型queryById开始");
+        log.info("厂区queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -42,13 +42,13 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryById结束");
+        log.info("厂区queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("数据字段类型queryByPage开始");
+        log.info("厂区queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -77,7 +77,31 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryByPage结束");
+        log.info("厂区queryByPage结束");
+        return outDTO;
+    }
+
+    @Override
+    public QueryListOutDTO queryList(QueryListDTO queryListDTO) {
+        log.info("厂区queryByPage开始");
+        QueryListOutDTO outDTO = new QueryListOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        try {
+            //转换实体入参
+            SysFactoryEntity sysFactory = BeanCopyUtils.copy(queryListDTO,SysFactoryEntity.class);
+            List<SysFactoryInfo> list = sysFactoryDao.selectSysFactoryInfoList(sysFactory);
+            //出参赋值
+            outDTO.setSysFactoryInfoList(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("厂区queryByPage结束");
         return outDTO;
     }
 

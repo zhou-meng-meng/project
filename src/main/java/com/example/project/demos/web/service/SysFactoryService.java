@@ -30,6 +30,8 @@ public interface SysFactoryService  {
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
 
+    QueryListOutDTO queryList(QueryListDTO queryListDTO);
+
     /**
      * 新增数据
      *

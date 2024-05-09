@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.project.demos.web.dto.customerUser.QueryByPageDTO;
 import com.example.project.demos.web.dto.list.CustomerUserInfo;
 import com.example.project.demos.web.entity.CustomerUser;
-import com.example.project.demos.web.service.BaseMapperPlus;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 import java.util.List;

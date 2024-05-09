@@ -33,6 +33,17 @@ public class CustomerSupplyEntity implements Serializable {
 	 * 客户类型 0-公户；1-个体
 	 */
 	private String type;
+
+	/**
+	 * 客户证件类型 字典值
+	 */
+	private String certType;
+
+	/**
+	 * 客户证件号码
+	 */
+	private String certNo;
+
 	/**
 	 * 联系人
 	 */
@@ -56,7 +67,7 @@ public class CustomerSupplyEntity implements Serializable {
 	/**
 	 * 微信号
 	 */
-	private String wechatNo;
+	private String weChatNo;
 	/**
 	 * 传真
 	 */

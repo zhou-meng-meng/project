@@ -8,36 +8,34 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 客户开户账号对应关系表
+ * 物料装袋表-明细
  * 
  * @author Mark
  * @email sunlightcs@gmail.com
- * @date 2024-04-24 13:42:58
+ * @date 2024-05-09 09:26:13
  */
 @Data
-@TableName("costomer_account_rel")
-public class CostomerAccountRelEntity implements Serializable {
+@TableName("material_package_detail")
+public class MaterialPackageDetailEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * 自增主键
+	 */
 	@TableId
 	private Long id;
-
 	/**
-	 * 客户ID
+	 * 装袋表主键
 	 */
-	private String costomerId;
+	private Long packageId;
 	/**
-	 * 客户账号
+	 * 物料枚举值
 	 */
-	private String accountNo;
+	private String materialCode;
 	/**
-	 * 客户账号开户行
+	 * 每锅重量
 	 */
-	private String accountOpenBank;
-	/**
-	 * 客户账户状态 0-正常；1-不可用
-	 */
-	private String accountStatus;
+	private Double packageWeight;
 	/**
 	 * 创建人
 	 */

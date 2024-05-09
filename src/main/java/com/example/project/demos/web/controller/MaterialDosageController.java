@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * @date 2024-05-08 17:08:07
  */
 @RestController
-@RequestMapping("sys/materialdosage")
+@RequestMapping("materialdosage")
 public class MaterialDosageController {
     /**
      * 服务对象

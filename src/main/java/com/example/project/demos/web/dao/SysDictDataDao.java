@@ -3,7 +3,6 @@ package com.example.project.demos.web.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.project.demos.web.dto.list.SysDictDataInfo;
 import com.example.project.demos.web.entity.SysDictDataEntity;
-import com.example.project.demos.web.service.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

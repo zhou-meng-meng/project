@@ -33,10 +33,17 @@ public class SysFactoryController extends BaseController{
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    @PostMapping("/querySysFactoryList")
+    @PostMapping("/querySysFactoryPageList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
         QueryByPageOutDTO outDTO = this.sysFactoryService.queryByPage(queryByPageDTO);
+        return outDTO;
+    }
+
+    @PostMapping("/querySysFactoryList")
+    @ApiOperation("查询列表(不分页)")
+    public QueryListOutDTO queryList(@RequestBody QueryListDTO queryListDTO) {
+        QueryListOutDTO outDTO = this.sysFactoryService.queryList(queryListDTO);
         return outDTO;
     }
 

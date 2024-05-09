@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.MaterialPackageDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.MaterialPackageEntity" id="materialPackageMap">
+        <result property="id" column="id"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="machineCode" column="machine_code"/>
+        <result property="packageDate" column="package_date"/>
+        <result property="dutyCode" column="duty_code"/>
+        <result property="potNum" column="pot_num"/>
+        <result property="tollWeight" column="toll_weight"/>
+        <result property="shouldNum" column="should_num"/>
+        <result property="actualNum" column="actual_num"/>
+        <result property="balanceNum" column="balance_num"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectMaterialPackageInfoListByPage" resultType="com.example.project.demos.web.dto.list.MaterialPackageInfo">
+        SELECT
+            t.id,
+            t.factory_code,
+            f.name as  factoryName,
+            t.machine_code,
+            t.package_date,
+            t.duty_code,
+            d.dict_value AS dutyName,
+            t.pot_num,
+            t.toll_weight,
+            t.should_num,
+            t.actual_num,
+            t.balance_num,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	material_package t
+                    left join  sys_factory  f on  f.code = t.factory_code
+                    LEFT JOIN sys_dict_data d ON d.dict_code = t.duty_code 	AND d.dict_type = 'duty'
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+            where  1=1
+        <if test="package.factoryCode != null and package.factoryCode != ''">
+            and t.factory_code    = #{package.factoryCode}
+        </if>
+        <if test="package.beginDate != null and package.beginDate != ''">
+            and t.package_date   <![CDATA[ >= ]]> #{package.beginDate}
+        </if>
+        <if test="package.endDate != null and package.endDate != ''">
+            and t.package_date   <![CDATA[ <= ]]> #{package.endDate}
+        </if>
+        <if test="package.dutyCode != null and package.dutyCode != ''">
+            and t.duty_code   =#{package.dutyCode}
+        </if>
+        <if test="package.machineCode != null and package.machineCode != ''">
+            and t.machine_code    =#{package.machineCode}
+        </if>
+        order  by t.factory_code, t.package_date
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT  count(1)   FROM	material_package t
+        where  1=1
+        <if test="factoryCode != null and factoryCode != ''">
+            and t.factory_code    = #{factoryCode}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.package_date   <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.package_date   <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="dutyCode != null and dutyCode != ''">
+            and t.duty_code   =#{dutyCode}
+        </if>
+        <if test="machineCode != null and machineCode != ''">
+            and t.machine_code    =#{machineCode}
+        </if>
+    </select>
+
+
+</mapper>
