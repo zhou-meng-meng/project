@@ -2,6 +2,7 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysUserDao;
 import com.example.project.demos.web.dto.list.SysUserInfo;
@@ -26,9 +27,10 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.net.InetAddress;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Slf4j
 @Service("sysUserService")
@@ -41,6 +43,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
+
+    @Autowired
+    private OauthSupport oauthSupport;
+
+    @Autowired
+    private Executor commonTaskExecutor;
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("用户queryById开始");
@@ -222,6 +230,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         entity.setLoginIp(ipAddress);
                         entity.setLoginDate(date);
                         sysUserDao.updateById(entity);
+                        //20240509 add by gc 生成token
+                        CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(info.getId()), commonTaskExecutor);
                     }
                 }
             }
