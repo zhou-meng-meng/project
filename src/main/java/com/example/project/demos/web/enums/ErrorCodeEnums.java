@@ -18,7 +18,8 @@ public enum ErrorCodeEnums {
     PWD_INITE("000002","当前密码为初始密码，请修改！"),
     PWD_OVERDUE("000003","当前密码已过期，请修改！"),
     PWD_INITE_ERROR("000004","输入的原密码错误，请重新输入"),
-
+    TOKEN_IS_INVALID("000005","无效TOKEN"),
+    USER_IS_NOT_EXIST("000006","用户不存在"),
 
     /**
      * D4错误码

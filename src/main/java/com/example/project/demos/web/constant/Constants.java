@@ -90,4 +90,14 @@ public interface Constants {
      * 密码过期天数
      */
     int OVERDUE_PWD_DAYS = 60;
+
+    /**
+     * 用户token
+     */
+    String TOKEN = "token";
+    /**
+     * 请求类型
+     */
+    String REQ_TYPE_GET = "GET";
+    String REQ_TYPE_POST = "POST";
 }
