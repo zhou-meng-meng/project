@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.dao.SysUserDao;
 import com.example.project.demos.web.dto.list.SysUserInfo;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,17 +40,23 @@ public class OauthSupport {
      * @return
      * @throws Throwable
      */
-    public Boolean tokenIsExpired(String token) throws Throwable {
-        SysUserInfo user = (SysUserInfo) redisTemplate.opsForValue().get(token);
+    public boolean tokenIsExpired(String token) throws Throwable {
+        UserLoginOutDTO user = (UserLoginOutDTO) redisTemplate.opsForValue().get(token);
         if (ObjectUtil.isEmpty(user)) {
             return true;
         }
         return false;
     }
 
+    public UserLoginOutDTO getUserInfoByToken(String token) throws Throwable {
+        return (UserLoginOutDTO) redisTemplate.opsForValue().get(token);
+    }
+
+
     /**
      * 持久化token
      */
+    @Deprecated
     public String persistenceToken(Long id) {
         //根据ID查询用户
         SysUserInfo user = sysUserDao.selectSysUserInfoById(id);
@@ -58,6 +65,15 @@ public class OauthSupport {
         }
         String token = IdUtil.simpleUUID();
         redisTemplate.opsForValue().set(token, user, 5, TimeUnit.MINUTES);
+        return token;
+    }
+
+    /**
+     * 持久化token
+     */
+    public String persistenceToken(UserLoginOutDTO dto) {
+        String token = IdUtil.simpleUUID();
+        redisTemplate.opsForValue().set(token, dto, 5, TimeUnit.MINUTES);
         return token;
     }
 

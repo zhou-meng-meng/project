@@ -2,6 +2,7 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysUserDao;
@@ -22,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
@@ -231,7 +231,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         entity.setLoginDate(date);
                         sysUserDao.updateById(entity);
                         //20240509 add by gc 生成token
-                        CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(info.getId()), commonTaskExecutor);
+                        UserLoginOutDTO finalOutDTO = outDTO;
+                        CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(finalOutDTO), commonTaskExecutor);
                     }
                 }
             }

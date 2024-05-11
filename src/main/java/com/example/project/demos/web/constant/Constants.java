@@ -100,6 +100,8 @@ public interface Constants {
      */
     String REQ_TYPE_GET = "GET";
     String REQ_TYPE_POST = "POST";
+    String SUCCESS_STR = "success";
+    String ERROR_STR = "error";
 
     String SYSTEM_CODE = "system";
 }
