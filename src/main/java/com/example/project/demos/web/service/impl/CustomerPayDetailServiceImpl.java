@@ -1,17 +1,15 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.CustomerSaleDao;
-import com.example.project.demos.web.dto.customerSale.*;
-import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
-import com.example.project.demos.web.dto.list.CustomerSaleInfo;
-import com.example.project.demos.web.entity.CustomerSaleEntity;
+import cn.hutool.core.util.ObjectUtil;
+import com.example.project.demos.web.dao.CustomerPayDetailDao;
+import com.example.project.demos.web.dto.customerPayDetail.*;
+import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
+import com.example.project.demos.web.entity.CustomerPayDetailEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.service.CustomerAccountRelService;
 import com.example.project.demos.web.service.CustomerPayDetailService;
-import com.example.project.demos.web.service.CustomerSaleService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -25,27 +23,24 @@ import java.util.Date;
 import java.util.List;
 
 @Slf4j
-@Service("customerSaleService")
-public class CustomerSaleServiceImpl implements CustomerSaleService {
+@Service("customerPayDetailService")
+public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     @Resource
-    private CustomerSaleDao customerSaleDao;
+    private CustomerPayDetailDao customerPayDetailDao;
 
     @Autowired
     private CustomerAccountRelService customerAccountRelService;
 
-    @Autowired
-    private CustomerPayDetailService customerPayDetailService;
-
-    @Override
+    /*@Override
     public QueryByIdOutDTO queryById(QueryByIdDTO dto) {
         log.info("销售客户queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            CustomerSaleInfo customerSaleInfo = customerSaleDao.selectCustomerSaleInfoById(dto.getId());
-            outDTO = BeanUtil.copyProperties(customerSaleInfo, QueryByIdOutDTO.class);
+            CustomerPayDetailInfo customerPayDetailInfo = customerPayDetailDao.selectCustomerPayDetailInfoById(dto.getId());
+            outDTO = BeanUtil.copyProperties(customerPayDetailInfo, QueryByIdOutDTO.class);
             //查询对应账户
             List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getCode());
             outDTO.setAccountRelList(list);
@@ -59,7 +54,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         outDTO.setErrorMsg(errortMsg);
         log.info("销售客户queryById结束");
         return outDTO;
-    }
+    }*/
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
@@ -69,20 +64,20 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.customerSaleDao.count(queryByPageDTO);
+            long total = this.customerPayDetailDao.count(queryByPageDTO.getCustomerCode());
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
                 //转换实体入参
-                CustomerSaleEntity customerSale = BeanCopyUtils.copy(queryByPageDTO,CustomerSaleEntity.class);
+                //CustomerPayDetailEntity customerPayDetail = BeanCopyUtils.copy(queryByPageDTO,CustomerPayDetailEntity.class);
                 //开始分页查询
-                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectCustomerSaleInfoListByPage(customerSale, pageRequest), pageRequest, total);
+                Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(queryByPageDTO.getCustomerCode(),queryByPageDTO.getCustomerName(), pageRequest), pageRequest, total);
                 //获取分页数据
-                List<CustomerSaleInfo> list = page.toList();
+                List<CustomerPayDetailInfo> list = page.toList();
                 //出参赋值
-                outDTO.setCustomerSaleInfoList(list);
+                outDTO.setCustomerPayDetailInfoList(list);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -102,22 +97,20 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            CustomerSaleEntity customerSaleEntity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
-            customerSaleEntity.setCreateBy("zhangyunning");
-            customerSaleEntity.setCreateTime(new Date());
-            int i = customerSaleDao.insert(customerSaleEntity);
-            //添加账号对应关系
-            customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
-            log.info("添加一条默认往来账信息，金额都为0");
-            com.example.project.demos.web.dto.customerPayDetail.AddDTO addDTO = new com.example.project.demos.web.dto.customerPayDetail.AddDTO();
-            addDTO.setCustomerCode(dto.getCode());
-            addDTO.setIsDefault(SysEnums.SYS_YES_FLAG.getCode());
-            addDTO.setBookBalance(new BigDecimal(0));
-            addDTO.setPayBalance(new BigDecimal(0));
-            addDTO.setReturnBalance(new BigDecimal(0));
-            addDTO.setCreateBy(Constants.SYSTEM_CODE);
-            addDTO.setRemark("默认往来账信息");
-            customerPayDetailService.insert(addDTO);
+            CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
+            if(SysEnums.SYS_YES_FLAG.getCode().equals(dto.getIsDefault())){
+                log.info("新增客户时，增加一条默认往来账");
+            }else{
+                //需要获取该客户最新一笔来往账信息
+                CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
+                //账面金额=上次账面余额-总金额+退回金额+打款金额
+                BigDecimal bookBalance = entity.getBookBalance().subtract(dto.getMaterialBalance()).add(dto.getReturnBalance()).add(dto.getPayBalance());
+                log.info("新的账面余额:"+entity.getBookBalance() + "-" + dto.getMaterialBalance() + "+" + dto.getReturnBalance() +"+" +  dto.getPayBalance() +"=" +bookBalance);
+                newEntity.setBookBalance(bookBalance );
+                newEntity.setCreateBy("zhangyunning");
+            }
+            newEntity.setCreateTime(new Date());
+            int i = customerPayDetailDao.insert(newEntity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -134,14 +127,11 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            CustomerSaleEntity customerSaleEntity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
-            customerSaleEntity.setCreateBy("zhangyunning");
-            customerSaleEntity.setUpdateTime(new Date());
-            int i = customerSaleDao.updateById(customerSaleEntity);
-            //先删除原账号对应关系
-            customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
-            //重新插入账号对应关系
-            customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
+            CustomerPayDetailEntity customerPayDetailEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
+            //修改
+            customerPayDetailEntity.setUpdateBy("zhangyunning");
+            customerPayDetailEntity.setUpdateTime(new Date());
+            int i = customerPayDetailDao.updateById(customerPayDetailEntity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -158,9 +148,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            int i = customerSaleDao.deleteById(dto.getId());
-            //删除客户对应账号
-            customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
+            int i = customerPayDetailDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -170,5 +158,4 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
-
 }

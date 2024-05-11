@@ -1,13 +1,16 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerSupplyDao;
 import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
 import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
 import com.example.project.demos.web.dto.customerSupply.*;
 import com.example.project.demos.web.entity.CustomerSupplyEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.service.CustomerAccountRelService;
+import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.service.CustomerSupplyService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +32,9 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
     private CustomerSupplyDao customerSupplyDao;
     @Autowired
     private CustomerAccountRelService customerAccountRelService;
+
+    @Autowired
+    private CustomerPayDetailService customerPayDetailService;
 
     @Override
     public QueryByIdOutDTO queryById(QueryByIdDTO dto) {
@@ -100,6 +107,16 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             int i = customerSupplyDao.insert(CustomerSupplyEntity);
             //添加账号对应关系
             customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
+            log.info("添加一条默认往来账信息，金额都为0");
+            com.example.project.demos.web.dto.customerPayDetail.AddDTO addDTO = new com.example.project.demos.web.dto.customerPayDetail.AddDTO();
+            addDTO.setCustomerCode(dto.getCode());
+            addDTO.setIsDefault(SysEnums.SYS_YES_FLAG.getCode());
+            addDTO.setBookBalance(new BigDecimal(0));
+            addDTO.setPayBalance(new BigDecimal(0));
+            addDTO.setReturnBalance(new BigDecimal(0));
+            addDTO.setCreateBy(Constants.SYSTEM_CODE);
+            addDTO.setRemark("默认往来账信息");
+            customerPayDetailService.insert(addDTO);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

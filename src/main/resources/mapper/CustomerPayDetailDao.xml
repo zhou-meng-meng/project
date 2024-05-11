@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.CustomerPayDetailDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.CustomerPayDetailEntity" id="customerPayDetailMap">
+        <result property="id" column="id"/>
+        <result property="customerCode" column="customer_code"/>
+        <result property="bookBalance" column="book_balance"/>
+        <result property="payBalance" column="pay_balance"/>
+        <result property="returnBalance" column="return_balance"/>
+        <result property="payType" column="pay_type"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectCustomerPayDetailInfoListByPage" resultType="com.example.project.demos.web.dto.list.CustomerPayDetailInfo">
+        SELECT
+        t.id,
+        t.customer_code,
+        #{customerName} as customerName,
+        t.book_balance,
+        t.pay_balance,
+        t.pay_type,
+        t.return_balance,
+        t.is_default,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	customer_pay_detail t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        where   t.costomer_code = #{customerCode}
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT   count(1)   FROM	customer_pay_detail t
+        where   t.customer_code = #{customerCode}
+    </select>
+
+    <!--获取该客户的最新一笔的往来账-->
+    <select id="selectLatestPayDetail" resultType="java.lang.String" resultMap="customerPayDetailMap">
+        select t.id,
+               t.customer_code,
+               t.book_balance,
+               t.pay_balance,
+               t.pay_type,
+               t.return_balance,
+               t.is_default
+               t.remark  from customer_pay_detail t
+             where   t.customer_code = #{customerCode} order  by  t.id  desc  limit 0,1
+    </select>
+
+</mapper>

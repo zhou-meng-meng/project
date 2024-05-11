@@ -23,6 +23,17 @@ public enum SysEnums {
         this.desc = desc;
     }
 
+    public static String getDescByCode(String code){
+        String desc="";
+        SysEnums  [] sysEnums= values();
+        for(SysEnums sysEnum : sysEnums){
+            if(sysEnum.getCode().equals(code.trim())){
+                desc = sysEnum.getDesc();
+            }
+        }
+        return desc;
+    }
+
     public String getCode() {
         return code;
     }
