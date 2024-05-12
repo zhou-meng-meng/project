@@ -1,0 +1,29 @@
+package com.example.project.demos.web.controller;
+
+import com.example.project.demos.web.Response.ResponseResult;
+import com.example.project.demos.web.auth.OauthSupport;
+import com.example.project.demos.web.constant.Constants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * @author guanc
+ * @version 创建时间：2024/5/9 18:02
+ * @describe
+ */
+@Slf4j
+@RestController
+@RequestMapping("token")
+public class TokenController {
+
+    @Autowired
+    private OauthSupport oauthSupport;
+
+    @GetMapping("getUserInfoByToken")
+    public ResponseResult<?> getUserInfoByToken(String token) throws Throwable {
+        return ResponseResult.Builder.buildOk(Constants.SUCCESS_STR, oauthSupport.getUserInfoByToken(token));
+    }
+}
