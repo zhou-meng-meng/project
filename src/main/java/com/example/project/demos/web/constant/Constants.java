@@ -102,4 +102,13 @@ public interface Constants {
     String REQ_TYPE_POST = "POST";
 
     String SYSTEM_CODE = "system";
+
+    /**
+     * 厂区编号前缀
+     */
+    String FACTORY_CODE_PREFIX = "F";
+    /**
+     * 仓库编号前缀
+     */
+    String STORE_CODE_PREFIX = "S";
 }

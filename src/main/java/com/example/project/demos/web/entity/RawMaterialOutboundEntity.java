@@ -50,9 +50,9 @@ public class RawMaterialOutboundEntity implements Serializable {
 	 */
 	private BigDecimal tollAmount;
 	/**
-	 * 厂区编号
+	 * 出库方编号
 	 */
-	private String factoryCode;
+	private String outCode;
 	/**
 	 * 领用人
 	 */

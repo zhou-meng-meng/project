@@ -22,6 +22,14 @@ public interface SysDictTypeDao extends BaseMapper<SysDictTypeEntity> {
     List<SysDictTypeInfo> queryAllByLimit(@Param("type") SysDictTypeEntity sysDictTypeEntity, @Param("pageable") Pageable pageable);
 
     /**
+     * 不分页
+     * @param sysDictTypeEntity
+     * @return
+     */
+    List<SysDictTypeInfo> queryAll(@Param("type") SysDictTypeEntity sysDictTypeEntity);
+
+
+    /**
      * 统计总行数
      *
      * @param queryByPageDTO 查询条件

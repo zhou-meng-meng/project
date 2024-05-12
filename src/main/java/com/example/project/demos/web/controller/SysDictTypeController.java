@@ -92,5 +92,18 @@ public class SysDictTypeController extends BaseController{
         return outDTO;
     }
 
+    /**
+     * 获取字典值键值对
+     *
+     * @param dto 主键
+     * @return map
+     */
+    @PostMapping("/queryKeyValueList")
+    @ApiOperation("获取字典值键值对")
+    public QueryKeyValueListOutDTO QueryKeyValueList(@RequestBody QueryKeyValueListDTO dto) {
+        QueryKeyValueListOutDTO outDTO = sysDictTypeService.QueryKeyValueList(dto);
+        return outDTO;
+    }
+
 }
 

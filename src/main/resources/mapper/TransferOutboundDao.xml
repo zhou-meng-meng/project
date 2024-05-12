@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.TransferOutboundDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.TransferOutboundEntity" id="transferOutboundMap">
+        <result property="id" column="id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="transferCount" column="transfer_count"/>
+        <result property="transferType" column="transfer_type"/>
+        <result property="transferDate" column="transfer_date"/>
+        <result property="unit" column="unit"/>
+        <result property="billNo" column="bill_no"/>
+        <result property="confirmState" column="confirm_state"/>
+        <result property="confirmTime" column="confirm_time"/>
+        <result property="confirmOpinion" column="confirm_opinion"/>
+        <result property="outCode" column="out_code"/>
+        <result property="inCode" column="in_code"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectTransferOutboundInfoListByPage" resultType="com.example.project.demos.web.dto.list.TransferOutboundInfo">
+        SELECT
+            t.id,
+            t.material_code,
+            m.NAME AS materialName,
+            t.transfer_count,
+            t.transfer_type,
+            t.transfer_date,
+            d.dict_value transferTypeName,
+            t.unit,
+            t.bill_no,
+            t.confirm_state,
+            d1.dict_value confirmStateName,
+            t.confirm_time,
+            t.confirm_opinion,
+            t.out_code,
+            t.in_code ,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	transfer_outbound t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN material_info m ON m.CODE = t.material_code
+                    LEFT JOIN sys_dict_data d ON d.dict_code = t.transfer_type and  d.dict_type = 'transfer_type'
+                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.confirm_state and  d1.dict_type = 'confirm_state'
+        where  1=1
+        <if test="transfer.materialCode != null and transfer.materialCode != ''">
+            and t.material_code    like concat('%', #{transfer.materialCode}, '%')
+        </if>
+        <if test="transfer.materialName != null and transfer.materialName != ''">
+            and m.name    like concat('%', #{transfer.materialName}, '%')
+        </if>
+        <if test="transfer.beginDate != null and transfer.beginDate != ''">
+            and t.transfer_date    <![CDATA[ >= ]]> #{transfer.beginDate}
+        </if>
+        <if test="transfer.endDate != null and transfer.endDate != ''">
+            and t.transfer_date    <![CDATA[ <= ]]> #{transfer.endDate}
+        </if>
+        <if test="transfer.transferType != null and transfer.transferType != ''">
+            and t.transfer_type   #{transfer.transferType}
+        </if>
+        <if test="transfer.confirmState != null and transfer.confirmState != ''">
+            and t.confirm_state   #{transfer.confirmState}
+        </if>
+        order  by  t.transfer_date
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT  count(1)  FROM	transfer_outbound t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="materialCode != null and materialCode != ''">
+            and t.material_code    like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.transfer_date    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.transfer_date    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="transferType != null and transferType != ''">
+            and t.transfer_type   #{transferType}
+        </if>
+        <if test="confirmState != null and confirmState != ''">
+            and t.confirm_state   #{confirmState}
+        </if>
+    </select>
+
+
+</mapper>

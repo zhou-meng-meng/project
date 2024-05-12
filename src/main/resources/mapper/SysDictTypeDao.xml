@@ -69,4 +69,36 @@
         </if>
     </select>
 
+    <!--查询数据-->
+    <select id="queryAll" resultType="com.example.project.demos.web.dto.list.SysDictTypeInfo" >
+        SELECT
+        t.id,
+        t.dict_type,
+        t.dict_name,
+        t.`status`,
+        d.dict_value AS statusName,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM
+        sys_dict_type t	LEFT JOIN sys_dict_data d ON t.`status` = d.dict_code 	AND d.dict_type = 'status'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        WHERE	1 = 1
+        <if test="type.dictName != null and type.dictName != ''">
+            AND  t.dict_type like    like concat('%', #{type.dictName}, '%')
+        </if>
+        <if test="type.dictType != null and type.dictType != ''">
+            and  t.dict_type like   like concat('%', #{type.dictType}, '%')
+        </if>
+        <if test="type.status != null and type.status != ''">
+            and  t.`status` =  =#{type.status}
+        </if>
+        order  by  id
+    </select>
+
 </mapper>

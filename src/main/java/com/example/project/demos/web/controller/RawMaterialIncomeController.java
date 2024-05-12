@@ -33,7 +33,7 @@ public class RawMaterialIncomeController extends BaseController{
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    @PostMapping("/querySysFactoryPageList")
+    @PostMapping("/queryPageList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
         QueryByPageOutDTO outDTO = this.rawMaterialIncomeService.queryByPage(queryByPageDTO);

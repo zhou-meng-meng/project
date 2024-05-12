@@ -11,7 +11,7 @@
         <result property="unit" column="unit"/>
         <result property="unitPrice" column="unit_price"/>
         <result property="supplyerCode" column="supplyer_code"/>
-        <result property="factoryCode" column="factory_code"/>
+        <result property="inCode" column="in_code"/>
         <result property="billNo" column="bill_no"/>
         <result property="materialBuyer" column="material_buyer"/>
         <result property="materialBuytime" column="material_buytime"/>
@@ -38,8 +38,7 @@
             t.unit_price,
             t.supplyer_code,
             s.name as supplyerName,
-            t.factory_code,
-            f.name as factoryName,
+            t.in_code,
             t.bill_no,
             t.material_buyer,
             u2.user_name AS materialBuyerName,
@@ -62,7 +61,6 @@
                     LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
                     left join material_info  m  on  m.code = t.material_code
                     left join customer_supply s on s.code = t.supplyer_code
-                    left join sys_factory  f  on f.code = t.factory_code
                     LEFT JOIN sys_dict_data d ON d.dict_code = t.model 	AND d.dict_type = 'material_model'
                     LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.unit 	AND d1.dict_type = 'unit'
                     LEFT JOIN sys_dict_data d2 ON d2.dict_code = t.approve_state 	AND d2.dict_type = 'approve_state'
@@ -120,8 +118,7 @@
         t.unit_price,
         t.supplyer_code,
         s.name as supplyerName,
-        t.factory_code,
-        f.name as factoryName,
+        t.in_code,
         t.bill_no,
         t.material_buyer,
         u2.user_name AS materialBuyerName,
@@ -144,7 +141,6 @@
         LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
         left join material_info  m  on  m.code = t.material_code
         left join customer_supply s on s.code = t.supplyer_code
-        left join sys_factory  f  on f.code = t.factory_code
         LEFT JOIN sys_dict_data d ON d.dict_code = t.model 	AND d.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.unit 	AND d1.dict_type = 'unit'
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = t.approve_state 	AND d2.dict_type = 'approve_state'

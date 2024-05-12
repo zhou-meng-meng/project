@@ -57,12 +57,12 @@ public class QueryByIdOutDTO {
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
     /**
-     * 厂区编号
+     * 出库方编号
      */
-    @ApiModelProperty(value = "厂区编号")
-    private String factoryCode;
-    @ApiModelProperty(value = "厂区名称")
-    private String factoryName;
+    @ApiModelProperty(value = "出库方编号")
+    private String outCode;
+    @ApiModelProperty(value = "出库方名称")
+    private String outName;
 
     /**
      * 领用人

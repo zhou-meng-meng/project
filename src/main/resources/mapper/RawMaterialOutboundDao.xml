@@ -12,7 +12,7 @@
         <result property="unitPrice" column="unit_price"/>
         <result property="count" column="count"/>
         <result property="tollAmount" column="toll_amount"/>
-        <result property="factoryCode" column="factory_code"/>
+        <result property="outCode" column="out_code"/>
         <result property="receiver" column="receiver"/>
         <result property="receiveTime" column="receive_time"/>
         <result property="billNo" column="bill_no"/>
@@ -37,8 +37,8 @@
             t.unit_price,
             t.count,
             t.toll_amount,
-            t.factory_code,
-            f.NAME AS factoryName,
+            t.out_code,
+            f.NAME AS outName,
             t.receiver,
             u2.user_name AS receiverName,
             t.receive_time,
@@ -59,7 +59,7 @@
             LEFT JOIN sys_user u2 ON u2.user_login = t.receiver
             LEFT JOIN material_info m ON m.CODE = t.material_code
             LEFT JOIN customer_supply s ON s.CODE = m.supplyer_code
-            LEFT JOIN sys_factory f ON f.CODE = t.factory_code
+            LEFT JOIN sys_factory f ON f.CODE = t.out_code
             LEFT JOIN sys_dict_data d ON d.dict_code = t.model 	AND d.dict_type = 'material_model'
             LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.unit 	AND d1.dict_type = 'unit'
        where 1 = 1
@@ -110,8 +110,8 @@
         t.unit_price,
         t.count,
         t.toll_amount,
-        t.factory_code,
-        f.NAME AS factoryName,
+        t.out_code,
+        f.NAME AS outName,
         t.receiver,
         u2.user_name AS receiverName,
         t.receive_time,
@@ -132,7 +132,7 @@
         LEFT JOIN sys_user u2 ON u2.user_login = t.receiver
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN customer_supply s ON s.CODE = m.supplyer_code
-        LEFT JOIN sys_factory f ON f.CODE = t.factory_code
+        LEFT JOIN sys_factory f ON f.CODE = t.out_code
         LEFT JOIN sys_dict_data d ON d.dict_code = t.model 	AND d.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.unit 	AND d1.dict_type = 'unit'
         where t.id =#{id}

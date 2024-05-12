@@ -3,6 +3,7 @@ package com.example.project.demos.web.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.sysStorehouse.QueryByPageDTO;
+import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,6 +22,8 @@ import java.util.List;
 public interface SysStorehouseDao extends BaseMapper<SysStorehouseEntity> {
     List<SysStorehouseInfo> selectSysStorehouseInfoListByPage(@Param("storehouse") SysStorehouseEntity sysStorehouseEntity, @Param("pageable") Pageable pageable);
 
+    //不分页
+    List<SysStorehouseInfo> selectStorehouseInfoList(@Param("storehouse") SysStorehouseEntity sysStorehouseEntity);
     /**
      * 统计总行数
      *

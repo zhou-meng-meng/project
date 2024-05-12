@@ -46,9 +46,9 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 */
 	private String supplyerCode;
 	/**
-	 * 厂区编号
+	 * 入库方编号
 	 */
-	private String factoryCode;
+	private String inCode;
 	/**
 	 * 单据号
 	 */

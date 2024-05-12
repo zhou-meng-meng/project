@@ -41,12 +41,12 @@ public class EditDTO {
     @ApiModelProperty(value = "供货商编号")
     private String supplyerCode;
     /**
-     * 厂区编号
+     * 入库方编号
      */
-    @ApiModelProperty(value = "厂区编号")
-    private String factoryCode;
-    @ApiModelProperty(value = "厂区名称")
-    private String factoryName;
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
+    @ApiModelProperty(value = "入库方名称")
+    private String inCodeName;
     /**
      * 单据号
      */

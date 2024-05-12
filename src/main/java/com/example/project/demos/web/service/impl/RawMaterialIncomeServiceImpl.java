@@ -34,6 +34,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         try{
             RawMaterialIncomeInfo rawMaterialIncomeInfo = rawMaterialIncomeDao.selectRawMaterialIncomeInfoById(id);
             outDTO = BeanUtil.copyProperties(rawMaterialIncomeInfo, QueryByIdOutDTO.class);
+
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());

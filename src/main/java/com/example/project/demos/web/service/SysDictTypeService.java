@@ -53,5 +53,7 @@ public interface SysDictTypeService  {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
+    QueryKeyValueListOutDTO QueryKeyValueList(QueryKeyValueListDTO dto);
+
 }
 

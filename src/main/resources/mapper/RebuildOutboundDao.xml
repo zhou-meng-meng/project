@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.RebuildOutboundDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.RebuildOutboundEntity" id="rebuildOutboundMap">
+        <result property="id" column="id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="rebuildCount" column="rebuild_count"/>
+        <result property="rebuildDate" column="rebuild_date"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="billNo" column="bill_no"/>
+        <result property="billState" column="bill_state"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectRebuildOutboundInfoListByPage" resultType="com.example.project.demos.web.dto.list.RebuildOutboundInfo">
+        SELECT
+            t.id,
+            t.material_code,
+            m.NAME AS materialName,
+            t.rebuild_count,
+            t.rebuild_date,
+            t.factory_code,
+            f.`name` as factoryName,
+            t.bill_no,
+            t.bill_state ,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	rebuild_outbound t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        left join  sys_factory  f on  f.code = t.factory_code
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="rebuild.materialCode != null and rebuild.materialCode != ''">
+            and t.material_code    like concat('%', #{rebuild.materialCode}, '%')
+        </if>
+        <if test="rebuild.materialName != null and rebuild.materialName != ''">
+            and m.name    like concat('%', #{rebuild.materialName}, '%')
+        </if>
+        <if test="rebuild.beginDate != null and rebuild.beginDate != ''">
+            and t.rebuild_date    <![CDATA[ >= ]]> #{rebuild.beginDate}
+        </if>
+        <if test="rebuild.endDate != null and rebuild.endDate != ''">
+            and t.rebuild_date    <![CDATA[ <= ]]> #{rebuild.endDate}
+        </if>
+        <if test="rebuild.factorCode != null and rebuild.factorCode != ''">
+            and t.factory_code   = #{rebuild.factorCode}
+        </if>
+        order  by  t.id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)  FROM	rebuild_outbound t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="materialCode != null and materialCode != ''">
+            and t.material_code    like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.rebuild_date    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.rebuild_date    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="factorCode != null and factorCode != ''">
+            and t.factory_code   = #{factorCode}
+        </if>
+    </select>
+
+
+</mapper>

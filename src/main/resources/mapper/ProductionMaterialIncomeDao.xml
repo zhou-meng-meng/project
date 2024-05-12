@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.ProductionMaterialIncomeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.ProductionMaterialIncomeEntity" id="productionMaterialIncomeMap">
+        <result property="id" column="id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="model" column="model"/>
+        <result property="incomeNum" column="income_num"/>
+        <result property="producer" column="producer"/>
+        <result property="produceTime" column="produce_time"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="approveState" column="approve_state"/>
+        <result property="billState" column="bill_state"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectProductionMaterialIncomeInfoListByPage"  resultType="com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo">
+        SELECT
+            t.id,
+            t.material_code,
+            m.NAME AS materialName,
+            t.model,
+            t.income_num,
+            t.producer,
+            u2.user_name AS producerName,
+            t.produce_time,
+            t.factory_code,
+            f.`name` as factoryName,
+            t.approve_state,
+            t.bill_state ,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM   production_material_income t
+                LEFT JOIN sys_user u ON u.user_login = t.create_by
+                LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                LEFT JOIN sys_user u2 ON u2.user_login = t.producer
+                left join  sys_factory  f on  f.code = t.factory_code
+                LEFT JOIN material_info m ON m.CODE = t.material_code
+          where  1=1  
+        <if test="prod.materialCode != null and prod.materialCode != ''">
+            and t.material_code    like concat('%', #{prod.materialCode}, '%')
+        </if>
+        <if test="prod.materialName != null and prod.materialName != ''">
+            and m.name    like concat('%', #{prod.materialName}, '%')
+        </if>
+        <if test="prod.beginDate != null and prod.beginDate != ''">
+            and t.produce_time    <![CDATA[ >= ]]> #{prod.beginDate}
+        </if>
+        <if test="prod.endDate != null and prod.endDate != ''">
+            and t.produce_time    <![CDATA[ <= ]]> #{prod.endDate}
+        </if>
+        <if test="prod.producerName != null and prod.producerName != ''">
+            and u2.user_name   like concat('%', #{prod.producerName}, '%')
+        </if>
+        order  by  t.id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count"  resultType="java.lang.Integer">
+        SELECT count(1)    FROM   production_material_income t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.producer
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="materialCode != null and materialCode != ''">
+            and t.material_code    like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.produce_time    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.produce_time    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="producerName != null and producerName != ''">
+            and u2.user_name   like concat('%', #{producerName}, '%')
+        </if>
+    </select>
+
+    <select id="selectProductionMaterialIncomeInfoById"  resultType="com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo">
+        SELECT
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        t.model,
+        t.income_num,
+        t.producer,
+        u2.user_name AS producerName,
+        t.produce_time,
+        t.factory_code,
+        f.`name` as factoryName,
+        t.approve_state,
+        t.bill_state ,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM   production_material_income t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.producer
+        left join  sys_factory  f on  f.code = t.factory_code
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where    t.id = #{id}
+    </select>
+
+
+</mapper>

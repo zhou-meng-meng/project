@@ -50,10 +50,10 @@ public class EditDTO {
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
     /**
-     * 厂区编号
+     * 出库方编号
      */
-    @ApiModelProperty(value = "厂区编号")
-    private String factoryCode;
+    @ApiModelProperty(value = "出库方编号")
+    private String outCode;
 
     /**
      * 领用人

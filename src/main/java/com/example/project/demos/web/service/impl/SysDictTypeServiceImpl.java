@@ -1,7 +1,10 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.dao.SysDictDataDao;
 import com.example.project.demos.web.dao.SysDictTypeDao;
+import com.example.project.demos.web.dto.list.SysDictDataInfo;
+import com.example.project.demos.web.dto.list.SysDictDataKeyValueInfo;
 import com.example.project.demos.web.dto.list.SysDictTypeInfo;
 import com.example.project.demos.web.dto.sysDictType.*;
 import com.example.project.demos.web.entity.SysDictTypeEntity;
@@ -15,8 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service("sysDictTypeService")
@@ -24,6 +26,9 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
 
     @Resource
     private SysDictTypeDao sysDictTypeDao;
+    @Resource
+    private SysDictDataDao sysDictDataDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("数据字段类型queryById开始");
@@ -134,6 +139,40 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    @Override
+    public QueryKeyValueListOutDTO QueryKeyValueList(QueryKeyValueListDTO dto) {
+        Map<String, List<SysDictDataKeyValueInfo>> map = new HashMap<>();
+        QueryKeyValueListOutDTO outDTO = new QueryKeyValueListOutDTO();
+        //获取dict_type集合
+        List<SysDictTypeInfo> typeList = sysDictTypeDao.queryAll(new SysDictTypeEntity());
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        try{
+            for(SysDictTypeInfo info : typeList){
+                String type = info.getDictType();
+                //根据type获取dict_data数据集合
+                List<SysDictDataInfo> dataList = sysDictDataDao.queryList(type);
+                List<SysDictDataKeyValueInfo> keyValueInfoList = new ArrayList<>();
+                //遍历dataList  组装SysDictDataKeyValueInfo  键值对
+                for(SysDictDataInfo dataInfo : dataList){
+                    SysDictDataKeyValueInfo keyValueInfo = new SysDictDataKeyValueInfo();
+                    keyValueInfo.setKey(dataInfo.getDictCode());
+                    keyValueInfo.setValue(dataInfo.getDictValue());
+                    keyValueInfoList.add(keyValueInfo);
+                }
+                map.put(type,keyValueInfoList);
+            }
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        outDTO.setMap(map);
         return outDTO;
     }
 }
