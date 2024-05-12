@@ -53,5 +53,7 @@ public interface SysUserService {
     UserLoginOutDTO userLogin(UserLoginDTO dto);
 
     ResetPwdOutDTO restPwd(ResetPwdDTO dto);
+
+    UpdatePwdOutDTO updatePwd(UpdatePwdDTO dto);
 }
 

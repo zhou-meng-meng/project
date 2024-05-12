@@ -112,6 +112,16 @@ public class SysUserController extends BaseController{
         return outDTO;
     }
 
+    /**
+     * 重置密码操作
+     */
+    @PostMapping("/updatePwd")
+    @ApiOperation("修改密码操作")
+    public UpdatePwdOutDTO updatePwd(@RequestBody UpdatePwdDTO dto) {
+        UpdatePwdOutDTO outDTO = sysUserService.updatePwd(dto);
+        return outDTO;
+    }
+
 
 
 }

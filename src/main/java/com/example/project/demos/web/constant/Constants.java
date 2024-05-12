@@ -113,4 +113,6 @@ public interface Constants {
      * 仓库编号前缀
      */
     String STORE_CODE_PREFIX = "S";
+
+    String INITE_PWD = "123456";
 }

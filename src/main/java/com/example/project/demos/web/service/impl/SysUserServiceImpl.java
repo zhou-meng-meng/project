@@ -114,7 +114,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         try{
             SysUserEntity sysUserEntity = BeanCopyUtils.copy(dto,SysUserEntity.class);
             //密码加密处理
-            String pwd = DigestUtils.md5DigestAsHex(dto.getPassword().getBytes());
+            String pwd = DigestUtils.md5DigestAsHex(Constants.INITE_PWD.getBytes());
             sysUserEntity.setPassword(pwd);
             sysUserEntity.setLastPasswordDate(date);
             sysUserEntity.setCreateBy("zhangyunning");
@@ -257,6 +257,32 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         try{
+            //将用户密码重置为123456的MD5
+            SysUserEntity sysUserEntity = sysUserDao.selectById(dto.getId());
+            //密码加密处理
+            String pwd = DigestUtils.md5DigestAsHex(Constants.INITE_PWD.getBytes());
+            sysUserEntity.setPassword(pwd);
+            sysUserEntity.setLastPasswordDate(date);
+            sysUserDao.updateById(sysUserEntity);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("重置密码结束");
+        return outDTO;
+    }
+
+    @Override
+    public UpdatePwdOutDTO updatePwd(UpdatePwdDTO dto) {
+        log.info("修改密码开始");
+        UpdatePwdOutDTO outDTO = new UpdatePwdOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        try{
             String oldPwd = dto.getOldPwd();
             log.info("输入的原密码:"+oldPwd);
             //转换MD5
@@ -286,7 +312,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("重置密码结束");
+        log.info("修改密码结束");
         return outDTO;
     }
 }

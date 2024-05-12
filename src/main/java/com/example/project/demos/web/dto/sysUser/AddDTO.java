@@ -63,12 +63,6 @@ public class AddDTO {
     private String sex;
 
     /**
-     * 密码
-     */
-    @ApiModelProperty(value = "密码")
-    private String password;
-
-    /**
      * 帐号状态（0正常 1离职）
      */
     @ApiModelProperty(value = "帐号状态（0正常 1离职）")
