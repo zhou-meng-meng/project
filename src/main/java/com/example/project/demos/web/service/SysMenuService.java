@@ -49,5 +49,9 @@ public interface SysMenuService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    QueryMenuTreeOutDTO queryMenuTree(QueryMenuTreeDTO dto);
+
+
 }
 

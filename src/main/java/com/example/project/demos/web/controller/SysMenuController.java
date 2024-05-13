@@ -92,5 +92,20 @@ public class SysMenuController extends BaseController{
         return outDTO;
     }
 
+    /**
+     * 获取菜单树形结构
+     *
+     * @param dto 主键
+     * @return 树形结构
+     */
+    @PostMapping("/queryMenuTree")
+    @ApiOperation("获取菜单树形结构")
+    public QueryMenuTreeOutDTO queryMenuTree(@RequestBody QueryMenuTreeDTO dto) {
+        QueryMenuTreeOutDTO outDTO = sysMenuService.queryMenuTree(dto);
+        return outDTO;
+    }
+
+
+
 }
 

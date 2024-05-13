@@ -7,7 +7,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 菜单权限表
@@ -77,6 +79,9 @@ public class SysMenuInfo implements Serializable {
 	private String status;
 	@ApiModelProperty(value = "菜单使用状态")
 	private String statusName;
+
+	/** 子菜单 */
+	private List<SysMenuInfo> children = new ArrayList<SysMenuInfo>();
 	/**
 	 * 创建者
 	 */

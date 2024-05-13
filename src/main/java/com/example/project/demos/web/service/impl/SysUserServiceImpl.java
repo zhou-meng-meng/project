@@ -8,10 +8,13 @@ import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysUserDao;
 import com.example.project.demos.web.dto.list.SysUserInfo;
 import com.example.project.demos.web.dto.list.SysUserRoleInfo;
+import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeDTO;
+import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeOutDTO;
 import com.example.project.demos.web.dto.sysUser.*;
 import com.example.project.demos.web.entity.SysUserEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
+import com.example.project.demos.web.service.SysMenuService;
 import com.example.project.demos.web.service.SysRoleMenuService;
 import com.example.project.demos.web.service.SysUserRoleService;
 import com.example.project.demos.web.service.SysUserService;
@@ -49,6 +52,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
     @Autowired
     private Executor commonTaskExecutor;
+
+    @Autowired
+    private SysMenuService sysMenuService;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("用户queryById开始");
@@ -217,8 +224,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                             //根据角色查询其权限菜单
                             String roleId = userRoleInfo.getRoleId();
                             log.info("roleId:"+roleId);
-                            List<String> menuList = sysRoleMenuService.queryMenuListByRoleId(roleId);
-                            outDTO.setMenuList(menuList);
+                            QueryMenuTreeDTO treeDTO = new QueryMenuTreeDTO();
+                            treeDTO.setRoleId(roleId);
+                            QueryMenuTreeOutDTO treeOutDTO =sysMenuService.queryMenuTree(treeDTO);
+                            outDTO.setMenuTreeList(treeOutDTO.getList());
                         }else{
                             log.info("userRoleInfo is null");
                         }

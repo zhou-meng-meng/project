@@ -68,4 +68,35 @@
         </if>
     </select>
 
+    <select id="selectSysMenuInfoList" resultType="com.example.project.demos.web.dto.list.SysMenuInfo" >
+        SELECT
+        t.id,
+        t.menu_id,
+        t.menu_name,
+        t.parent_id,
+        t.order_num,
+        t.path,
+        t.visible,
+        t.STATUS
+        FROM	sys_menu t
+        where  t.STATUS  = '0' and t.visible = '0'
+       order  by t.menu_id,  t.order_num
+    </select>
+
+    <select id="selectSysMenuInfoListByRoleId" resultType="com.example.project.demos.web.dto.list.SysMenuInfo" >
+        SELECT
+            t.menu_id,
+            t.menu_name,
+            t.parent_id,
+            t.order_num,
+            t.path,
+            t.visible,
+            t.STATUS
+        FROM	sys_role_menu r
+        LEFT JOIN sys_menu t ON t.menu_id = r.menu_id
+        WHERE	r.role_id = #{roleId}
+          AND t.STATUS = '0' 	AND t.visible = '0'
+        order  by t.menu_id,  t.order_num
+    </select>
+
 </mapper>

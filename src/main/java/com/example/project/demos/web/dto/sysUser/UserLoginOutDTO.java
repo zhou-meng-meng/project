@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.sysUser;
 
+import com.example.project.demos.web.dto.list.SysMenuTreeInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -108,11 +109,8 @@ public class UserLoginOutDTO {
     @ApiModelProperty(value = "密码是否过期 Y-是;N-否")
     private String isOverDuePwd;
 
-    /**
-     * 权限菜单集合
-     */
-    @ApiModelProperty(value = "权限菜单集合")
-    private List<String> menuList;
+    @ApiModelProperty(value = "权限菜单树形")
+    private List<SysMenuTreeInfo> menuTreeList;
 
     /**
      * 操作结果编码:null
