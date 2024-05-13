@@ -9,6 +9,7 @@
         <result property="code" column="code"/>
         <result property="name" column="name"/>
         <result property="model" column="model"/>
+        <result property="unit" column="unit"/>
         <result property="type" column="type"/>
         <result property="supplyerCode" column="supplyer_code"/>
         <result property="createBy" column="create_by"/>
@@ -25,6 +26,8 @@
         t.NAME,
         t.model,
         d.dict_value as modelName,
+        t.unit,
+        d2.dict_value as unitName,
         t.type,
         d1.dict_value as typeName,
         t.supplyer_code,
@@ -42,6 +45,7 @@
         left join customer_supply   s  on  s.code = t.supplyer_code
         left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
         left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
+        left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'unit'
         where  1=1
         <if test="info.code != null and info.code != ''">
             and t.code    like concat('%', #{info.code}, '%')
@@ -84,6 +88,8 @@
             t.NAME,
             t.model,
             d.dict_value as modelName,
+            t.unit,
+            d2.dict_value as unitName,
             t.type,
             d1.dict_value as typeName,
             t.supplyer_code,
@@ -101,6 +107,7 @@
                     left join customer_supply   s  on  s.code = t.supplyer_code
                     left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
                     left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
+                    left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'unit'
         where   t.id = #{id}
     </select>
 

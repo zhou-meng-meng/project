@@ -25,6 +25,12 @@ public class AddDTO {
     @ApiModelProperty(value = "型号编号")
     private String model;
 
+    /**
+     * 单位
+     */
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
 
     /**
      * 物料类型  0-原材料；1-销售产品

@@ -2,6 +2,7 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,6 +37,12 @@ public class MaterialInfoEntity implements Serializable {
 	 * 型号
 	 */
 	private String model;
+
+	/**
+	 * 单位
+	 */
+	private String unit;
+
 	/**
 	 * 物料类型  0-原材料；1-销售产品
 	 */

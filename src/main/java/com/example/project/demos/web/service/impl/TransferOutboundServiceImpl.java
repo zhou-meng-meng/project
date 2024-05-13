@@ -81,7 +81,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
                 List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
                 //赋值调出方和调入方
-                list = setTransferObject(list,factoryInfoList,sysStorehouseInfoList);
+                list = setTransferObject(list);
                 //出参赋值
                 outDTO.setTransferOutboundInfoList(list);
             }
@@ -158,11 +158,12 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
     /**
      * 赋值调入方和调出方的名称
      * @param list
-     * @param factoryInfoList
-     * @param sysStorehouseInfoList
      * @return
      */
-    private List<TransferOutboundInfo> setTransferObject(List<TransferOutboundInfo> list,List<SysFactoryInfo> factoryInfoList,List<SysStorehouseInfo> sysStorehouseInfoList){
+    private List<TransferOutboundInfo> setTransferObject(List<TransferOutboundInfo> list){
+        //获取厂区和仓库集合
+        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
         for(TransferOutboundInfo info : list){
             //调入方
             String inCode = info.getInCode();

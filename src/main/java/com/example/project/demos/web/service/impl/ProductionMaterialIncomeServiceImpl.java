@@ -66,6 +66,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 Page<ProductionMaterialIncomeInfo> page = new PageImpl<>(this.productionMaterialIncomeDao.selectProductionMaterialIncomeInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ProductionMaterialIncomeInfo> list = page.toList();
+                //处理入库方名称
                 //出参赋值
                 outDTO.setProductionMaterialIncomeInfoList(list);
             }

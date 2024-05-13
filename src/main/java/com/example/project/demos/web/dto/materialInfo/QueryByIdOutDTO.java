@@ -38,6 +38,18 @@ public class QueryByIdOutDTO {
     private String modelName;
 
     /**
+     * 单位
+     */
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    /**
+     * 单位名称
+     */
+    @ApiModelProperty(value = "单位名称")
+    private String unitName;
+
+    /**
      * 物料类型  0-原材料；1-销售产品
      */
     @ApiModelProperty(value = "物料类型  0-原材料；1-销售产品")

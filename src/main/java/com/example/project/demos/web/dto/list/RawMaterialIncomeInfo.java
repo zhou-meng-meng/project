@@ -66,7 +66,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	@ApiModelProperty(value = "入库方编号")
 	private String inCode;
 	@ApiModelProperty(value = "入库方名称")
-	private String inCodeName;
+	private String inName;
 	/**
 	 * 单据号
 	 */
