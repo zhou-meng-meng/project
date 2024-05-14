@@ -56,8 +56,8 @@
         <if test="info.type != null and info.type != ''">
             and t.type    =#{info.type}
         </if>
-        <if test="supplyerName != null and supplyerName != ''">
-            and s.name    like concat('%', #{supplyerName}, '%')
+        <if test="info.supplyerName != null and info.supplyerName != ''">
+            and s.name    like concat('%', #{info.supplyerName}, '%')
         </if>
         order  by  t.CODE
         limit #{pageable.offset}, #{pageable.pageSize}

@@ -89,7 +89,7 @@
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                     LEFT JOIN sys_user u2 ON u2.user_login = t.leader
                     left join sys_dept  d  on  d.dept_id  = t.parent_id
-        where   id = #{id}
+        where   t.id = #{id}
     </select>
 
 </mapper>

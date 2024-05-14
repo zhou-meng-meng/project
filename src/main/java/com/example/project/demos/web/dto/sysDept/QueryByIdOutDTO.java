@@ -15,35 +15,60 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "主键")
     private Long id;
-    /**
-     * 厂区编号
-     */
-    @ApiModelProperty(value = "厂区编号")
-    private String code;
-    /**
-     * 厂区名称
-     */
-    @ApiModelProperty(value = "厂区名称")
-    private String name;
-    /**
-     * 厂区详细地址
-     */
-    @ApiModelProperty(value = "厂区详细地址")
-    private String address;
-    /**
-     * 厂区负责人
-     */
-    @ApiModelProperty(value = "厂区负责人")
-    private String manage;
 
-    @ApiModelProperty(value = "厂区负责人姓名")
-    private String manageName;
+    /**
+     * 部门id
+     */
+    @ApiModelProperty(value = "部门id")
+    private String deptId;
+
+    /**
+     * 部门名称
+     */
+    @ApiModelProperty(value = "部门名称")
+    private String deptName;
+
+    /**
+     * 父部门id
+     */
+    @ApiModelProperty(value = "父部门id")
+    private String parentId;
+    /**
+     * 父部门名称
+     */
+    @ApiModelProperty(value = "父部门名称")
+    private String parentName;
+    /**
+     * 显示顺序
+     */
+    @ApiModelProperty(value = "显示顺序")
+    private Integer orderNum;
+    /**
+     * 负责人
+     */
+    @ApiModelProperty(value = "负责人登录名")
+    private String leader;
+    @ApiModelProperty(value = "负责人姓名")
+    private String leaderName;
+    /**
+     * 联系电话
+     */
+    @ApiModelProperty(value = "联系电话")
+    private String phoneNo;
+
+    /**
+     * 状态（0正常 1停用）
+     */
+    @ApiModelProperty(value = "状态（0正常 1停用）")
+    private String status;
+    @ApiModelProperty(value = "状态")
+    private String statusName;
     /**
      * 创建者
      */
-    @ApiModelProperty(value = "创建者")
+    @ApiModelProperty(value = "创建者英文名")
     private String createBy;
-    @ApiModelProperty(value = "创建人名称")
+    @ApiModelProperty(value = "创建者名字")
     private String createByName;
     /**
      * 创建时间
@@ -54,9 +79,9 @@ public class QueryByIdOutDTO {
     /**
      * 更新者
      */
-    @ApiModelProperty(value = "修改人")
+    @ApiModelProperty(value = "更新者英文名")
     private String updateBy;
-    @ApiModelProperty(value = "修改人名称")
+    @ApiModelProperty(value = "更新者名字")
     private String updateByName;
     /**
      * 更新时间
