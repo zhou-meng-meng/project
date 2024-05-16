@@ -26,6 +26,7 @@
             t.role_name,
             t.role_sort,
             t.is_price_edit,
+            d1.dict_value AS isPriceEditName,
             t.STATUS,
             d.dict_value AS statusName,
             t.del_flag,
@@ -38,6 +39,7 @@
             t.remark
         FROM	sys_role t
             LEFT JOIN sys_dict_data d ON t.`status` = d.dict_code 	AND d.dict_type = 'status'
+            LEFT JOIN sys_dict_data d1 ON t.is_price_edit = d1.dict_code 	AND d1.dict_type = 'sys_yes_no'
             LEFT JOIN sys_user u ON u.user_login = t.create_by
             LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
             where 1=1

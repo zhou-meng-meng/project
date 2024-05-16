@@ -37,6 +37,8 @@ public class SysRoleInfo implements Serializable {
      */
     @ApiModelProperty(value = "单价权限 Y-是;N-否")
     private String isPriceEdit;
+    @ApiModelProperty(value = "单价权限 Y-是;N-否")
+    private String isPriceEditName;
 
     /**
      * 角色状态（0正常 1停用）
