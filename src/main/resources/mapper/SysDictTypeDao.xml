@@ -41,15 +41,15 @@
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         WHERE	1 = 1
         <if test="type.dictName != null and type.dictName != ''">
-            AND  t.dict_type like    like concat('%', #{type.dictName}, '%')
+            AND  t.dict_name like     concat('%', #{type.dictName}, '%')
         </if>
         <if test="type.dictType != null and type.dictType != ''">
-            and  t.dict_type like   like concat('%', #{type.dictType}, '%')
+            and  t.dict_type like    concat('%', #{type.dictType}, '%')
         </if>
         <if test="type.status != null and type.status != ''">
             and  t.`status` =  =#{type.status}
         </if>
-        order  by  id
+        order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
@@ -59,10 +59,10 @@
         FROM  sys_dict_type t
         WHERE	1 = 1
         <if test="dictName != null and dictName != ''">
-            AND  t.dict_type like    like concat('%', #{dictName}, '%')
+            AND  t.dict_name like     concat('%', #{dictName}, '%')
         </if>
         <if test="dictType != null and dictType != ''">
-            and  t.dict_type like   like concat('%', #{dictType}, '%')
+            and  t.dict_type like    concat('%', #{dictType}, '%')
         </if>
         <if test="status != null and status != ''">
             and  t.`status` =  =#{status}
@@ -90,15 +90,15 @@
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         WHERE	1 = 1
         <if test="type.dictName != null and type.dictName != ''">
-            AND  t.dict_type like    like concat('%', #{type.dictName}, '%')
+            AND  t.dict_name like     concat('%', #{type.dictName}, '%')
         </if>
         <if test="type.dictType != null and type.dictType != ''">
-            and  t.dict_type like   like concat('%', #{type.dictType}, '%')
+            and  t.dict_type like    concat('%', #{type.dictType}, '%')
         </if>
         <if test="type.status != null and type.status != ''">
             and  t.`status` =  =#{type.status}
         </if>
-        order  by  id
+        order  by  t.id
     </select>
 
 </mapper>

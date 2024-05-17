@@ -140,9 +140,9 @@ public class SysRoleServiceImpl  implements SysRoleService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
+            SysRoleEntity sysRoleEntity = this.sysRoleDao.selectById(dto.getId());
             int i = sysRoleDao.deleteById(dto.getId());
             //删除角色对应菜单关系表
-            SysRoleEntity sysRoleEntity = this.sysRoleDao.selectById(dto.getId());
             int j = sysRoleMenuService.deleteByRoleId(sysRoleEntity.getRoleId());
         }catch (Exception e){
             log.info(e.getMessage());
