@@ -18,4 +18,8 @@ import java.util.List;
 @Mapper
 public interface SysDictDataDao extends BaseMapper<SysDictDataEntity> {
 	List<SysDictDataInfo> queryList(@Param(value = "type") String type);
+
+	int deleteByType(@Param(value = "type") String type);
+
+	int checkByValue(@Param(value = "type") String type,@Param(value = "code") String code,@Param(value = "isDefault") String isDefault);
 }

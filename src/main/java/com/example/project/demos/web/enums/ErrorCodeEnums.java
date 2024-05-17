@@ -19,7 +19,10 @@ public enum ErrorCodeEnums {
     PWD_OVERDUE("000003","当前密码已过期，请修改！"),
     PWD_INITE_ERROR("000004","输入的原密码错误，请重新输入"),
     TOKEN_IS_INVALID("000005","无效TOKEN"),
-    USER_IS_NOT_EXIST("000006","用户不存在");
+    USER_IS_NOT_EXIST("000006","用户不存在"),
+    DICT_TYPE_IS_EXIST("000007","输入的字典类型已经存在"),
+    DICT_DATA_IS_EXIST("000008","输入的字典值已经存在"),
+    DICT_DATA_ISDEFAULT_EXIST("000009","当前字典类型已经存在默认值");
 
 
     public static String getDescByCode(String code){

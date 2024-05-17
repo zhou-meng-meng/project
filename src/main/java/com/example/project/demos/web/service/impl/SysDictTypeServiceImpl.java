@@ -91,10 +91,17 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            SysDictTypeEntity sysDictTypeEntity = BeanCopyUtils.copy(dto,SysDictTypeEntity.class);
-            sysDictTypeEntity.setCreateBy("zhangyunning");
-            sysDictTypeEntity.setCreateTime(new Date());
-            int i = sysDictTypeDao.insert(sysDictTypeEntity);
+            //判断录入的type值是否已经存在
+            int k = sysDictTypeDao.checkByType(dto.getDictType());
+            if(k > 0){
+                errorCode = ErrorCodeEnums.DICT_TYPE_IS_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.DICT_TYPE_IS_EXIST.getDesc();
+            }else{
+                SysDictTypeEntity sysDictTypeEntity = BeanCopyUtils.copy(dto,SysDictTypeEntity.class);
+                sysDictTypeEntity.setCreateBy("zhangyunning");
+                sysDictTypeEntity.setCreateTime(new Date());
+                int i = sysDictTypeDao.insert(sysDictTypeEntity);
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -131,7 +138,11 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
+            //获取数据
+            SysDictTypeEntity entity = sysDictTypeDao.selectById(dto.getId());
             int i = sysDictTypeDao.deleteById(dto.getId());
+            //删除下属字典数据
+            int j = sysDictDataDao.deleteByType(entity.getDictType());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

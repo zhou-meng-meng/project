@@ -7,6 +7,7 @@ import com.example.project.demos.web.dto.list.SysDictTypeInfo;
 import com.example.project.demos.web.dto.sysDictData.*;
 import com.example.project.demos.web.entity.SysDictDataEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.service.SysDictDataService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -70,10 +71,34 @@ public class SysDictDataServiceImpl  implements SysDictDataService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
-            sysDictDataEntity.setCreateBy("zhangyunning");
-            sysDictDataEntity.setCreateTime(new Date());
-            int i = sysDictDataDao.insert(sysDictDataEntity);
+            //判断输入的字典数据是否有重复
+            int k = sysDictDataDao.checkByValue(dto.getDictType(),dto.getDictCode(),"");
+            if(k > 0){
+                //存在相同字典值的数据
+                errorCode = ErrorCodeEnums.DICT_DATA_IS_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.DICT_DATA_IS_EXIST.getDesc();
+            }else{
+                if(dto.getIsDefault().equals(SysEnums.SYS_YES_FLAG.getCode())){
+                    //当前数值设为了默认   判断是否已经存在默认
+                    k = sysDictDataDao.checkByValue(dto.getDictType(),"",dto.getIsDefault());
+                    if(k > 0){
+                        //存在默认值
+                        errorCode = ErrorCodeEnums.DICT_DATA_ISDEFAULT_EXIST.getCode();
+                        errortMsg = ErrorCodeEnums.DICT_DATA_ISDEFAULT_EXIST.getDesc();
+                    }else{
+                        //新增数据
+                        SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
+                        sysDictDataEntity.setCreateBy("zhangyunning");
+                        sysDictDataEntity.setCreateTime(new Date());
+                        int i = sysDictDataDao.insert(sysDictDataEntity);
+                    }
+                }else{
+                    SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
+                    sysDictDataEntity.setCreateBy("zhangyunning");
+                    sysDictDataEntity.setCreateTime(new Date());
+                    int i = sysDictDataDao.insert(sysDictDataEntity);
+                }
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -90,10 +115,26 @@ public class SysDictDataServiceImpl  implements SysDictDataService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
-            sysDictDataEntity.setCreateBy("zhangyunning");
-            sysDictDataEntity.setUpdateTime(new Date());
-            int i = sysDictDataDao.updateById(sysDictDataEntity);
+            if(dto.getIsDefault().equals(SysEnums.SYS_YES_FLAG.getCode())){
+                //当前数值设为了默认   判断是否已经存在默认
+                int k = sysDictDataDao.checkByValue(dto.getDictType(),"",dto.getIsDefault());
+                if(k > 0){
+                    //存在默认值
+                    errorCode = ErrorCodeEnums.DICT_DATA_ISDEFAULT_EXIST.getCode();
+                    errortMsg = ErrorCodeEnums.DICT_DATA_ISDEFAULT_EXIST.getDesc();
+                }else{
+                    //新增数据
+                    SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
+                    sysDictDataEntity.setCreateBy("zhangyunning");
+                    sysDictDataEntity.setUpdateTime(new Date());
+                    int i = sysDictDataDao.updateById(sysDictDataEntity);
+                }
+            }else{
+                SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
+                sysDictDataEntity.setCreateBy("zhangyunning");
+                sysDictDataEntity.setUpdateTime(new Date());
+                int i = sysDictDataDao.updateById(sysDictDataEntity);
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

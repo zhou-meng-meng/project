@@ -36,4 +36,6 @@ public interface SysDictTypeDao extends BaseMapper<SysDictTypeEntity> {
      * @return 总行数
      */
     int count(QueryByPageDTO queryByPageDTO);
+
+    int checkByType(@Param("type") String type);
 }

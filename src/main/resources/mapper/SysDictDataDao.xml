@@ -44,4 +44,20 @@
         where  t.dict_type = #{type}  order   by t.dict_sort asc
     </select>
 
+    <delete id="deleteByType">
+        delete  from sys_dict_data   where dict_type = #{type}
+    </delete>
+
+    <select id="checkByValue" resultType="java.lang.Integer">
+        select count(1)  from sys_dict_data  t  where   t.dict_type = #{type}
+        <if test="code != null and code != ''">
+            AND  t.dict_code = #{code}
+        </if>
+        <if test="isDefault != null and isDefault != ''">
+            and  t.is_default = #{isDefault}
+        </if>
+    </select>
+
+
+
 </mapper>

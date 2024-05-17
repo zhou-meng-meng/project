@@ -101,4 +101,9 @@
         order  by  t.id
     </select>
 
+    <select id="checkByType" resultType="java.lang.Integer" >
+        SELECT  count(1)  FROM  sys_dict_type t
+        WHERE	 t.dict_type = #{type}
+    </select>
+
 </mapper>
