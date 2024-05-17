@@ -111,10 +111,17 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            SysFactoryEntity sysFactoryEntity = BeanCopyUtils.copy(dto,SysFactoryEntity.class);
-            sysFactoryEntity.setCreateBy("zhangyunning");
-            sysFactoryEntity.setCreateTime(new Date());
-            int i = sysFactoryDao.insert(sysFactoryEntity);
+            //判断厂区编号是否存在
+            int k = sysFactoryDao.checkCode(dto.getCode());
+            if( k > 0){
+                errorCode= ErrorCodeEnums.FACTORY_CODE_IS_EXIST.getCode();
+                errortMsg= ErrorCodeEnums.FACTORY_CODE_IS_EXIST.getDesc();
+            }else{
+                SysFactoryEntity sysFactoryEntity = BeanCopyUtils.copy(dto,SysFactoryEntity.class);
+                sysFactoryEntity.setCreateBy("zhangyunning");
+                sysFactoryEntity.setCreateTime(new Date());
+                int i = sysFactoryDao.insert(sysFactoryEntity);
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

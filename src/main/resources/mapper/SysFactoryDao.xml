@@ -124,4 +124,9 @@
         order  by  t.CODE
     </select>
 
+    <select id="checkCode" resultType="java.lang.Integer">
+        SELECT count(1)  FROM	sys_factory t
+        where  t.code   =   #{code}
+    </select>
+
 </mapper>

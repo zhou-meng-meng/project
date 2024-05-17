@@ -88,10 +88,17 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
-            SysStorehouseEntity sysStorehouseEntity = BeanCopyUtils.copy(dto,SysStorehouseEntity.class);
-            sysStorehouseEntity.setCreateBy("zhangyunning");
-            sysStorehouseEntity.setCreateTime(new Date());
-            int i = sysStorehouseDao.insert(sysStorehouseEntity);
+            //判断仓库编码是否存在
+            int k = sysStorehouseDao.checkCode(dto.getCode());
+            if(k > 0){
+                errorCode= ErrorCodeEnums.STORE_CODE_IS_EXIST.getCode();
+                errortMsg= ErrorCodeEnums.STORE_CODE_IS_EXIST.getDesc();
+            }else {
+                SysStorehouseEntity sysStorehouseEntity = BeanCopyUtils.copy(dto,SysStorehouseEntity.class);
+                sysStorehouseEntity.setCreateBy("zhangyunning");
+                sysStorehouseEntity.setCreateTime(new Date());
+                int i = sysStorehouseDao.insert(sysStorehouseEntity);
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
