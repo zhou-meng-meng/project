@@ -31,4 +31,8 @@ public interface SysDeptDao extends BaseMapper<SysDeptEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SysDeptInfo selectSysDeptInfoById(Long id);
+
+    //不分页
+    List<SysDeptInfo> selectSysDeptInfoList(@Param("dept") SysDeptEntity sysDeptEntity);
+
 }

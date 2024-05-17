@@ -5,15 +5,21 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dao.SysDeptDao;
+import com.example.project.demos.web.dao.SysFactoryDao;
+import com.example.project.demos.web.dao.SysStorehouseDao;
 import com.example.project.demos.web.dao.SysUserDao;
-import com.example.project.demos.web.dto.list.SysUserInfo;
-import com.example.project.demos.web.dto.list.SysUserRoleInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeDTO;
 import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeOutDTO;
 import com.example.project.demos.web.dto.sysUser.*;
+import com.example.project.demos.web.entity.SysDeptEntity;
+import com.example.project.demos.web.entity.SysFactoryEntity;
+import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.entity.SysUserEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
 import com.example.project.demos.web.service.SysMenuService;
 import com.example.project.demos.web.service.SysRoleMenuService;
 import com.example.project.demos.web.service.SysUserRoleService;
@@ -30,6 +36,7 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -56,6 +63,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
     @Autowired
     private SysMenuService sysMenuService;
 
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
+
+    @Resource
+    private SysDeptDao sysDeptDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("用户queryById开始");
@@ -64,7 +80,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
             SysUserInfo sysUserInfo = this.sysUserDao.selectSysUserInfoById(id);
-            outDTO = BeanUtil.copyProperties(sysUserInfo, QueryByIdOutDTO.class);
+            //赋值单位名称
+            List<SysUserInfo> list = new ArrayList<>();
+            list.add(sysUserInfo);
+            list = setDeptName(list);
+            outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -97,6 +117,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 Page<SysUserInfo> page = new PageImpl<>(this.sysUserDao.selectSysUserInfoListByPage(SysUser, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SysUserInfo> list = page.toList();
+                //赋值所属单位名称
+                list = setDeptName(list);
                 //出参赋值
                 outDTO.setSysUserInfoList(list);
             }
@@ -324,4 +346,38 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         log.info("修改密码结束");
         return outDTO;
     }
+
+
+    private List<SysUserInfo> setDeptName(List<SysUserInfo> list){
+        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+        List<SysStorehouseInfo> storehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+        List<SysDeptInfo> deptInfoList = sysDeptDao.selectSysDeptInfoList(new SysDeptEntity());
+        for(SysUserInfo info : list){
+            String type = info.getUserType();
+            if(type.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                //属于总公司
+                for(SysDeptInfo deptInfo : deptInfoList){
+                    if(info.getDeptId().equals(deptInfo.getDeptId())){
+                        info.setDeptName(deptInfo.getDeptName());
+                    }
+                }
+            }else if(type.equals(UserTypeEnums.USER_TYPE_FACTORY.getCode())){
+                //属于厂区
+                for(SysFactoryInfo sysFactoryInfo : factoryInfoList){
+                    if(info.getDeptId().equals(sysFactoryInfo.getCode())){
+                        info.setDeptName(sysFactoryInfo.getName());
+                    }
+                }
+            }else{
+                //属于仓库
+                for(SysStorehouseInfo sysStorehouseInfo : storehouseInfoList ){
+                    if(info.getDeptId().equals(sysStorehouseInfo.getCode())){
+                        info.setDeptName(sysStorehouseInfo.getName());
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
 }

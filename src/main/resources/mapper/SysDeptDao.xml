@@ -92,4 +92,38 @@
         where   t.id = #{id}
     </select>
 
+    <select id="selectSysDeptInfoList" resultType="com.example.project.demos.web.dto.list.SysDeptInfo">
+        SELECT
+        t.id,
+        t.dept_id,
+        t.dept_name,
+        t.parent_id,
+        d.dept_name as parentName,
+        t.order_num,
+        t.leader,
+        u2.user_name as leaderName,
+        t.phone_no,
+        t.STATUS,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	sys_dept t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.leader
+        left join sys_dept  d  on  d.dept_id  = t.parent_id
+        where  1=1
+        <if test="dept.deptId != null and dept.deptId != ''">
+            and t.dept_id    like concat('%', #{dept.deptId}, '%')
+        </if>
+        <if test="dept.deptName != null and dept.deptName != ''">
+            and t.dept_name    like concat('%', #{dept.deptName}, '%')
+        </if>
+        order  by  t.dept_id
+    </select>
+
 </mapper>

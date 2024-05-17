@@ -123,15 +123,15 @@ public class SysDictDataServiceImpl  implements SysDictDataService {
                     errorCode = ErrorCodeEnums.DICT_DATA_ISDEFAULT_EXIST.getCode();
                     errortMsg = ErrorCodeEnums.DICT_DATA_ISDEFAULT_EXIST.getDesc();
                 }else{
-                    //新增数据
+                    //修改数据
                     SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
-                    sysDictDataEntity.setCreateBy("zhangyunning");
+                    sysDictDataEntity.setUpdateBy("zhangyunning");
                     sysDictDataEntity.setUpdateTime(new Date());
                     int i = sysDictDataDao.updateById(sysDictDataEntity);
                 }
             }else{
                 SysDictDataEntity sysDictDataEntity = BeanCopyUtils.copy(dto,SysDictDataEntity.class);
-                sysDictDataEntity.setCreateBy("zhangyunning");
+                sysDictDataEntity.setUpdateBy("zhangyunning");
                 sysDictDataEntity.setUpdateTime(new Date());
                 int i = sysDictDataDao.updateById(sysDictDataEntity);
             }

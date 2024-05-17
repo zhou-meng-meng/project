@@ -2,6 +2,8 @@ package com.example.project.demos.web.dto.customerSupply;
 
 import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ import java.util.List;
 public class QueryByIdOutDTO {
 
     private static final long serialVersionUID = -89026850526790880L;
+    @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "主键")
     private Long id;
     /**

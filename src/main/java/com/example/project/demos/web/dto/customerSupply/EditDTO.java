@@ -3,6 +3,8 @@ package com.example.project.demos.web.dto.customerSupply;
 import com.example.project.demos.web.dto.list.MaterialPackageDetailInfo;
 import com.example.project.demos.web.entity.CustomerAccountRelEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @Data
 public class EditDTO {
     @ApiModelProperty(value = "主键")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 客户编号

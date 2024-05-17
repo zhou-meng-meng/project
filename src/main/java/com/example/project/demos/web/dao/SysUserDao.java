@@ -34,4 +34,5 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
     SysUserInfo selectUserForLogin(@Param(value = "userLogin") String userLogin,@Param(value = "password") String password);
 
     int selectUserByPwd(@Param(value = "id") Long id,@Param(value = "password") String password);
+
 }
