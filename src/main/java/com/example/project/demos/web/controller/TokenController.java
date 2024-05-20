@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.example.project.demos.web.Response.ResponseResult;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.handler.RequestHandler;
 import com.example.project.demos.web.handler.RequestHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class TokenController {
 
     @GetMapping("testGetUserInfo")
     public ResponseResult<?> testGetUserInfo() throws Throwable {
-        return ResponseResult.Builder.buildOk(JSON.toJSONString(RequestHolder.getUserInfo()));
+        UserLoginOutDTO userInfo = RequestHolder.getUserInfo();
+        return ResponseResult.Builder.buildOk(JSON.toJSONString(userInfo));
     }
 }
