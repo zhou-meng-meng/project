@@ -1,11 +1,11 @@
 package com.example.project.demos.web.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.example.project.demos.web.Response.ResponseResult;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dto.sysUser.UserLoginDTO;
-import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.handler.RequestHandler;
+import com.example.project.demos.web.handler.RequestHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +35,6 @@ public class TokenController {
 
     @GetMapping("testGetUserInfo")
     public ResponseResult<?> testGetUserInfo() throws Throwable {
-        UserLoginOutDTO dto = requestHandler.getUserInfo();
-        return null;
+        return ResponseResult.Builder.buildOk(JSON.toJSONString(RequestHolder.getUserInfo()));
     }
 }

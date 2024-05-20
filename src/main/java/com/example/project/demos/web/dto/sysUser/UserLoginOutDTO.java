@@ -7,11 +7,12 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class UserLoginOutDTO {
+public class UserLoginOutDTO implements Serializable {
     /**
      * 主键
      */

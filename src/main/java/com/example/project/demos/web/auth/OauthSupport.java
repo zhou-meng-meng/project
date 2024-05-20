@@ -8,6 +8,7 @@ import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -63,8 +64,10 @@ public class OauthSupport {
         if (ObjectUtils.isEmpty(user)) {
             throw new CustomException(500, ErrorCodeEnums.USER_IS_NOT_EXIST.getDesc(), null);
         }
+        UserLoginOutDTO userDto  = new UserLoginOutDTO();
+        BeanUtils.copyProperties(user, userDto);
         String token = IdUtil.simpleUUID();
-        redisTemplate.opsForValue().set(token, user, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(token, userDto, 5, TimeUnit.MINUTES);
         return token;
     }
 
