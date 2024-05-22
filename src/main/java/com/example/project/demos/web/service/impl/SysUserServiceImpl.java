@@ -5,10 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.SysDeptDao;
-import com.example.project.demos.web.dao.SysFactoryDao;
-import com.example.project.demos.web.dao.SysStorehouseDao;
-import com.example.project.demos.web.dao.SysUserDao;
+import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeDTO;
 import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeOutDTO;
@@ -71,6 +68,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
     @Resource
     private SysDeptDao sysDeptDao;
+
+    @Resource
+    private SysRoleDao sysRoleDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {

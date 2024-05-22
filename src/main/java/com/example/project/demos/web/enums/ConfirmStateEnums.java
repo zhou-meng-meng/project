@@ -9,7 +9,8 @@ public enum ConfirmStateEnums {
 
 
     CONFIRM_STATE_UNDO("0","待确认"),
-    CONFIRM_STATE_DONE("1","已确认");
+    CONFIRM_STATE_DONE("1","已确认"),
+    CONFIRM_STATE_REJECT("2","确认拒绝");
 
     private String code;
     private String desc;

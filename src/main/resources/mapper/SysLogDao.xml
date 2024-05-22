@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.SysLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.SysLogEntity" id="sysLogMap">
+        <result property="id" column="id"/>
+        <result property="functionId" column="function_id"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="userCode" column="user_code"/>
+        <result property="operationTime" column="operation_time"/>
+        <result property="operationInfo" column="operation_info"/>
+        <result property="operationResult" column="operation_result"/>
+        <result property="operationMsg" column="operation_msg"/>
+    </resultMap>
+
+    <select id="selectSysLogInfoListByPage" resultType="com.example.project.demos.web.dto.list.SysLogInfo" >
+        SELECT
+        t.id,
+        t.function_id,
+        t.operation_type,
+        t.user_code,
+        u.user_name as userName,
+        t.operation_time,
+        t.operation_info,
+        t.operation_result,
+        t.operation_msg
+        FROM	sys_log t
+        left join sys_user  u  on  u.user_login = t.user_code
+        where 1=1
+        <if test="log.operationInfo != null and log.operationInfo != ''">
+            and t.operation_info    like concat('%', #{log.operationInfo}, '%')
+        </if>
+        <if test="log.operationResult != null and log.operationResult != ''">
+            and t.operation_result    like concat('%', #{log.operationResult}, '%')
+        </if>
+        <if test="log.beginDate != null and log.beginDate != ''">
+            and t.operation_time   <![CDATA[ >= ]]> #{log.beginDate}
+        </if>
+        <if test="log.endDate != null and log.endDate != ''">
+            and t.operation_time   <![CDATA[ <= ]]> #{log.endDate}
+        </if>
+        <if test="log.userName != null and log.userName != ''">
+            and u.user_name    like concat('%', #{log.userName}, '%')
+        </if>
+        order  by t.operation_time  desc
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer" >
+        SELECT  count(1)  FROM	sys_log t
+        left join sys_user  u  on  u.user_login = t.user_code
+        where 1=1
+        <if test="operationInfo != null and operationInfo != ''">
+            and t.operation_info    like concat('%', #{operationInfo}, '%')
+        </if>
+        <if test="operationResult != null and operationResult != ''">
+            and t.operation_result    = #{operationResult}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.operation_time   <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.operation_time   <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="userName != null and userName != ''">
+            and u.user_name    like concat('%', #{userName}, '%')
+        </if>
+    </select>
+
+</mapper>

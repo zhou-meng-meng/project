@@ -49,7 +49,7 @@
         <if test="type.status != null and type.status != ''">
             and  t.`status` =  =#{type.status}
         </if>
-        order  by  t.id
+        order  by  t.create_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
