@@ -1,7 +1,6 @@
 package com.example.project.demos.web.service.impl;
 
 import com.example.project.demos.web.dao.SysLogDao;
-import com.example.project.demos.web.dao.SysMenuDao;
 import com.example.project.demos.web.dto.list.SysLogInfo;
 import com.example.project.demos.web.dto.sysLog.QueryByPageDTO;
 import com.example.project.demos.web.dto.sysLog.QueryByPageOutDTO;
@@ -50,8 +49,8 @@ public class SysLogServiceImpl implements SysLogService {
                 //处理枚举值
                 for(SysLogInfo info : list){
                     info.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
-                    info.setOperationType(OperationTypeEnums.getDescByCode(info.getOperationType()));
-                    info.setOperationResult(SysEnums.getDescByCode(info.getOperationResult()));
+                    info.setOperationTypeName(OperationTypeEnums.getDescByCode(info.getOperationType()));
+                    info.setOperationResultName(SysEnums.getDescByCode(info.getOperationResult()));
                 }
                 //出参赋值
                 outDTO.setSysLogInfoList(list);

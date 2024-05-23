@@ -239,7 +239,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
                     }else{
                         log.info("密码未过期，查询用户其他信息");
-                        isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
+                        /*isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
                         //查询其角色信息
                         SysUserRoleInfo userRoleInfo = sysUserRoleService.selectRoleInfoByUserLogin(userLogin);
                         if(ObjectUtil.isNotNull(userRoleInfo)){
@@ -252,7 +252,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                             outDTO.setMenuTreeList(treeOutDTO.getList());
                         }else{
                             log.info("userRoleInfo is null");
-                        }
+                        }*/
                         //修改当前登录IP和登录时间
                         InetAddress inetAddress = InetAddress.getLocalHost();
                         String ipAddress = inetAddress.getHostAddress();

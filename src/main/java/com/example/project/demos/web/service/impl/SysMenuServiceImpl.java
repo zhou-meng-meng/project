@@ -163,7 +163,6 @@ public class SysMenuServiceImpl  implements SysMenuService {
             //开始处理
             List<SysMenuInfo> menuTrees = buildMenuTree(menuInfoList);
             list = menuTrees.stream().map(SysMenuTreeInfo::new).collect(Collectors.toList());
-
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
