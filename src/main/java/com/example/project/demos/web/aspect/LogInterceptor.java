@@ -4,6 +4,7 @@ import cn.hutool.core.date.StopWatch;
 import com.alibaba.fastjson.JSON;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.exception.CustomException;
 import com.google.common.collect.Lists;
@@ -77,11 +78,15 @@ public class LogInterceptor {
                 log.info("█ param={}", JSON.toJSONString(arg));
             }
         }
-
         //String token = httpServletRequest.getHeader(Constants.TOKEN);
         String token = this.getToken();
         //校验token TODO 暂注掉
         //this.checkToken(token, url,requestId);
+        try {
+            this.putUserInfo(token, url);
+        } catch (Exception e) {
+            log.error("█ putUserInfo error e", e);
+        }
         // 执行原方法
         Object result = point.proceed();
         // 输出响应日志
@@ -93,22 +98,37 @@ public class LogInterceptor {
         return result;
     }
 
-    private String getToken(){
+    private String getToken() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(Constants.TOKEN);
     }
 
     /**
      * 校验 token
      */
-    private void checkToken(String token, String path,String reqId) throws Throwable {
+    private void checkToken(String token, String path, String reqId) throws Throwable {
         for (String ignorePath : ignorePaths) {
             if (path.contains(ignorePath)) {
                 return;
             }
         }
         if (StringUtils.isBlank(token) || oauthSupport.tokenIsExpired(token)) {
-            throw new CustomException(401, ErrorCodeEnums.TOKEN_IS_INVALID.getDesc(),reqId);
+            throw new CustomException(401, ErrorCodeEnums.TOKEN_IS_INVALID.getDesc(), reqId);
         }
+    }
+
+    private Boolean putUserInfo(String token, String path) {
+        for (String ignorePath : ignorePaths) {
+            if (path.contains(ignorePath)) {
+                return Boolean.TRUE;
+            }
+        }
+        try {
+            UserLoginOutDTO userInfo = oauthSupport.getUserInfoByToken(token);
+            ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().setAttribute("user", userInfo);
+        } catch (Throwable e) {
+             e.printStackTrace();
+        }
+        return Boolean.TRUE;
     }
 
 
