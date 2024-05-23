@@ -36,6 +36,15 @@ public class RebuildOutboundInfo implements Serializable {
 	private String materialCode;
 	@ApiModelProperty(value = "物料名称")
 	private String materialName;
+	@ApiModelProperty(value = "型号")
+	private String model;
+	@ApiModelProperty(value = "型号")
+	private String modelName;
+
+	@ApiModelProperty(value = "单位")
+	private String unit;
+	@ApiModelProperty(value = "单位名称")
+	private String unitName;
 	/**
 	 * 重造出库数量
 	 */
@@ -48,21 +57,21 @@ public class RebuildOutboundInfo implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date rebuildDate;
 	/**
-	 * 入库厂区编号
+	 * 入库方编号
 	 */
-	@ApiModelProperty(value = "入库厂区编号")
-	private String factoryCode;
-	@ApiModelProperty(value = "入库厂区名称")
-	private String factoryName;
+	@ApiModelProperty(value = "入库方编号")
+	private String inCode;
+	@ApiModelProperty(value = "入库方名称")
+	private String inName;
 	/**
 	 * 单据号
 	 */
-	@ApiModelProperty(value = "自增主键")
+	@ApiModelProperty(value = "单据号")
 	private String billNo;
 	/**
 	 * 单据状态
 	 */
-	@ApiModelProperty(value = "自增主键")
+	@ApiModelProperty(value = "单据状态")
 	private String billState;
 	/**
 	 * 创建者

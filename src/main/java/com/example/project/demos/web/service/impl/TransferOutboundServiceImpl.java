@@ -20,6 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+
+import java.sql.ClientInfoStatus;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,15 +47,19 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
-        /*try{
-            TransferOutboundInfo TransferOutboundInfo = transferOutboundDao.selectTransferOutboundInfoById(id);
-            outDTO = BeanUtil.copyProperties(TransferOutboundInfo, QueryByIdOutDTO.class);
+        try{
+            TransferOutboundInfo info = transferOutboundDao.selectTransferOutboundInfoById(id);
+            //处理调入方和调出方
+            List<TransferOutboundInfo> list = new ArrayList<>();
+            list.add(info);
+            list = setTransferObject(list);
+            outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
-        }*/
+        }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         log.info("调拨出库queryById结束");
@@ -77,9 +84,6 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 Page<TransferOutboundInfo> page = new PageImpl<>(this.transferOutboundDao.selectTransferOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<TransferOutboundInfo> list = page.toList();
-                //获取厂区和仓库集合
-                List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-                List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
                 //赋值调出方和调入方
                 list = setTransferObject(list);
                 //出参赋值

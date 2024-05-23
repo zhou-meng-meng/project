@@ -31,6 +31,15 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "型号")
     private String model;
+    @ApiModelProperty(value = "型号")
+    private String modelName;
+    /**
+     * 单位
+     */
+    @ApiModelProperty(value = "单位")
+    private String unit;
+    @ApiModelProperty(value = "单位")
+    private String unitName;
     /**
      * 入库数量
      */
@@ -50,12 +59,12 @@ public class QueryByIdOutDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date produceTime;
     /**
-     * 厂区编号
+     * 入库方编号
      */
-    @ApiModelProperty(value = "厂区编号")
-    private String factoryCode;
-    @ApiModelProperty(value = "厂区名称")
-    private String factoryName;
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
+    @ApiModelProperty(value = "入库方名称")
+    private String inName;
     /**
      * 审批状态
      */

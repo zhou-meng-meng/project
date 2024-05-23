@@ -32,14 +32,7 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 * 物料编号
 	 */
 	private String materialCode;
-	/**
-	 * 型号
-	 */
-	private String model;
-	/**
-	 * 单位
-	 */
-	private String unit;
+
 	/**
 	 * 单价
 	 */

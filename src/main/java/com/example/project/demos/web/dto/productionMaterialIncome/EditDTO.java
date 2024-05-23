@@ -24,11 +24,6 @@ public class EditDTO {
     private String materialCode;
 
     /**
-     * 型号
-     */
-    @ApiModelProperty(value = "型号")
-    private String model;
-    /**
      * 入库数量
      */
     @ApiModelProperty(value = "入库数量")

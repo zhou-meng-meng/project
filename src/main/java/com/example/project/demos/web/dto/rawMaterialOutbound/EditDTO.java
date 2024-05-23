@@ -25,18 +25,6 @@ public class EditDTO {
     private String materialCode;
 
     /**
-     * 型号
-     */
-    @ApiModelProperty(value = "型号")
-    private String model;
-
-    /**
-     * 单位
-     */
-    @ApiModelProperty(value = "单位")
-    private String unit;
-
-    /**
      * 单价
      */
     @ApiModelProperty(value = "单价")

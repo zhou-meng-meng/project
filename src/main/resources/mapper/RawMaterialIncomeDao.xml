@@ -7,8 +7,6 @@
     <resultMap type="com.example.project.demos.web.entity.RawMaterialIncomeEntity" id="rawMaterialIncomeMap">
         <result property="id" column="id"/>
         <result property="materialCode" column="material_code"/>
-        <result property="model" column="model"/>
-        <result property="unit" column="unit"/>
         <result property="unitPrice" column="unit_price"/>
         <result property="supplyerCode" column="supplyer_code"/>
         <result property="inCode" column="in_code"/>
@@ -31,10 +29,10 @@
             t.id,
             t.material_code,
             m.name as materialName,
-            t.model,
-            d.dict_value as  modelName,
-            t.unit,
-            d1.dict_value as  unitName,
+            m.model,
+            d2.dict_value modelName,
+            m.unit,
+            d3.dict_value unitName,
             t.unit_price,
             t.supplyer_code,
             s.name as supplyerName,
@@ -44,7 +42,7 @@
             u2.user_name AS materialBuyerName,
             t.material_buytime,
             t.approve_state,
-            d2.dict_value as approveStateName,
+            d1.dict_value as approveStateName,
             t.bill_state,
             t.count,
             t.toll_amout ,
@@ -61,9 +59,9 @@
                     LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
                     left join material_info  m  on  m.code = t.material_code
                     left join customer_supply s on s.code = t.supplyer_code
-                    LEFT JOIN sys_dict_data d ON d.dict_code = t.model 	AND d.dict_type = 'material_model'
-                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.unit 	AND d1.dict_type = 'unit'
-                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = t.approve_state 	AND d2.dict_type = 'approve_state'
+                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+                    LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.approve_state 	AND d1.dict_type = 'approve_state'
           where 1=1
         <if test="raw.materialCode != null and raw.materialCode != ''">
             and t.material_code    like concat('%', #{raw.materialCode}, '%')
@@ -108,42 +106,42 @@
 
     <select id="selectRawMaterialIncomeInfoById" resultType="com.example.project.demos.web.dto.list.RawMaterialIncomeInfo">
         SELECT
-        t.id,
-        t.material_code,
-        m.name as materialName,
-        t.model,
-        d.dict_value as  modelName,
-        t.unit,
-        d1.dict_value as  unitName,
-        t.unit_price,
-        t.supplyer_code,
-        s.name as supplyerName,
-        t.in_code,
-        t.bill_no,
-        t.material_buyer,
-        u2.user_name AS materialBuyerName,
-        t.material_buytime,
-        t.approve_state,
-        d2.dict_value as approveStateName,
-        t.bill_state,
-        t.count,
-        t.toll_amout ,
-        t.create_by,
-        u.user_name AS createByName,
-        t.create_time,
-        t.update_by,
-        u1.user_name AS updateByName,
-        t.update_time,
-        t.remark
+            t.id,
+            t.material_code,
+            m.name as materialName,
+            m.model,
+            d2.dict_value modelName,
+            m.unit,
+            d3.dict_value unitName,
+            t.unit_price,
+            t.supplyer_code,
+            s.name as supplyerName,
+            t.in_code,
+            t.bill_no,
+            t.material_buyer,
+            u2.user_name AS materialBuyerName,
+            t.material_buytime,
+            t.approve_state,
+            d1.dict_value as approveStateName,
+            t.bill_state,
+            t.count,
+            t.toll_amout ,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
         FROM	raw_material_income t
-        LEFT JOIN sys_user u ON u.user_login = t.create_by
-        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
-        left join material_info  m  on  m.code = t.material_code
-        left join customer_supply s on s.code = t.supplyer_code
-        LEFT JOIN sys_dict_data d ON d.dict_code = t.model 	AND d.dict_type = 'material_model'
-        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.unit 	AND d1.dict_type = 'unit'
-        LEFT JOIN sys_dict_data d2 ON d2.dict_code = t.approve_state 	AND d2.dict_type = 'approve_state'
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
+                    left join material_info  m  on  m.code = t.material_code
+                    left join customer_supply s on s.code = t.supplyer_code
+                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+                    LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.approve_state 	AND d1.dict_type = 'approve_state'
         where  t.id = #{id}
     </select>
 

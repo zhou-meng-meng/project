@@ -37,11 +37,7 @@ public class EditDTO {
     @ApiModelProperty(value = "调拨日期")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date transferDate;
-    /**
-     * 单位
-     */
-    @ApiModelProperty(value = "单位")
-    private String unit;
+
     /**
      * 单据号
      */

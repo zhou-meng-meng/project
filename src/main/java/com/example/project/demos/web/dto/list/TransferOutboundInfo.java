@@ -36,6 +36,17 @@ public class TransferOutboundInfo implements Serializable {
 	private String materialCode;
 	@ApiModelProperty(value = "物料名称")
 	private String materialName;
+
+	@ApiModelProperty(value = "型号")
+	private String model;
+	@ApiModelProperty(value = "物料名称")
+	private String modelName;
+
+	@ApiModelProperty(value = "单位")
+	private String unit;
+	@ApiModelProperty(value = "单位名称")
+	private String unitName;
+
 	/**
 	 * 调拨数量
 	 */
@@ -51,11 +62,6 @@ public class TransferOutboundInfo implements Serializable {
 	@ApiModelProperty(value = "调拨日期")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date transferDate;
-	/**
-	 * 单位
-	 */
-	@ApiModelProperty(value = "单位")
-	private String unit;
 	/**
 	 * 单据号
 	 */

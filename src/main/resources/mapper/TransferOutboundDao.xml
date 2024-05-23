@@ -10,7 +10,6 @@
         <result property="transferCount" column="transfer_count"/>
         <result property="transferType" column="transfer_type"/>
         <result property="transferDate" column="transfer_date"/>
-        <result property="unit" column="unit"/>
         <result property="billNo" column="bill_no"/>
         <result property="confirmState" column="confirm_state"/>
         <result property="confirmTime" column="confirm_time"/>
@@ -26,34 +25,39 @@
 
     <select id="selectTransferOutboundInfoListByPage" resultType="com.example.project.demos.web.dto.list.TransferOutboundInfo">
         SELECT
-            t.id,
-            t.material_code,
-            m.NAME AS materialName,
-            t.transfer_count,
-            t.transfer_type,
-            t.transfer_date,
-            d.dict_value transferTypeName,
-            t.unit,
-            t.bill_no,
-            t.confirm_state,
-            d1.dict_value confirmStateName,
-            t.confirm_time,
-            t.confirm_opinion,
-            t.out_code,
-            t.in_code ,
-            t.create_by,
-            u.user_name AS createByName,
-            t.create_time,
-            t.update_by,
-            u1.user_name AS updateByName,
-            t.update_time,
-            t.remark
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.transfer_count,
+        t.transfer_type,
+        t.transfer_date,
+        d.dict_value transferTypeName,
+        t.bill_no,
+        t.confirm_state,
+        d1.dict_value confirmStateName,
+        t.confirm_time,
+        t.confirm_opinion,
+        t.out_code,
+        t.in_code ,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
         FROM	transfer_outbound t
-                    LEFT JOIN sys_user u ON u.user_login = t.create_by
-                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-                    LEFT JOIN material_info m ON m.CODE = t.material_code
-                    LEFT JOIN sys_dict_data d ON d.dict_code = t.transfer_type and  d.dict_type = 'transfer_type'
-                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.confirm_state and  d1.dict_type = 'confirm_state'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d ON d.dict_code = t.transfer_type and  d.dict_type = 'transfer_type'
+        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.confirm_state and  d1.dict_type = 'confirm_state'
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         where  1=1
         <if test="transfer.materialCode != null and transfer.materialCode != ''">
             and t.material_code    like concat('%', #{transfer.materialCode}, '%')
@@ -99,6 +103,44 @@
         <if test="confirmState != null and confirmState != ''">
             and t.confirm_state   #{confirmState}
         </if>
+    </select>
+
+    <select id="selectTransferOutboundInfoById" resultType="com.example.project.demos.web.dto.list.TransferOutboundInfo">
+        SELECT
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.transfer_count,
+        t.transfer_type,
+        t.transfer_date,
+        d.dict_value transferTypeName,
+        t.bill_no,
+        t.confirm_state,
+        d1.dict_value confirmStateName,
+        t.confirm_time,
+        t.confirm_opinion,
+        t.out_code,
+        t.in_code ,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	transfer_outbound t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d ON d.dict_code = t.transfer_type and  d.dict_type = 'transfer_type'
+        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.confirm_state and  d1.dict_type = 'confirm_state'
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        where   t.id = #{id}
     </select>
 
 

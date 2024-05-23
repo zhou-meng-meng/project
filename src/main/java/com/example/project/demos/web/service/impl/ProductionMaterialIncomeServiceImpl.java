@@ -1,10 +1,18 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.ProductionMaterialIncomeDao;
+import com.example.project.demos.web.dao.SysFactoryDao;
+import com.example.project.demos.web.dao.SysStorehouseDao;
 import com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.SysFactoryInfo;
+import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.productionMaterialIncome.*;
 import com.example.project.demos.web.entity.ProductionMaterialIncomeEntity;
+import com.example.project.demos.web.entity.SysFactoryEntity;
+import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.ProductionMaterialIncomeService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
@@ -15,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +34,12 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
     @Resource
     private ProductionMaterialIncomeDao productionMaterialIncomeDao;
 
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("产量入库queryById开始");
@@ -32,8 +47,11 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            ProductionMaterialIncomeInfo ProductionMaterialIncomeInfo = productionMaterialIncomeDao.selectProductionMaterialIncomeInfoById(id);
-            outDTO = BeanUtil.copyProperties(ProductionMaterialIncomeInfo, QueryByIdOutDTO.class);
+            ProductionMaterialIncomeInfo productionMaterialIncomeInfo = productionMaterialIncomeDao.selectProductionMaterialIncomeInfoById(id);
+            List<ProductionMaterialIncomeInfo> list = new ArrayList<>();
+            list.add(productionMaterialIncomeInfo);
+            list = setProductionMaterialIncomeObject(list);
+            outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -67,6 +85,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 //获取分页数据
                 List<ProductionMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
+                list = setProductionMaterialIncomeObject(list);
                 //出参赋值
                 outDTO.setProductionMaterialIncomeInfoList(list);
             }
@@ -138,6 +157,38 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+
+    /**
+     * 赋值产量入库方名称
+     * @param list
+     * @return
+     */
+    private List<ProductionMaterialIncomeInfo> setProductionMaterialIncomeObject(List<ProductionMaterialIncomeInfo> list){
+        log.info("获取厂区和仓库集合");
+        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+        for(ProductionMaterialIncomeInfo info : list){
+            //入库方
+            String inCode = info.getInCode();
+            if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                //工厂
+                for(SysFactoryInfo fInfo : factoryInfoList){
+                    if(inCode.equals(fInfo.getCode())){
+                        info.setInName(fInfo.getName());
+                    }
+                }
+            }else{
+                //仓库
+                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                    if(inCode.equals(sInfo.getCode())){
+                        info.setInName(sInfo.getName());
+                    }
+                }
+            }
+        }
+        return list;
     }
 
 }

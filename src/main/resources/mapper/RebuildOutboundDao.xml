@@ -9,7 +9,7 @@
         <result property="materialCode" column="material_code"/>
         <result property="rebuildCount" column="rebuild_count"/>
         <result property="rebuildDate" column="rebuild_date"/>
-        <result property="factoryCode" column="factory_code"/>
+        <result property="inCode" column="in_code"/>
         <result property="billNo" column="bill_no"/>
         <result property="billState" column="bill_state"/>
         <result property="createBy" column="create_by"/>
@@ -24,10 +24,13 @@
             t.id,
             t.material_code,
             m.NAME AS materialName,
+            m.model,
+            d2.dict_value modelName,
+            m.unit,
+            d3.dict_value unitName,
             t.rebuild_count,
             t.rebuild_date,
-            t.factory_code,
-            f.`name` as factoryName,
+            t.in_code,
             t.bill_no,
             t.bill_state ,
             t.create_by,
@@ -40,8 +43,9 @@
         FROM	rebuild_outbound t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        left join  sys_factory  f on  f.code = t.factory_code
         LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         where  1=1
         <if test="rebuild.materialCode != null and rebuild.materialCode != ''">
             and t.material_code    like concat('%', #{rebuild.materialCode}, '%')
@@ -81,6 +85,36 @@
         <if test="factorCode != null and factorCode != ''">
             and t.factory_code   = #{factorCode}
         </if>
+    </select>
+
+    <select id="selectRebuildOutboundInfoById" resultType="com.example.project.demos.web.dto.list.RebuildOutboundInfo">
+        SELECT
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.rebuild_count,
+        t.rebuild_date,
+        t.in_code,
+        t.bill_no,
+        t.bill_state ,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	rebuild_outbound t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        where  t.id = #{id}
     </select>
 
 
