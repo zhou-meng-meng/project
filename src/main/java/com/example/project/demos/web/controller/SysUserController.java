@@ -33,6 +33,19 @@ public class SysUserController extends BaseController{
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
+    @PostMapping("/queryPopByPageList")
+    @ApiOperation("查询列表(弹窗)")
+    public QueryPopByPageOutDTO queryPopByPageList(@RequestBody QueryPopByPageDTO queryByPageDTO) {
+        QueryPopByPageOutDTO outDTO = this.sysUserService.queryPopByPage(queryByPageDTO);
+        return outDTO;
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param queryByPageDTO 筛选条件
+     * @return 查询结果
+     */
     @PostMapping("/querySysUserList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
@@ -121,8 +134,6 @@ public class SysUserController extends BaseController{
         UpdatePwdOutDTO outDTO = sysUserService.updatePwd(dto);
         return outDTO;
     }
-
-
 
 }
 

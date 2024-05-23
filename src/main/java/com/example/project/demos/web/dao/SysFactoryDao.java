@@ -1,6 +1,7 @@
 package com.example.project.demos.web.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.project.demos.web.dto.list.SysFactoryAndStorePopInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.sysFactory.*;
 import com.example.project.demos.web.entity.SysFactoryEntity;
@@ -35,4 +36,22 @@ public interface SysFactoryDao extends BaseMapper<SysFactoryEntity> {
     SysFactoryInfo selectSysFactoryInfoById(Long id);
 
     int checkCode(@Param("code") String code);
+
+    /**
+     * 厂区和仓库弹窗数量查询
+     * @param code
+     * @param name
+     * @param type
+     * @return
+     */
+    int countPop(@Param("code") String code,@Param("name") String name,@Param("type") String type);
+
+    /**
+     * 厂区和仓库弹窗l列表查询
+     * @param code
+     * @param name
+     * @param type
+     * @return
+     */
+    List<SysFactoryAndStorePopInfo> queryPopListByPage(@Param("code") String code,@Param("name") String name,@Param("type") String type,@Param("pageable") Pageable pageable);
 }

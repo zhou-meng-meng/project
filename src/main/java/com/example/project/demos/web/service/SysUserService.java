@@ -26,6 +26,8 @@ public interface SysUserService {
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
 
+    QueryPopByPageOutDTO queryPopByPage(QueryPopByPageDTO queryByPageDTO);
+
     /**
      * 新增数据
      *

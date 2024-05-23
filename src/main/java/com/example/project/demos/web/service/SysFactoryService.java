@@ -3,8 +3,6 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.sysFactory.*;
 
-import java.util.Map;
-
 /**
  * 工厂维护表
  *
@@ -30,7 +28,7 @@ public interface SysFactoryService  {
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
 
-    QueryListOutDTO queryList(QueryListDTO queryListDTO);
+    QueryPopPageListOutDTO queryPopListByPage(QueryPopPageListDTO queryPopPageListDTO);
 
     /**
      * 新增数据

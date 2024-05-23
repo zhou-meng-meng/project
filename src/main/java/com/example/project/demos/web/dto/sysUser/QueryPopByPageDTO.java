@@ -1,26 +1,23 @@
-package com.example.project.demos.web.dto.sysFactory;
+package com.example.project.demos.web.dto.sysUser;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class QueryListDTO {
+public class QueryPopByPageDTO {
 
     /**
-     * 厂区编号
+     * 用户工号
      */
-    @ApiModelProperty(value = "厂区编号")
-    private String code;
+    @ApiModelProperty(value = "用户工号")
+    private String userId;
+
     /**
-     * 厂区名称
+     * 用户姓名
      */
-    @ApiModelProperty(value = "厂区名称")
-    private String name;
-    /**
-     * 厂区详细地址
-     */
-    @ApiModelProperty(value = "厂区详细地址")
-    private String address;
+    @ApiModelProperty(value = "用户姓名")
+    private String userName;
+
 
     /**
      * 翻页数据起始位置:1

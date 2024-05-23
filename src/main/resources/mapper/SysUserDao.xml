@@ -116,6 +116,27 @@
         </if>
     </select>
 
+
+    <select id="selectSysUserInfoPopListByPage"  resultType="com.example.project.demos.web.dto.list.SysUserInfo">
+        SELECT
+        t.id,
+        t.user_id,
+        t.user_name,
+        t.user_type,
+        t.dept_id,
+        t.phone_no
+        FROM   sys_user t
+        where 1=1
+        <if test="user.userId != null and user.userId != ''">
+            and t.user_id    like concat('%', #{user.userId}, '%')
+        </if>
+        <if test="user.userName != null and user.userName != ''">
+            and t.user_name    like concat('%', #{user.userName}, '%')
+        </if>
+        order  by  t.user_id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
     <select id="selectSysUserInfoById"  resultType="com.example.project.demos.web.dto.list.SysUserInfo">
         SELECT
         t.id,

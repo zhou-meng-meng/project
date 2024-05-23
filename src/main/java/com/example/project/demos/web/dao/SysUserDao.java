@@ -22,6 +22,14 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
     List<SysUserInfo> selectSysUserInfoListByPage(@Param("user") SysUserEntity SysUserEntity, @Param("pageable") Pageable pageable);
 
     /**
+     * 弹窗使用
+     * @param SysUserEntity
+     * @param pageable
+     * @return
+     */
+    List<SysUserInfo> selectSysUserInfoPopListByPage(@Param("user") SysUserEntity SysUserEntity, @Param("pageable") Pageable pageable);
+
+    /**
      * 统计总行数
      *
      * @param queryByPageDTO 查询条件
