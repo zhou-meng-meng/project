@@ -80,8 +80,8 @@ public class LogInterceptor {
         }
         //String token = httpServletRequest.getHeader(Constants.TOKEN);
         String token = this.getToken();
-        //校验token TODO 暂注掉
-        //this.checkToken(token, url,requestId);
+        //校验token
+        this.checkToken(token, url,requestId);
         try {
             this.putUserInfo(token, url);
         } catch (Exception e) {
