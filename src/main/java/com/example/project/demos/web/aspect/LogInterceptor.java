@@ -117,6 +117,9 @@ public class LogInterceptor {
     }
 
     private Boolean putUserInfo(String token, String path) {
+        if(StringUtils.isBlank(token)){
+            return Boolean.TRUE;
+        }
         for (String ignorePath : ignorePaths) {
             if (path.contains(ignorePath)) {
                 return Boolean.TRUE;
