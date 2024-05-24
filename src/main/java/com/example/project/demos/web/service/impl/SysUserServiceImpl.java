@@ -260,7 +260,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 errorCode= ErrorCodeEnums.LOGIN_ERROR.getCode();
                 errortMsg= ErrorCodeEnums.LOGIN_ERROR.getDesc();
             }else{
-                outDTO = BeanUtil.copyProperties(info,UserLoginOutDTO.class);
+                //赋值部门名称
+                List<SysUserInfo> list = new ArrayList<>();
+                list.add(info);
+                list = setDeptName(list);
+                outDTO = BeanUtil.copyProperties(list.get(0),UserLoginOutDTO.class);
                 log.info("判断该用户密码是不是初始密码");
                 String pwd = info.getPassword();
                 log.info("用户密码:"+pwd);
@@ -278,20 +282,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
                     }else{
                         log.info("密码未过期，查询用户其他信息");
-                        /*isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
-                        //查询其角色信息
-                        SysUserRoleInfo userRoleInfo = sysUserRoleService.selectRoleInfoByUserLogin(userLogin);
-                        if(ObjectUtil.isNotNull(userRoleInfo)){
-                            //根据角色查询其权限菜单
-                            String roleId = userRoleInfo.getRoleId();
-                            log.info("roleId:"+roleId);
-                            QueryMenuTreeDTO treeDTO = new QueryMenuTreeDTO();
-                            treeDTO.setRoleId(roleId);
-                            QueryMenuTreeOutDTO treeOutDTO =sysMenuService.queryMenuTree(treeDTO);
-                            outDTO.setMenuTreeList(treeOutDTO.getList());
-                        }else{
-                            log.info("userRoleInfo is null");
-                        }*/
+                        isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
+
                         //修改当前登录IP和登录时间
                         InetAddress inetAddress = InetAddress.getLocalHost();
                         String ipAddress = inetAddress.getHostAddress();
