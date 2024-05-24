@@ -128,5 +128,10 @@ public class UserLoginOutDTO implements Serializable {
     @ApiModelProperty(value = "操作结果信息")
     private String errorMsg;
 
+    /**
+     * 操作结果信息:null
+     */
+    @ApiModelProperty(value = "token")
+    private String token;
 
 }

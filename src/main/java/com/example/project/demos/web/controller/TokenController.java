@@ -5,7 +5,6 @@ import com.example.project.demos.web.Response.ResponseResult;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
-import com.example.project.demos.web.handler.RequestHandler;
 import com.example.project.demos.web.handler.RequestHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,6 @@ public class TokenController {
     @Autowired
     private OauthSupport oauthSupport;
 
-    @Autowired
-    private RequestHandler requestHandler;
 
     @GetMapping("getUserInfoByToken")
     public ResponseResult<?> getUserInfoByToken(String token) throws Throwable {

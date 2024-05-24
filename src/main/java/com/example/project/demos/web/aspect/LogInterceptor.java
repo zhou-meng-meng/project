@@ -80,8 +80,8 @@ public class LogInterceptor {
         }
         //String token = httpServletRequest.getHeader(Constants.TOKEN);
         String token = this.getToken();
-        //校验token TODO 暂注掉
-        //this.checkToken(token, url,requestId);
+        //校验token
+        this.checkToken(token, url,requestId);
         try {
             this.putUserInfo(token, url);
         } catch (Exception e) {
@@ -117,6 +117,9 @@ public class LogInterceptor {
     }
 
     private Boolean putUserInfo(String token, String path) {
+        if(StringUtils.isBlank(token)){
+            return Boolean.TRUE;
+        }
         for (String ignorePath : ignorePaths) {
             if (path.contains(ignorePath)) {
                 return Boolean.TRUE;
