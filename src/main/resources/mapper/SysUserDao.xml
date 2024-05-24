@@ -121,6 +121,7 @@
         SELECT
         t.id,
         t.user_id,
+        t.user_login,
         t.user_name,
         t.user_type,
         t.dept_id,

@@ -46,7 +46,7 @@ public class MaterialPackageInfo implements Serializable {
 	 * 日期
 	 */
 	@ApiModelProperty(value = "日期")
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date packageDate;
 	/**
 	 * 班次

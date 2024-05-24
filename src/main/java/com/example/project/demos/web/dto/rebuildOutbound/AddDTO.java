@@ -25,7 +25,7 @@ public class AddDTO {
      * 重造时间
      */
     @ApiModelProperty(value = "重造时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date rebuildDate;
     /**
      * 入库方编号

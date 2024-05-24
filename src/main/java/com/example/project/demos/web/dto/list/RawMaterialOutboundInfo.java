@@ -88,7 +88,7 @@ public class RawMaterialOutboundInfo implements Serializable {
 	 * 领用时间
 	 */
 	@ApiModelProperty(value = "领用时间")
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date receiveTime;
 	/**
 	 * 单据号

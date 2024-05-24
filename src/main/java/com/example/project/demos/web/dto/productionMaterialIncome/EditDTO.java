@@ -38,7 +38,7 @@ public class EditDTO {
      * 生产日期
      */
     @ApiModelProperty(value = "生产日期")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date produceTime;
     /**
      * 厂区编号
