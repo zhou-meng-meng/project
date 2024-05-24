@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.MaterialInventoryDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.MaterialInventoryEntity" id="materialInventoryMap">
+        <result property="id" column="id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="stockCode" column="stock_code"/>
+        <result property="inventoryNum" column="inventory_num"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <!--获取物料编号集合-->
+    <select id="selectMaterialCodeByPage" resultType="java.lang.String">
+        select distinct  t.material_code from  material_inventory  t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="stock.materialCode != null and stock.materialCode != ''">
+            and t.material_code    like concat('%', #{stock.materialCode}, '%')
+        </if>
+        <if test="stock.materialName != null and stock.materialName != ''">
+            and m.name    like concat('%', #{stock.materialName}, '%')
+        </if>
+        <if test="stock.stockCode != null and stock.stockCode != ''">
+            and t.stock_code    = #{stock.stockCode}
+        </if>
+        order  by t.material_code
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="countMaterialCode" resultType="java.lang.Integer">
+        select count(distinct  t.material_code) from  material_inventory  t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="materialCode != null and materialCode != ''">
+            and t.material_code    like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="stockCode != null and stockCode != ''">
+            and t.stock_code    = #{stockCode}
+        </if>
+    </select>
+
+    <!--获取库存集合-->
+    <select id="selectMaterialInventoryList" resultType="com.example.project.demos.web.dto.list.MaterialInventoryInfo">
+        select t.id,t.material_code, m.name as materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.stock_code,t.inventory_num,t.remark
+        from material_inventory  t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        where t.material_code in
+        <foreach item="code" collection="codeList" open="(" separator="," close=")">
+            #{code}
+        </foreach>
+        order  by t.material_code
+    </select>
+
+
+</mapper>

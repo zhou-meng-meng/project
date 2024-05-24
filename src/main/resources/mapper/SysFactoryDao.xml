@@ -90,6 +90,11 @@
         where   t.id = #{id}
     </select>
 
+    <select id="checkCode" resultType="java.lang.Integer">
+        SELECT count(1)  FROM	sys_factory t
+        where  t.code   =   #{code}
+    </select>
+
     <!--不分页-->
     <select id="selectSysFactoryInfoList" resultType="com.example.project.demos.web.dto.list.SysFactoryInfo">
         SELECT
@@ -124,9 +129,74 @@
         order  by  t.CODE
     </select>
 
-    <select id="checkCode" resultType="java.lang.Integer">
-        SELECT count(1)  FROM	sys_factory t
-        where  t.code   =   #{code}
+
+    <select id="countPop" resultType="java.lang.Integer">
+        select count(1) from (
+                select  t.code from (
+                  SELECT f.`code`
+                  FROM	sys_factory f where  1=1
+                    <if test="type != null and type != '' and type =='S'.toString() ">
+                        and 1=2
+                    </if>
+                    <if test="code != null and code != ''">
+                        and f.code    like concat('%', #{code}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        and f.name    like concat('%', #{name}, '%')
+                    </if>
+                  UNION
+                  SELECT  s.`code`
+                  FROM	sys_storehouse s  where  1=1
+                    <if test="type != null and type != '' and type =='F'.toString() ">
+                        and 1=2
+                    </if>
+                    <if test="code != null and code != ''">
+                        and s.code    like concat('%', #{code}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        and s.name    like concat('%', #{name}, '%')
+                    </if>
+              ) t ) u
     </select>
+
+    <select id="queryPopListByPage" resultType="com.example.project.demos.web.dto.list.SysFactoryAndStorePopInfo">
+        select  t.code,t.name,t.manage ,manage_tel,u.user_name from (
+                SELECT
+                    f.`code`,
+                    f.`name`,
+                    f.manage,
+                    f.manage_tel
+                FROM	sys_factory f where  1=1
+                <if test="type != null and type != '' and type =='S'.toString() ">
+                    and 1=2
+                </if>
+                <if test="code != null and code != ''">
+                    and f.code    like concat('%', #{code}, '%')
+                </if>
+                <if test="name != null and name != ''">
+                    and f.name    like concat('%', #{name}, '%')
+                </if>
+
+                UNION
+                SELECT
+                    s.`code`,
+                    s.`name`,
+                    s.manage,
+                    s.manage_tel
+                FROM	sys_storehouse s  where  1=1
+                <if test="type != null and type != '' and type =='F'.toString() ">
+                    and 1=2
+                </if>
+                <if test="code != null and code != ''">
+                    and s.code    like concat('%', #{code}, '%')
+                </if>
+                <if test="name != null and name != ''">
+                    and s.name    like concat('%', #{name}, '%')
+                </if>
+                ) t  left join sys_user  u  on  u.user_login = t.manage
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+
 
 </mapper>

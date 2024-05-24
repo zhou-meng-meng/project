@@ -49,9 +49,9 @@ public class ProductionMaterialIncomeEntity implements Serializable {
 	 */
 	private Date produceTime;
 	/**
-	 * 厂区编号
+	 * 入库方编号
 	 */
-	private String factoryCode;
+	private String inCode;
 	/**
 	 * 审批状态
 	 */

@@ -40,10 +40,10 @@ public class SysFactoryController extends BaseController{
         return outDTO;
     }
 
-    @PostMapping("/querySysFactoryList")
-    @ApiOperation("查询列表(不分页)")
-    public QueryListOutDTO queryList(@RequestBody QueryListDTO queryListDTO) {
-        QueryListOutDTO outDTO = this.sysFactoryService.queryList(queryListDTO);
+    @PostMapping("/querySysFactoryAndStorePopList")
+    @ApiOperation("厂区/仓库查询列表(弹窗)")
+    public QueryPopPageListOutDTO queryList(@RequestBody QueryPopPageListDTO queryPopListDTO) {
+        QueryPopPageListOutDTO outDTO = this.sysFactoryService.queryPopListByPage(queryPopListDTO);
         return outDTO;
     }
 

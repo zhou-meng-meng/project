@@ -74,7 +74,7 @@ public class QueryByIdOutDTO {
      * 微信号
      */
     @ApiModelProperty(value = "微信号")
-    private String weChatNo;
+    private String wechatNo;
     /**
      * 传真
      */

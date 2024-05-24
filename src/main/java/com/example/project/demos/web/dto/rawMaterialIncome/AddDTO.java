@@ -20,17 +20,6 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
-    /**
-     * 型号
-     */
-    @ApiModelProperty(value = "型号")
-    private String model;
-
-    /**
-     * 单位
-     */
-    @ApiModelProperty(value = "单位")
-    private String unit;
 
     /**
      * 单价

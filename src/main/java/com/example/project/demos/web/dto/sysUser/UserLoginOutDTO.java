@@ -113,8 +113,8 @@ public class UserLoginOutDTO implements Serializable {
     @ApiModelProperty(value = "密码是否过期 Y-是;N-否")
     private String isOverDuePwd;
 
-    @ApiModelProperty(value = "权限菜单树形")
-    private List<SysMenuTreeInfo> menuTreeList;
+    /*@ApiModelProperty(value = "权限菜单树形")
+    private List<SysMenuTreeInfo> menuTreeList;*/
 
     /**
      * 操作结果编码:null

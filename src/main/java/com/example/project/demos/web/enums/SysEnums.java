@@ -13,6 +13,8 @@ public enum SysEnums {
 
     SYS_YES_FLAG("Y","是"),
     SYS_NO_FLAG("N","否"),
+    SYS_SUCCESS_FLAG("S","成功"),
+    SYS_FAIL_FLAG("F","失败")
     ;
 
     private String code;

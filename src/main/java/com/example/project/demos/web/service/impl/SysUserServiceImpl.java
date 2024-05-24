@@ -5,10 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.project.demos.web.auth.OauthSupport;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.SysDeptDao;
-import com.example.project.demos.web.dao.SysFactoryDao;
-import com.example.project.demos.web.dao.SysStorehouseDao;
-import com.example.project.demos.web.dao.SysUserDao;
+import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeDTO;
 import com.example.project.demos.web.dto.sysMenu.QueryMenuTreeOutDTO;
@@ -72,6 +69,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
     @Resource
     private SysDeptDao sysDeptDao;
 
+    @Resource
+    private SysRoleDao sysRoleDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("用户queryById开始");
@@ -115,6 +115,45 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 SysUserEntity SysUser = BeanCopyUtils.copy(queryByPageDTO,SysUserEntity.class);
                 //开始分页查询
                 Page<SysUserInfo> page = new PageImpl<>(this.sysUserDao.selectSysUserInfoListByPage(SysUser, pageRequest), pageRequest, total);
+                //获取分页数据
+                List<SysUserInfo> list = page.toList();
+                //赋值所属单位名称
+                list = setDeptName(list);
+                //出参赋值
+                outDTO.setSysUserInfoList(list);
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("用户queryByPage结束");
+        return outDTO;
+    }
+
+
+    @Override
+    public QueryPopByPageOutDTO queryPopByPage(QueryPopByPageDTO queryPopByPageDTO) {
+        log.info("用户queryByPage开始");
+        QueryPopByPageOutDTO outDTO = new QueryPopByPageOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        try {
+            //先用查询条件查询总条数
+            QueryByPageDTO queryByPageDTO = BeanUtil.copyProperties(queryPopByPageDTO,QueryByPageDTO.class);
+            long total = this.sysUserDao.count(queryByPageDTO);
+            outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
+            //存在数据的   继续查询
+            if(total != 0L){
+                //分页信息
+                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                //转换实体入参
+                SysUserEntity SysUser = BeanCopyUtils.copy(queryByPageDTO,SysUserEntity.class);
+                //开始分页查询
+                Page<SysUserInfo> page = new PageImpl<>(this.sysUserDao.selectSysUserInfoPopListByPage(SysUser, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SysUserInfo> list = page.toList();
                 //赋值所属单位名称
@@ -239,7 +278,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
                     }else{
                         log.info("密码未过期，查询用户其他信息");
-                        isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
+                        /*isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
                         //查询其角色信息
                         SysUserRoleInfo userRoleInfo = sysUserRoleService.selectRoleInfoByUserLogin(userLogin);
                         if(ObjectUtil.isNotNull(userRoleInfo)){
@@ -252,7 +291,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                             outDTO.setMenuTreeList(treeOutDTO.getList());
                         }else{
                             log.info("userRoleInfo is null");
-                        }
+                        }*/
                         //修改当前登录IP和登录时间
                         InetAddress inetAddress = InetAddress.getLocalHost();
                         String ipAddress = inetAddress.getHostAddress();

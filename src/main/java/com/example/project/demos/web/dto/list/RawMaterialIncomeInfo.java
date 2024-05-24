@@ -96,6 +96,9 @@ public class RawMaterialIncomeInfo implements Serializable {
 	@ApiModelProperty(value = "审批状态")
 	private String approveStateName;
 
+	@ApiModelProperty(value = "审批意见")
+	private String approveOpinion;
+
 	/**
 	 * 单据状态
 	 */

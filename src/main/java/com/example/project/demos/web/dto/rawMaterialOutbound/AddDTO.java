@@ -18,17 +18,6 @@ public class AddDTO {
     private String materialCode;
 
     /**
-     * 型号
-     */
-    @ApiModelProperty(value = "型号")
-    private String model;
-
-    /**
-     * 单位
-     */
-    @ApiModelProperty(value = "单位")
-    private String unit;
-    /**
      * 单价
      */
     @ApiModelProperty(value = "单价")
@@ -59,7 +48,7 @@ public class AddDTO {
      * 领用时间
      */
     @ApiModelProperty(value = "领用时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date receiveTime;
     /**
      * 单据号

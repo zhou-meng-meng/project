@@ -45,7 +45,7 @@
         left join customer_supply   s  on  s.code = t.supplyer_code
         left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
         left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
-        left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'unit'
+        left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'material_unit'
         where  1=1
         <if test="info.code != null and info.code != ''">
             and t.code    like concat('%', #{info.code}, '%')
@@ -54,10 +54,10 @@
             and t.name    like concat('%', #{info.name}, '%')
         </if>
         <if test="info.type != null and info.type != ''">
-            and t.type    =#{info.type}
+            and t.type    = #{info.type}
         </if>
-        <if test="info.supplyerName != null and info.supplyerName != ''">
-            and s.name    like concat('%', #{info.supplyerName}, '%')
+        <if test="supplyerName != null and supplyerName != ''">
+            and s.name    like concat('%', #{supplyerName}, '%')
         </if>
         order  by  t.CODE
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -66,6 +66,7 @@
     <select id="count" resultType="java.lang.Integer">
         SELECT count(1)
         FROM	material_info t
+        left join customer_supply   s  on  s.code = t.supplyer_code
         where  1=1
         <if test="code != null and code != ''">
             and t.code    like concat('%', #{code}, '%')
@@ -107,7 +108,7 @@
                     left join customer_supply   s  on  s.code = t.supplyer_code
                     left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
                     left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
-                    left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'unit'
+                    left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'material_unit'
         where   t.id = #{id}
     </select>
 

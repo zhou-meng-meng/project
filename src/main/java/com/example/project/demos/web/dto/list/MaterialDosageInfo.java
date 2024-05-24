@@ -13,8 +13,8 @@ public class MaterialDosageInfo {
     /**
      * 自增主键
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "主键")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 厂区编号
@@ -27,7 +27,7 @@ public class MaterialDosageInfo {
      * 班组日期
      */
     @ApiModelProperty(value = "班组日期")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date dutyDate;
     /**
      * 班组 0-白班 1-中班 2-夜班
@@ -77,7 +77,7 @@ public class MaterialDosageInfo {
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     /**
      * 更新者
@@ -90,7 +90,7 @@ public class MaterialDosageInfo {
      * 更新时间
      */
     @ApiModelProperty(value = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
     /**
      * 备注

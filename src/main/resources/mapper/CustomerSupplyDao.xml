@@ -16,7 +16,7 @@
         <result property="address" column="address"/>
         <result property="level" column="level"/>
         <result property="email" column="email"/>
-        <result property="weChatNo" column="weChat_no"/>
+        <result property="wechatNo" column="wechat_no"/>
         <result property="faxNo" column="fax_no"/>
         <result property="saler" column="saler"/>
         <result property="createBy" column="create_by"/>
@@ -42,7 +42,7 @@
             t.LEVEL,
             d2.dict_value levelName,
             t.email,
-            t.weChat_no,
+            t.wechat_no,
             t.fax_no,
             t.saler ,
             t.create_by,
@@ -103,7 +103,7 @@
         t.LEVEL,
         d2.dict_value levelName,
         t.email,
-        t.weChat_no,
+        t.wechat_no,
         t.fax_no,
         t.saler ,
         t.create_by,

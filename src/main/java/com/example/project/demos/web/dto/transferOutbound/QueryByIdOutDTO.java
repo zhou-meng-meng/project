@@ -22,10 +22,20 @@ public class QueryByIdOutDTO {
     /**
      * 物料编号
      */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "物料编号")
     private String materialCode;
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "物料名称")
     private String materialName;
+
+    @ApiModelProperty(value = "型号")
+    private String model;
+    @ApiModelProperty(value = "物料名称")
+    private String modelName;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+    @ApiModelProperty(value = "单位名称")
+    private String unitName;
     /**
      * 调拨数量
      */
@@ -33,39 +43,36 @@ public class QueryByIdOutDTO {
     /**
      * 调拨类型 0-原材料；1-产量
      */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "调拨类型 0-原材料；1-产量")
     private String transferType;
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "调拨类型 0-原材料；1-产量")
     private String transferTypeName;
-    /**
-     * 单位
-     */
-    private String unit;
+
     /**
      * 单据号
      */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "单据号")
     private String billNo;
     /**
      * 单据(确认)状态
      */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "单据(确认)状态")
     private String confirmState;
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "单据(确认)状态")
     private String confirmStateName;
     /**
      * 调出厂(仓库)编号
      */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "调出厂(仓库)编号")
     private String outCode;
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "调出厂(仓库)")
     private String outName;
     /**
      * 调入厂（仓库）编号
      */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "调入厂（仓库）编号")
     private String inCode;
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "调入厂（仓库）")
     private String inCodeName;
     /**
      * 创建者

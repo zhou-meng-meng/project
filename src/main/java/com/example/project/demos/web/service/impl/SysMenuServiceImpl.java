@@ -31,7 +31,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
     private SysMenuDao sysMenuDao;
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("数据字段类型queryById开始");
+        log.info("菜单管理queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -46,13 +46,13 @@ public class SysMenuServiceImpl  implements SysMenuService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryById结束");
+        log.info("菜单管理queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("数据字段类型queryByPage开始");
+        log.info("菜单管理queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -81,7 +81,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryByPage结束");
+        log.info("菜单管理queryByPage结束");
         return outDTO;
     }
 
@@ -163,7 +163,6 @@ public class SysMenuServiceImpl  implements SysMenuService {
             //开始处理
             List<SysMenuInfo> menuTrees = buildMenuTree(menuInfoList);
             list = menuTrees.stream().map(SysMenuTreeInfo::new).collect(Collectors.toList());
-
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

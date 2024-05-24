@@ -18,7 +18,7 @@ public class AddDTO {
      * 班组日期
      */
     @ApiModelProperty(value = "班组日期")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date dutyDate;
     /**
      * 班组 0-白班 1-中班 2-夜班

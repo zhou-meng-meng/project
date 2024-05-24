@@ -7,11 +7,10 @@
     <resultMap type="com.example.project.demos.web.entity.ProductionMaterialIncomeEntity" id="productionMaterialIncomeMap">
         <result property="id" column="id"/>
         <result property="materialCode" column="material_code"/>
-        <result property="model" column="model"/>
         <result property="incomeNum" column="income_num"/>
         <result property="producer" column="producer"/>
         <result property="produceTime" column="produce_time"/>
-        <result property="factoryCode" column="factory_code"/>
+        <result property="inCode" column="in_code"/>
         <result property="approveState" column="approve_state"/>
         <result property="billState" column="bill_state"/>
         <result property="createBy" column="create_by"/>
@@ -26,13 +25,15 @@
             t.id,
             t.material_code,
             m.NAME AS materialName,
-            t.model,
+            m.model,
+            d2.dict_value modelName,
+            m.unit,
+            d3.dict_value unitName,
             t.income_num,
             t.producer,
             u2.user_name AS producerName,
             t.produce_time,
-            t.factory_code,
-            f.`name` as factoryName,
+            t.in_code,
             t.approve_state,
             t.bill_state ,
             t.create_by,
@@ -46,8 +47,9 @@
                 LEFT JOIN sys_user u ON u.user_login = t.create_by
                 LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                 LEFT JOIN sys_user u2 ON u2.user_login = t.producer
-                left join  sys_factory  f on  f.code = t.factory_code
                 LEFT JOIN material_info m ON m.CODE = t.material_code
+                LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+                LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
           where  1=1  
         <if test="prod.materialCode != null and prod.materialCode != ''">
             and t.material_code    like concat('%', #{prod.materialCode}, '%')
@@ -92,31 +94,34 @@
 
     <select id="selectProductionMaterialIncomeInfoById"  resultType="com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo">
         SELECT
-        t.id,
-        t.material_code,
-        m.NAME AS materialName,
-        t.model,
-        t.income_num,
-        t.producer,
-        u2.user_name AS producerName,
-        t.produce_time,
-        t.factory_code,
-        f.`name` as factoryName,
-        t.approve_state,
-        t.bill_state ,
-        t.create_by,
-        u.user_name AS createByName,
-        t.create_time,
-        t.update_by,
-        u1.user_name AS updateByName,
-        t.update_time,
-        t.remark
+            t.id,
+            t.material_code,
+            m.NAME AS materialName,
+            m.model,
+            d2.dict_value modelName,
+            m.unit,
+            d3.dict_value unitName,
+            t.income_num,
+            t.producer,
+            u2.user_name AS producerName,
+            t.produce_time,
+            t.in_code,
+            t.approve_state,
+            t.bill_state ,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
         FROM   production_material_income t
-        LEFT JOIN sys_user u ON u.user_login = t.create_by
-        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        LEFT JOIN sys_user u2 ON u2.user_login = t.producer
-        left join  sys_factory  f on  f.code = t.factory_code
-        LEFT JOIN material_info m ON m.CODE = t.material_code
+                   LEFT JOIN sys_user u ON u.user_login = t.create_by
+                   LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                   LEFT JOIN sys_user u2 ON u2.user_login = t.producer
+                   LEFT JOIN material_info m ON m.CODE = t.material_code
+                   LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+                   LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         where    t.id = #{id}
     </select>
 

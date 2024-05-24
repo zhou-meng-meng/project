@@ -14,8 +14,11 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "物料名称")
     private String materialName;
 
-    @ApiModelProperty(value = "入库厂区")
-    private String factoryCode;
+    /**
+     * 入库方编号
+     */
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
 
     @ApiModelProperty(value = "开始日期")
     private String beginDate;

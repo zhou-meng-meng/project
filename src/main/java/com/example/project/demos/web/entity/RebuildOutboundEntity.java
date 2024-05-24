@@ -41,9 +41,9 @@ public class RebuildOutboundEntity implements Serializable {
 	 */
 	private Date rebuildDate;
 	/**
-	 * 入库厂区编号
+	 * 入库方编号
 	 */
-	private String factoryCode;
+	private String inCode;
 	/**
 	 * 单据号
 	 */

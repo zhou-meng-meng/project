@@ -29,7 +29,7 @@ public class QueryByIdOutDTO {
      * 班组日期
      */
     @ApiModelProperty(value = "班组日期")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date dutyDate;
     /**
      * 班组 0-白班 1-中班 2-夜班
@@ -79,7 +79,7 @@ public class QueryByIdOutDTO {
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新者
@@ -92,7 +92,7 @@ public class QueryByIdOutDTO {
      * 更新时间
      */
     @ApiModelProperty(value = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 备注

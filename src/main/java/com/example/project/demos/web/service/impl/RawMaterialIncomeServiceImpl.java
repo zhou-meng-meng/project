@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,9 +45,10 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
             RawMaterialIncomeInfo rawMaterialIncomeInfo = rawMaterialIncomeDao.selectRawMaterialIncomeInfoById(id);
-            outDTO = BeanUtil.copyProperties(rawMaterialIncomeInfo, QueryByIdOutDTO.class);
-            //处理入库方名称
-
+            List<RawMaterialIncomeInfo> list = new ArrayList<>();
+            list.add(rawMaterialIncomeInfo);
+            list = setRawMaterialIncomeObject(list);
+            outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -95,8 +97,6 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         log.info("来料入库queryByPage结束");
         return outDTO;
     }
-
-
 
     @Override
     public AddOutDTO insert(AddDTO dto) {

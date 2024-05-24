@@ -2,6 +2,7 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.dao.SysFactoryDao;
+import com.example.project.demos.web.dto.list.SysFactoryAndStorePopInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.sysFactory.*;
 import com.example.project.demos.web.entity.SysFactoryEntity;
@@ -81,18 +82,28 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         return outDTO;
     }
 
+
     @Override
-    public QueryListOutDTO queryList(QueryListDTO queryListDTO) {
-        log.info("厂区queryByPage开始");
-        QueryListOutDTO outDTO = new QueryListOutDTO();
+    public QueryPopPageListOutDTO queryPopListByPage(QueryPopPageListDTO dto) {
+        log.info("厂区/仓储queryPopListByPage开始");
+        QueryPopPageListOutDTO outDTO = new QueryPopPageListOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
-            //转换实体入参
-            SysFactoryEntity sysFactory = BeanCopyUtils.copy(queryListDTO,SysFactoryEntity.class);
-            List<SysFactoryInfo> list = sysFactoryDao.selectSysFactoryInfoList(sysFactory);
-            //出参赋值
-            outDTO.setSysFactoryInfoList(list);
+            //先用查询条件查询总条数
+            long total = this.sysFactoryDao.countPop(dto.getCode(),dto.getName(),dto.getType());
+            outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
+            //存在数据的   继续查询
+            if(total != 0L){
+                //分页信息
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
+                //开始分页查询
+                Page<SysFactoryAndStorePopInfo> page = new PageImpl<>(this.sysFactoryDao.queryPopListByPage(dto.getCode(),dto.getName(),dto.getType(), pageRequest), pageRequest, total);
+                //获取分页数据
+                List<SysFactoryAndStorePopInfo> list = page.toList();
+                //出参赋值
+                outDTO.setPopList(list);
+            }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -101,7 +112,7 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("厂区queryByPage结束");
+        log.info("厂区/仓储queryByPage结束");
         return outDTO;
     }
 

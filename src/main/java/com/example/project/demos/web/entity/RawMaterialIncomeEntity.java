@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -32,14 +33,7 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 * 物料编号
 	 */
 	private String materialCode;
-	/**
-	 * 型号
-	 */
-	private String model;
-	/**
-	 * 单位
-	 */
-	private String unit;
+
 	/**
 	 * 单价
 	 */
@@ -68,6 +62,7 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 * 审批状态
 	 */
 	private String approveState;
+	private String approveOpinion;
 	/**
 	 * 单据状态
 	 */

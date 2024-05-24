@@ -1,17 +1,10 @@
-package com.example.project.demos.web.dto.sysFactory;
+package com.example.project.demos.web.dto.salesOutbound;
 
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class QueryListOutDTO {
-
-
-    private List<SysFactoryInfo> sysFactoryInfoList;
-
+public class AddOutDTO {
     /**
      * 操作结果编码:null
      */
@@ -23,5 +16,4 @@ public class QueryListOutDTO {
      */
     @ApiModelProperty(value = "操作结果信息")
     private String errorMsg;
-
 }

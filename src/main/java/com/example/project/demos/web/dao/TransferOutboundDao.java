@@ -28,4 +28,7 @@ public interface TransferOutboundDao extends BaseMapper<TransferOutboundEntity> 
      * @return 总行数
      */
     int count(QueryByPageDTO queryByPageDTO);
+
+    TransferOutboundInfo selectTransferOutboundInfoById(Long id);
+
 }

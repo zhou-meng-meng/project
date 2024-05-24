@@ -1,10 +1,18 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.RawMaterialOutboundDao;
+import com.example.project.demos.web.dao.SysFactoryDao;
+import com.example.project.demos.web.dao.SysStorehouseDao;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.RawMaterialOutboundInfo;
+import com.example.project.demos.web.dto.list.SysFactoryInfo;
+import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.rawMaterialOutbound.*;
 import com.example.project.demos.web.entity.RawMaterialOutboundEntity;
+import com.example.project.demos.web.entity.SysFactoryEntity;
+import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.RawMaterialOutboundService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
@@ -15,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +33,12 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
 
     @Resource
     private RawMaterialOutboundDao rawMaterialOutboundDao;
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
+    
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -33,7 +48,10 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
             RawMaterialOutboundInfo rawMaterialOutboundInfo = rawMaterialOutboundDao.selectRawMaterialOutboundInfoById(id);
-            outDTO = BeanUtil.copyProperties(rawMaterialOutboundInfo, QueryByIdOutDTO.class);
+            List<RawMaterialOutboundInfo> list = new ArrayList<>();
+            list.add(rawMaterialOutboundInfo);
+            list = setRawMaterialOutboundObject(list);
+            outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -66,6 +84,8 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
                 Page<RawMaterialOutboundInfo> page = new PageImpl<>(this.rawMaterialOutboundDao.selectRawMaterialOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<RawMaterialOutboundInfo> list = page.toList();
+                //赋值出库方名称
+                list = setRawMaterialOutboundObject(list);
                 //出参赋值
                 outDTO.setRawMaterialOutboundInfoList(list);
             }
@@ -139,6 +159,37 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+    /**
+     * 赋值原材料出库方名称
+     * @param list
+     * @return
+     */
+    private List<RawMaterialOutboundInfo> setRawMaterialOutboundObject(List<RawMaterialOutboundInfo> list){
+        //获取厂区和仓库集合
+        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+        for(RawMaterialOutboundInfo info : list){
+            //出库方
+            String outCode = info.getOutCode();
+            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                //工厂
+                for(SysFactoryInfo fInfo : factoryInfoList){
+                    if(outCode.equals(fInfo.getCode())){
+                        info.setOutName(fInfo.getName());
+                    }
+                }
+            }else{
+                //仓库
+                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                    if(outCode.equals(sInfo.getCode())){
+                        info.setOutName(sInfo.getName());
+                    }
+                }
+            }
+        }
+        return list;
     }
 
 }

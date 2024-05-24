@@ -1,26 +1,30 @@
-package com.example.project.demos.web.dto.sysFactory;
+package com.example.project.demos.web.dto.sysLog;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-@Data
-public class QueryListDTO {
+import java.util.Date;
 
+@Data
+public class QueryByPageDTO {
     /**
-     * 厂区编号
+     * 操作人
      */
-    @ApiModelProperty(value = "厂区编号")
-    private String code;
+    private String userName;
     /**
-     * 厂区名称
+     * 操作时间
      */
-    @ApiModelProperty(value = "厂区名称")
-    private String name;
+    private String beginDate;
+    private String endDate;
     /**
-     * 厂区详细地址
+     * 操作内容说明
      */
-    @ApiModelProperty(value = "厂区详细地址")
-    private String address;
+    private String operationInfo;
+    /**
+     * 操作结果 S-成功; F-失败
+     */
+    private String operationResult;
 
     /**
      * 翻页数据起始位置:1

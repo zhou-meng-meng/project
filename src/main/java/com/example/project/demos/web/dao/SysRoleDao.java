@@ -29,4 +29,6 @@ public interface SysRoleDao extends BaseMapper<SysRoleEntity> {
      * @return 总行数
      */
     int count(QueryByPageDTO queryByPageDTO);
+
+
 }

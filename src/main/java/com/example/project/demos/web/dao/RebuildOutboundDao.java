@@ -28,4 +28,6 @@ public interface RebuildOutboundDao extends BaseMapper<RebuildOutboundEntity> {
      * @return 总行数
      */
     int count(QueryByPageDTO queryByPageDTO);
+
+    RebuildOutboundInfo selectRebuildOutboundInfoById(Long id);
 }

@@ -33,14 +33,6 @@ public class RawMaterialOutboundEntity implements Serializable {
 	 */
 	private String materialCode;
 	/**
-	 * 型号
-	 */
-	private String model;
-	/**
-	 * 单位
-	 */
-	private String unit;
-	/**
 	 * 单价
 	 */
 	private BigDecimal unitPrice;
