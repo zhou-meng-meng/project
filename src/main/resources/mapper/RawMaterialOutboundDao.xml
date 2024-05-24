@@ -84,7 +84,7 @@
             and t.material_code    like concat('%', #{materialCode}, '%')
         </if>
         <if test="materialName != null and materialName != ''">
-            and m.name    like concat('%', #{raw.materialName}, '%')
+            and m.name    like concat('%', #{materialName}, '%')
         </if>
         <if test="supplyerName != null and supplyerName != ''">
             and s.name    like concat('%', #{supplyerName}, '%')
