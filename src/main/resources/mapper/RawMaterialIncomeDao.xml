@@ -14,6 +14,7 @@
         <result property="materialBuyer" column="material_buyer"/>
         <result property="materialBuytime" column="material_buytime"/>
         <result property="approveState" column="approve_state"/>
+        <result property="approveOpinion" column="approve_opinion"/>
         <result property="billState" column="bill_state"/>
         <result property="count" column="count"/>
         <result property="tollAmout" column="toll_amout"/>
@@ -43,6 +44,7 @@
             t.material_buytime,
             t.approve_state,
             d1.dict_value as approveStateName,
+            t.approve_opinion,
             t.bill_state,
             t.count,
             t.toll_amout ,
@@ -123,6 +125,7 @@
             t.material_buytime,
             t.approve_state,
             d1.dict_value as approveStateName,
+            t.approve_opinion,
             t.bill_state,
             t.count,
             t.toll_amout ,
