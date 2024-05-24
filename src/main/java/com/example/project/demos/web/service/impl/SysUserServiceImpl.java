@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.project.demos.web.auth.OauthSupport;
@@ -244,6 +245,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         //是否初始密码     密码是否过期
         String isInitePwd = SysEnums.SYS_YES_FLAG.getCode();
         String isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
+        //token
+        String token = IdUtil.simpleUUID();
         try{
             log.info("用户登录-userLogin开始");
             String userLogin = dto.getUserLogin();
@@ -294,7 +297,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         sysUserDao.updateById(entity);
                         //20240509 add by gc 生成token
                         UserLoginOutDTO finalOutDTO = outDTO;
-                        CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(finalOutDTO), commonTaskExecutor);
+
+                        CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(finalOutDTO,token), commonTaskExecutor);
                     }
                 }
             }
@@ -308,6 +312,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         outDTO.setErrorMsg(errortMsg);
         outDTO.setIsInitePwd(isInitePwd);
         outDTO.setIsOverDuePwd(isOverDuePwd);
+        outDTO.setToken(token);
         return outDTO;
     }
 

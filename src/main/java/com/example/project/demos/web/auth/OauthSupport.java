@@ -74,8 +74,7 @@ public class OauthSupport {
     /**
      * 持久化token
      */
-    public String persistenceToken(UserLoginOutDTO dto) {
-        String token = IdUtil.simpleUUID();
+    public String persistenceToken(UserLoginOutDTO dto,String token) {
         redisTemplate.opsForValue().set(token, dto, 5, TimeUnit.MINUTES);
         return token;
     }
