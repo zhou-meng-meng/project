@@ -29,5 +29,5 @@ public interface MaterialDosageDao extends BaseMapper<MaterialDosageEntity> {
      */
     int count(QueryByPageDTO queryByPageDTO);
 
-    //MaterialDosageInfo selectMaterialDosageInfoById(Long id);
+    MaterialDosageInfo selectMaterialDosageInfoById(Long id);
 }

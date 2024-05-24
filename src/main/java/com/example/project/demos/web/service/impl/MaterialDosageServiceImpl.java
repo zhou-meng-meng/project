@@ -31,7 +31,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
-        /*try{
+        try{
             MaterialDosageInfo materialDosageInfo = materialDosageDao.selectMaterialDosageInfoById(id);
             outDTO = BeanUtil.copyProperties(materialDosageInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
@@ -42,7 +42,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryById结束");*/
+        log.info("数据字段类型queryById结束");
         return outDTO;
     }
 
@@ -63,8 +63,6 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
-                //转换实体入参
-                //MaterialDosageEntity MaterialDosage = BeanCopyUtils.copy(queryByPageDTO,MaterialDosageEntity.class);
                 //开始分页查询
                 Page<MaterialDosageInfo> page = new PageImpl<>(this.materialDosageDao.selectMaterialDosageInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
