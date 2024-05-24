@@ -80,17 +80,17 @@
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN customer_supply s ON s.CODE = m.supplyer_code
         where 1 = 1
-        <if test="raw.materialCode != null and raw.materialCode != ''">
-            and t.material_code    like concat('%', #{raw.materialCode}, '%')
+        <if test="materialCode != null and materialCode != ''">
+            and t.material_code    like concat('%', #{materialCode}, '%')
         </if>
-        <if test="raw.materialName != null and raw.materialName != ''">
+        <if test="materialName != null and materialName != ''">
             and m.name    like concat('%', #{raw.materialName}, '%')
         </if>
-        <if test="raw.supplyerName != null and raw.supplyerName != ''">
-            and s.name    like concat('%', #{raw.supplyerName}, '%')
+        <if test="supplyerName != null and supplyerName != ''">
+            and s.name    like concat('%', #{supplyerName}, '%')
         </if>
-        <if test="raw.billNo != null and raw.billNo != ''">
-            and t.bill_no    like concat('%', #{raw.billNo}, '%')
+        <if test="billNo != null and billNo != ''">
+            and t.bill_no    like concat('%', #{billNo}, '%')
         </if>
     </select>
 

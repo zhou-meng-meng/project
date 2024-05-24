@@ -13,14 +13,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 
+ * 销售出库表
  * 
  * @author Mark
  * @email sunlightcs@gmail.com
- * @date 2024-05-23 10:56:52
+ * @date 2024-05-24 14:38:26
  */
 @Data
-public class SupplyReturnInfo implements Serializable {
+public class SalesOutboundInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -29,12 +29,6 @@ public class SupplyReturnInfo implements Serializable {
 	@ApiModelProperty(value = "自增主键")
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-
-	@ApiModelProperty(value = "客户编号")
-	private String customerCode;
-	@ApiModelProperty(value = "客户名称")
-	private String customerName;
-
 	/**
 	 * 物料编号
 	 */
@@ -54,26 +48,50 @@ public class SupplyReturnInfo implements Serializable {
 	private String unitName;
 
 	/**
+	 * 出库数量
+	 */
+	@ApiModelProperty(value = "出库数量")
+	private BigDecimal outCount;
+	/**
 	 * 单价
 	 */
 	@ApiModelProperty(value = "单价")
 	private BigDecimal unitPrice;
 	/**
-	 * 退回数量
-	 */
-	@ApiModelProperty(value = "退回数量")
-	private BigDecimal returnCount;
-	/**
 	 * 总金额
 	 */
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
+	@ApiModelProperty(value = "购货客户编号")
+	private String customerCode;
+	@ApiModelProperty(value = "购货客户名称")
+	private String customerName;
 	/**
-	 * 审核状态
+	 * 出库方编号
 	 */
-	@ApiModelProperty(value = "审核状态")
+	@ApiModelProperty(value = "出库方编号")
+	private String outCode;
+	@ApiModelProperty(value = "出库方名称")
+	private String outName;
+	/**
+	 * 销售员英文名
+	 */
+	@ApiModelProperty(value = "销售员英文名")
+	private String saler;
+	@ApiModelProperty(value = "销售员名称")
+	private String salerName;
+	/**
+	 * 销售时间
+	 */
+	@ApiModelProperty(value = "销售时间")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date saleTime;
+	/**
+	 * 审批状态
+	 */
+	@ApiModelProperty(value = "审批状态")
 	private String approveState;
-	@ApiModelProperty(value = "审核状态")
+	@ApiModelProperty(value = "审批状态")
 	private String approveStateName;
 	/**
 	 * 审批意见
@@ -93,25 +111,28 @@ public class SupplyReturnInfo implements Serializable {
 	@ApiModelProperty(value = "单据状态")
 	private String billStateName;
 	/**
-	 * 退回方编号
+	 * 运输方式
 	 */
-	@ApiModelProperty(value = "退回方编号")
-	private String outCode;
-	@ApiModelProperty(value = "退回方名称")
-	private String outName;
+	@ApiModelProperty(value = "运输方式")
+	private String transportType;
+	@ApiModelProperty(value = "运输方式")
+	private String transportTypeName;
 	/**
-	 * 退回人
+	 * 运费
 	 */
-	@ApiModelProperty(value = "退回人")
-	private String returnUser;
-	@ApiModelProperty(value = "退回人")
-	private String returnUserName;
+	@ApiModelProperty(value = "运费")
+	private BigDecimal freight;
 	/**
-	 * 退货时间
+	 * 回款金额
 	 */
-	@ApiModelProperty(value = "退货时间")
+	@ApiModelProperty(value = "回款金额")
+	private BigDecimal receivePayment;
+	/**
+	 * 回款时间
+	 */
+	@ApiModelProperty(value = "回款时间")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-	private Date returnTime;
+	private Date receivePaymentTime;
 	/**
 	 * 创建者
 	 */
