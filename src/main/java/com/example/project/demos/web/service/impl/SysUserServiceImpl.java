@@ -295,12 +295,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         entity.setLoginIp(ipAddress);
                         entity.setLoginDate(date);
                         sysUserDao.updateById(entity);
-                        //20240509 add by gc 生成token
-                        UserLoginOutDTO finalOutDTO = outDTO;
-
-                        CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(finalOutDTO,token), commonTaskExecutor);
                     }
                 }
+                //20240509 add by gc 生成token
+                UserLoginOutDTO finalOutDTO = outDTO;
+                CompletableFuture.runAsync(() -> oauthSupport.persistenceToken(finalOutDTO,token), commonTaskExecutor);
             }
         }catch (Exception e){
             log.info(e.getMessage());
