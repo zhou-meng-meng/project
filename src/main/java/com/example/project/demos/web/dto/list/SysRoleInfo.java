@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class SysRoleInfo implements Serializable {
@@ -36,12 +37,17 @@ public class SysRoleInfo implements Serializable {
     private Integer roleSort;
 
     /**
-     * 角色状态（0正常 1停用）
+     * 角色权限类型集合
      */
-    @ApiModelProperty(value = "单价权限 Y-是;N-否")
-    private String isPriceEdit;
-    @ApiModelProperty(value = "单价权限 Y-是;N-否")
-    private String isPriceEditName;
+    @ApiModelProperty(value = "角色权限类型集合")
+    private List<String> authorityType;
+
+    /**
+     * 列表使用权限类型展示字段
+     */
+    @ApiModelProperty(value = "权限类型")
+    private String authorityTypeStr;
+
 
     /**
      * 角色状态（0正常 1停用）

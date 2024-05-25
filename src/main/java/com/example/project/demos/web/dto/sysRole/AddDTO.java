@@ -26,10 +26,10 @@ public class AddDTO {
     private Integer roleSort;
 
     /**
-     * 角色状态（0正常 1停用）
+     * 角色权限类型集合
      */
-    @ApiModelProperty(value = "单价权限 Y-是;N-否")
-    private String isPriceEdit;
+    @ApiModelProperty(value = "角色权限类型集合")
+    private List<String> authorityType;
 
     /**
      * 角色状态（0正常 1停用）

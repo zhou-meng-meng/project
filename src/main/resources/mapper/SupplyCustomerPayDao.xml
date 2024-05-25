@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.SupplyCustomerPayDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.SupplyCustomerPayEntity" id="supplyCustomerPayMap">
+        <result property="id" column="id"/>
+        <result property="incomeId" column="income_id"/>
+        <result property="customerCode" column="customer_code"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="incomeDate" column="income_date"/>
+        <result property="incomeCount" column="income_count"/>
+        <result property="tollAmount" column="toll_amount"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectSupplyCustomerPayInfoListByPage" resultType="com.example.project.demos.web.dto.list.SupplyCustomerPayInfo">
+        SELECT
+        t.id,
+        t.income_id,
+        t.customer_code,
+        c.name as customerName,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.unit_price,
+        t.income_date,
+        t.income_count,
+        t.toll_amount,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	supply_customer_pay t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        left join customer_supply  c on  c.code = t.customer_code
+        where  1=1
+        <if test="pay.materialName != null and pay.materialName != ''">
+            and m.name    like concat('%', #{pay.materialName}, '%')
+        </if>
+        <if test="pay.customerName != null and pay.customerName != ''">
+            and c.name    like concat('%', #{pay.customerName}, '%')
+        </if>
+        <if test="pay.beginDate != null and pay.beginDate != ''">
+            and t.income_date    <![CDATA[ >= ]]> #{pay.beginDate}
+        </if>
+        <if test="pay.endDate != null and pay.endDate != ''">
+            and t.income_date    <![CDATA[ <= ]]> #{pay.endDate}
+        </if>
+        order  by  t.id
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT  count(1)    FROM	supply_customer_pay t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        left join customer_supply  c on  c.code = t.customer_code
+        where  1=1
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="customerName != null and customerName != ''">
+            and c.name    like concat('%', #{customerName}, '%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.income_date    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.income_date    <![CDATA[ <= ]]> #{endDate}
+        </if>
+    </select>
+
+    <select id="selectSupplyCustomerPayInfoById" resultType="com.example.project.demos.web.dto.list.SupplyCustomerPayInfo">
+        SELECT
+            t.id,
+            t.income_id,
+            t.customer_code,
+            c.name as customerName,
+            t.material_code,
+            m.NAME AS materialName,
+            m.model,
+            d2.dict_value modelName,
+            m.unit,
+            d3.dict_value unitName,
+            t.unit_price,
+            t.income_date,
+            t.income_count,
+            t.toll_amount,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	supply_customer_pay t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN material_info m ON m.CODE = t.material_code
+                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+                    LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+                    left join customer_supply  c on  c.code = t.customer_code
+        where  t.id = #{id}
+    </select>
+
+
+
+</mapper>

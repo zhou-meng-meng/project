@@ -78,10 +78,10 @@ public class UserLoginOutDTO implements Serializable {
     private String roleName;
 
     /**
-     * 角色单价权限 Y-是;N-否
+     * 角色权限类型集合
      */
-    @ApiModelProperty(value = "角色单价权限 Y-是;N-否")
-    private String isPriceEdit;
+    @ApiModelProperty(value = "角色权限类型集合")
+    private List<String> authorityType;
 
     /**
      * 最后登录IP
@@ -113,9 +113,6 @@ public class UserLoginOutDTO implements Serializable {
     @ApiModelProperty(value = "密码是否过期 Y-是;N-否")
     private String isOverDuePwd;
 
-    /*@ApiModelProperty(value = "权限菜单树形")
-    private List<SysMenuTreeInfo> menuTreeList;*/
-
     /**
      * 操作结果编码:null
      */
@@ -129,7 +126,7 @@ public class UserLoginOutDTO implements Serializable {
     private String errorMsg;
 
     /**
-     * 操作结果信息:null
+     * token值
      */
     @ApiModelProperty(value = "token")
     private String token;

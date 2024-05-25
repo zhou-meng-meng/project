@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.SysRoleAuthorityTypeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.SysRoleAuthorityTypeEntity" id="sysRoleAuthorityTypeMap">
+        <result property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="roleAuthorityType" column="role_authority_type"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="querySysRoleAuthorityTypeListByRoleId" resultType="java.lang.String">
+        select  role_authority_type  from sys_role_authority_type  where role_id = #{roleId}
+    </select>
+
+
+    <delete id="deleteByRoleId">
+        delete  from sys_role_authority_type  where role_id = #{roleId}
+    </delete>
+
+
+</mapper>

@@ -1,7 +1,5 @@
 package com.example.project.demos.web.dto.list;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -13,14 +11,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 原材料来料入库表
+ * 
  * 
  * @author Mark
  * @email sunlightcs@gmail.com
- * @date 2024-05-10 14:54:43
+ * @date 2024-05-25 15:30:37
  */
 @Data
-public class RawMaterialIncomeInfo implements Serializable {
+public class SalesCustomerPayInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -30,12 +28,25 @@ public class RawMaterialIncomeInfo implements Serializable {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
+	 * 销售出库主键
+	 */
+	private Long saleId;
+	/**
+	 * 客户编号
+	 */
+	@ApiModelProperty(value = "客户编号")
+	private String customerCode;
+	@ApiModelProperty(value = "客户名称")
+	private String customerName;
+
+	/**
 	 * 物料编号
 	 */
 	@ApiModelProperty(value = "物料编号")
 	private String materialCode;
 	@ApiModelProperty(value = "物料名称")
 	private String materialName;
+
 	/**
 	 * 型号
 	 */
@@ -43,6 +54,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	private String model;
 	@ApiModelProperty(value = "型号")
 	private String modelName;
+
 	/**
 	 * 单位
 	 */
@@ -50,70 +62,31 @@ public class RawMaterialIncomeInfo implements Serializable {
 	private String unit;
 	@ApiModelProperty(value = "单位")
 	private String unitName;
-
 	/**
 	 * 单价
 	 */
 	@ApiModelProperty(value = "单价")
-	private String unitPrice;
+	private BigDecimal unitPrice;
 	/**
-	 * 供货商编号
+	 * 销售日期
 	 */
-	@ApiModelProperty(value = "供货商编号")
-	private String supplyerCode;
-	@ApiModelProperty(value = "供货商名称")
-	private String supplyerName;
+	@ApiModelProperty(value = "销售日期")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date saleDate;
 	/**
-	 * 入库方编号
+	 * 销售数量
 	 */
-	@ApiModelProperty(value = "入库方编号")
-	private String inCode;
-	@ApiModelProperty(value = "入库方名称")
-	private String inName;
-	/**
-	 * 单据号
-	 */
-	@ApiModelProperty(value = "单据号")
-	private String billNo;
-	/**
-	 * 进货人
-	 */
-	@ApiModelProperty(value = "进货人")
-	private String materialBuyer;
-	@ApiModelProperty(value = "进货人")
-	private String materialBuyerName;
-	/**
-	 * 进货时间
-	 */
-	@ApiModelProperty(value = "进货时间")
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date materialBuytime;
-	/**
-	 * 审批状态
-	 */
-	@ApiModelProperty(value = "审批状态")
-	private String approveState;
-	@ApiModelProperty(value = "审批状态")
-	private String approveStateName;
-
-	@ApiModelProperty(value = "审批意见")
-	private String approveOpinion;
-
-	/**
-	 * 单据状态
-	 */
-	@ApiModelProperty(value = "单据状态")
-	private String billState;
-	/**
-	 * 总数量
-	 */
-	@ApiModelProperty(value = "总数量")
-	private BigDecimal count;
+	@ApiModelProperty(value = "销售数量")
+	private BigDecimal saleCount;
 	/**
 	 * 总金额
 	 */
 	@ApiModelProperty(value = "总金额")
-	private BigDecimal tollAmout;
+	private BigDecimal tollAmount;
+	@ApiModelProperty(value = "经办人英文名")
+	private String operator;
+	@ApiModelProperty(value = "经办人姓名")
+	private String operatorName;
 	/**
 	 * 创建者
 	 */

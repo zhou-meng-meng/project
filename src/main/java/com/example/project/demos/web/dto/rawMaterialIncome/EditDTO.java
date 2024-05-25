@@ -54,7 +54,7 @@ public class EditDTO {
      * 进货时间
      */
     @ApiModelProperty(value = "进货时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date materialBuytime;
     /**
      * 审批状态

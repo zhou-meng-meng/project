@@ -190,7 +190,6 @@
             t.user_type,
             t.role_id,
             r.role_name as roleName,
-            r.is_price_edit as isPriceEdit,
             t.dept_id,
             t.email,
             t.weChat_no,

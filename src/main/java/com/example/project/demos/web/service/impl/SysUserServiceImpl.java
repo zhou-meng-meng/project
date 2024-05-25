@@ -18,10 +18,7 @@ import com.example.project.demos.web.entity.SysUserEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.enums.UserTypeEnums;
-import com.example.project.demos.web.service.SysMenuService;
-import com.example.project.demos.web.service.SysRoleMenuService;
-import com.example.project.demos.web.service.SysUserRoleService;
-import com.example.project.demos.web.service.SysUserService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -47,19 +44,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
     private SysUserDao sysUserDao;
 
     @Autowired
-    private SysUserRoleService sysUserRoleService;
-
-    @Autowired
-    private SysRoleMenuService sysRoleMenuService;
+    private SysRoleAuthorityTypeService sysRoleAuthorityTypeService;
 
     @Autowired
     private OauthSupport oauthSupport;
 
     @Autowired
     private Executor commonTaskExecutor;
-
-    @Autowired
-    private SysMenuService sysMenuService;
 
     @Resource
     private SysFactoryDao sysFactoryDao;
@@ -69,9 +60,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
     @Resource
     private SysDeptDao sysDeptDao;
-
-    @Resource
-    private SysRoleDao sysRoleDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -286,7 +274,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                     }else{
                         log.info("密码未过期，查询用户其他信息");
                         isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
-
+                        //根据角色编码获取该角色权限类型
+                        List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
+                        outDTO.setAuthorityType(authorityType);
                         //修改当前登录IP和登录时间
                         InetAddress inetAddress = InetAddress.getLocalHost();
                         String ipAddress = inetAddress.getHostAddress();

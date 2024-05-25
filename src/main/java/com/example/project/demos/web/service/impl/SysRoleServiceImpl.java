@@ -6,6 +6,8 @@ import com.example.project.demos.web.dto.list.SysRoleInfo;
 import com.example.project.demos.web.dto.sysRole.*;
 import com.example.project.demos.web.entity.SysRoleEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.RoleAuthorityTypeEnums;
+import com.example.project.demos.web.service.SysRoleAuthorityTypeService;
 import com.example.project.demos.web.service.SysRoleMenuService;
 import com.example.project.demos.web.service.SysRoleService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
@@ -27,6 +29,8 @@ public class SysRoleServiceImpl  implements SysRoleService {
 
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
+    @Autowired
+    private SysRoleAuthorityTypeService sysRoleAuthorityTypeService;
     @Resource
     private SysRoleDao sysRoleDao;
     @Override
@@ -40,6 +44,9 @@ public class SysRoleServiceImpl  implements SysRoleService {
             outDTO = BeanUtil.copyProperties(sysRoleEntity, QueryByIdOutDTO.class);
             //获取权限菜单集合
             List<String> list = sysRoleMenuService.queryMenuListByRoleId(sysRoleEntity.getRoleId());
+            //获取角色权限类型集合
+            List<String> typeList = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(sysRoleEntity.getRoleId());
+            outDTO.setAuthorityType(typeList);
             outDTO.setMenuList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -73,6 +80,17 @@ public class SysRoleServiceImpl  implements SysRoleService {
                 Page<SysRoleInfo> page = new PageImpl<>(this.sysRoleDao.selectSysRoleInfoListByPage(sysRole, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SysRoleInfo> list = page.toList();
+                //循环赋值权限类型字段
+                for(SysRoleInfo info : list){
+                    String typeStr = "";
+                    String roleId = info.getRoleId();
+                    List<String> typeList = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(roleId);
+                    for(String type : typeList){
+                        String name = RoleAuthorityTypeEnums.getDescByCode(type);
+                        typeStr = typeStr +"  "+name;
+                    }
+                    info.setAuthorityTypeStr(typeStr.trim());
+                }
                 //出参赋值
                 outDTO.setSysRoleInfoList(list);
             }
@@ -100,6 +118,8 @@ public class SysRoleServiceImpl  implements SysRoleService {
             int i = sysRoleDao.insert(sysRoleEntity);
             //插入角色菜单权限表
             sysRoleMenuService.insertBatch(dto.getRoleId(),dto.getMenuList());
+            //插入角色权限类型表
+            sysRoleAuthorityTypeService.insertBatch(dto.getRoleId(),dto.getAuthorityType());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -124,6 +144,10 @@ public class SysRoleServiceImpl  implements SysRoleService {
             int j = sysRoleMenuService.deleteByRoleId(dto.getRoleId());
             //插入角色菜单权限表
             sysRoleMenuService.insertBatch(dto.getRoleId(),dto.getMenuList());
+            //先删除原来的角色权限类型表
+            sysRoleAuthorityTypeService.deleteByRoleId(dto.getRoleId());
+            //插入角色权限类型表
+            sysRoleAuthorityTypeService.insertBatch(dto.getRoleId(),dto.getAuthorityType());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -144,6 +168,8 @@ public class SysRoleServiceImpl  implements SysRoleService {
             int i = sysRoleDao.deleteById(dto.getId());
             //删除角色对应菜单关系表
             int j = sysRoleMenuService.deleteByRoleId(sysRoleEntity.getRoleId());
+            //删除角色权限类型表
+            sysRoleAuthorityTypeService.deleteByRoleId(sysRoleEntity.getRoleId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
