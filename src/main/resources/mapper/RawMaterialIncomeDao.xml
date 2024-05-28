@@ -15,6 +15,7 @@
         <result property="materialBuytime" column="material_buytime"/>
         <result property="approveState" column="approve_state"/>
         <result property="approveOpinion" column="approve_opinion"/>
+        <result property="approveTime" column="approve_time"/>
         <result property="billState" column="bill_state"/>
         <result property="count" column="count"/>
         <result property="tollAmout" column="toll_amout"/>
@@ -45,6 +46,7 @@
             t.approve_state,
             d1.dict_value as approveStateName,
             t.approve_opinion,
+            t.approve_time,
             t.bill_state,
             t.count,
             t.toll_amout ,
@@ -80,6 +82,9 @@
         <if test="raw.approveState != null and raw.approveState != ''">
             and t.approve_state    = #{raw.approveState}
         </if>
+        <if test="raw.inCode != null and raw.inCode != ''">
+            and t.in_code    = #{raw.inCode}
+        </if>
         order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -104,6 +109,9 @@
         <if test="approveState != null and approveState != ''">
             and t.approve_state    = #{approveState}
         </if>
+        <if test="inCode != null and inCode != ''">
+            and t.in_code    = #{inCode}
+        </if>
     </select>
 
     <select id="selectRawMaterialIncomeInfoById" resultType="com.example.project.demos.web.dto.list.RawMaterialIncomeInfo">
@@ -126,6 +134,7 @@
             t.approve_state,
             d1.dict_value as approveStateName,
             t.approve_opinion,
+            t.approve_time,
             t.bill_state,
             t.count,
             t.toll_amout ,

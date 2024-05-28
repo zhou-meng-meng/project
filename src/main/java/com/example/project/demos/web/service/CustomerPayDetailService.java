@@ -2,6 +2,8 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.customerPayDetail.*;
 
+import java.math.BigDecimal;
+
 /**
  * 客户往来账明细
  *
@@ -28,11 +30,17 @@ public interface CustomerPayDetailService  {
 
     /**
      * 新增数据
-     *
+     * 财务从页面操作使用
      * @param dto 实例对象
      * @return 实例对象
      */
     AddOutDTO insert(AddDTO dto);
+
+    /**
+     * 系统自动增加使用
+     * @return
+     */
+    int addPayBySystem(AddPayBySystemDTO dto);
 
     /**
      * 修改数据

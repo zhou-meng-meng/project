@@ -18,7 +18,9 @@ public class QueryByPageDTO {
     private String approveState;
     @ApiModelProperty(value = "单据号")
     private String billNo;
-    @ApiModelProperty(value = "退回人")
+    @ApiModelProperty(value = "退回人登录名")
+    private String returnUser;
+    @ApiModelProperty(value = "退回人姓名")
     private String returnUserName;
 
     @ApiModelProperty(value = "开始日期")

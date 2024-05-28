@@ -4,6 +4,9 @@ package com.example.project.demos.web.service;
 import com.example.project.demos.web.dto.materialInventory.QueryByPageDTO;
 import com.example.project.demos.web.dto.materialInventory.QueryByPageOutDTO;
 
+import java.math.BigDecimal;
+import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -21,6 +24,17 @@ public interface MaterialInventoryService  {
      * @return 查询结果
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+
+    /**
+     *
+     * @param materialCode  物料编号
+     * @param code  仓库/厂区编号
+     * @return
+     */
+    int checkIfMaterialCodeExist(String materialCode,String code);
+
+    int updateStockInventory(String materialCode, String code, BigDecimal num,String type, Date date) throws UnknownHostException;
+
 
 }
 

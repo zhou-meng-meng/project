@@ -13,6 +13,7 @@
         <result property="operationInfo" column="operation_info"/>
         <result property="operationResult" column="operation_result"/>
         <result property="operationMsg" column="operation_msg"/>
+        <result property="loginIp" column="login_ip"/>
     </resultMap>
 
     <select id="selectSysLogInfoListByPage" resultType="com.example.project.demos.web.dto.list.SysLogInfo" >
@@ -25,7 +26,8 @@
         t.operation_time,
         t.operation_info,
         t.operation_result,
-        t.operation_msg
+        t.operation_msg,
+        t.login_ip
         FROM	sys_log t
         left join sys_user  u  on  u.user_login = t.user_code
         where 1=1

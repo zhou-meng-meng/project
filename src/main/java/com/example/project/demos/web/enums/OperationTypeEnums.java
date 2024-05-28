@@ -8,13 +8,13 @@ package com.example.project.demos.web.enums;
 public enum OperationTypeEnums {
 
     OPERATION_TYPE_QUERY("0","查询"),
-    USER_TYPE_ADD("1","新增"),
-    USER_TYPE_DELETE("2","删除"),
-    USER_TYPE_UPDATE("3","修改"),
-    USER_TYPE_IMPORT("4","导入"),
-    USER_TYPE_EXPORT("5","导出"),
-    USER_TYPE_AUTH("6","审核"),
-    USER_TYPE_CONFIRM("7","确认");
+    OPERATION_TYPE_ADD("1","新增"),
+    OPERATION_TYPE_DELETE("2","删除"),
+    OPERATION_TYPE_UPDATE("3","修改"),
+    OPERATION_TYPE_IMPORT("4","导入"),
+    OPERATION_TYPE_EXPORT("5","导出"),
+    OPERATION_TYPE_APPROVE("6","审核"),
+    OPERATION_TYPE_CONFIRM("7","确认");
 
     private String code;
     private String desc;

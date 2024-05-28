@@ -59,8 +59,8 @@
         <if test="rebuild.endDate != null and rebuild.endDate != ''">
             and t.rebuild_date    <![CDATA[ <= ]]> #{rebuild.endDate}
         </if>
-        <if test="rebuild.factorCode != null and rebuild.factorCode != ''">
-            and t.factory_code   = #{rebuild.factorCode}
+        <if test="rebuild.inCode != null and rebuild.inCode != ''">
+            and t.in_code   = #{rebuild.inCode}
         </if>
         order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -82,8 +82,8 @@
         <if test="endDate != null and endDate != ''">
             and t.rebuild_date    <![CDATA[ <= ]]> #{endDate}
         </if>
-        <if test="factorCode != null and factorCode != ''">
-            and t.factory_code   = #{factorCode}
+        <if test="inCode != null and inCode != ''">
+            and t.in_code   = #{inCode}
         </if>
     </select>
 

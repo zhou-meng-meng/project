@@ -6,7 +6,10 @@ package com.example.project.demos.web.enums;
  * </p>
  */
 public enum FunctionTypeEnums {
-
+    APPROVE_OPERATION_QUEUE("010001","待审核事项"),
+    CONFIRM_OPERATION_QUEUE("010002","待确认事项"),
+    APPROVE_OPERATION_FLOW("010003","待审核操作"),
+    CONFIRM_OPERATION_FLOW("010004","待确认操作"),
     RAW_MATERIAL_INCOME("020001","来料入库"),
     PRODUCTION_MATERIAL_INCOME("020002","产量入库"),
     RAW_MATERIAL_OUTBOUND("020003","原材料出库"),

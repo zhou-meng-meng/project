@@ -19,6 +19,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "审批状态")
     private String approveState;
 
+    @ApiModelProperty(value = "入库方编码")
+    private String inCode;
+
 
     /**
      * 翻页数据起始位置:1

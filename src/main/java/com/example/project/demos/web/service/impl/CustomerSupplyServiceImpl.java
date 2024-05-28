@@ -3,12 +3,14 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerSupplyDao;
+import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
 import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
 import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
 import com.example.project.demos.web.dto.customerSupply.*;
 import com.example.project.demos.web.entity.CustomerSupplyEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.CustomerAccountRelService;
 import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.service.CustomerSupplyService;
@@ -67,6 +69,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //数据权限  总公司审核人和财务可使用此菜单 因为不需要添加数据权限
             //先用查询条件查询总条数
             long total = this.customerSupplyDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -100,23 +103,17 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
         try{
             CustomerSupplyEntity CustomerSupplyEntity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
-            CustomerSupplyEntity.setCreateBy("zhangyunning");
-            CustomerSupplyEntity.setCreateTime(new Date());
+            CustomerSupplyEntity.setCreateBy(RequestHolder.getUserInfo().getUserLogin());
+            CustomerSupplyEntity.setCreateTime(date);
             int i = customerSupplyDao.insert(CustomerSupplyEntity);
             //添加账号对应关系
             customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
             log.info("添加一条默认往来账信息，金额都为0");
-            com.example.project.demos.web.dto.customerPayDetail.AddDTO addDTO = new com.example.project.demos.web.dto.customerPayDetail.AddDTO();
-            addDTO.setCustomerCode(dto.getCode());
-            addDTO.setIsDefault(SysEnums.SYS_YES_FLAG.getCode());
-            addDTO.setBookBalance(new BigDecimal(0));
-            addDTO.setPayBalance(new BigDecimal(0));
-            addDTO.setReturnBalance(new BigDecimal(0));
-            addDTO.setCreateBy(Constants.SYSTEM_CODE);
-            addDTO.setRemark("默认往来账信息");
-            customerPayDetailService.insert(addDTO);
+            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",Constants.SYSTEM_CODE,Constants.SYSTEM_CODE,date,"默认往来账");
+            customerPayDetailService.addPayBySystem(addDTO);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

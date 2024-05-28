@@ -64,5 +64,26 @@
         order  by t.material_code
     </select>
 
+    <select id="checkIfMaterialCodeExist" resultType="java.lang.Integer">
+        select count(1) from material_inventory  t
+        where t.material_code = #{materialCode} and  t.stock_code = #{code}
+    </select>
+
+    <!--增加库存-->
+    <update id="addStockInventory">
+        update material_inventory  t
+        set t.inventory_num = t.inventory_num + #{num}
+        where t.material_code = #{materialCode} and  t.stock_code = #{code}
+    </update>
+
+    <!--减少库存-->
+    <update id="reduceStockInventory">
+        update material_inventory  t
+        set t.inventory_num = t.inventory_num  - #{num}
+        where t.material_code = #{materialCode} and  t.stock_code = #{code}
+    </update>
+
+
+
 
 </mapper>

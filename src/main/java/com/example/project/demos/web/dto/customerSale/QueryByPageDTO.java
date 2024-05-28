@@ -23,6 +23,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "联系人")
     private String linkUser;
 
+    @ApiModelProperty(value = "所属销售")
+    private String saler;
+
     /**
      * 翻页数据起始位置:1
      */

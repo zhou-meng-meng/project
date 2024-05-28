@@ -23,7 +23,7 @@ public class EditDTO {
     private String dictValue;
 
     @ApiModelProperty(value = "字典排序码")
-    private Integer dictSort;
+    private String dictSort;
 
     @ApiModelProperty(value = "是否默认:Y-是;N-否")
     private String isDefault;

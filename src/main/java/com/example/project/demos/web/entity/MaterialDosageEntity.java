@@ -54,15 +54,15 @@ public class MaterialDosageEntity implements Serializable {
 	/**
 	 * 磨粉棒重量
 	 */
-	private Double grindingWeight;
+	private Long grindingWeight;
 	/**
 	 * 机器磅重量
 	 */
-	private Double machineWeight;
+	private Long machineWeight;
 	/**
 	 * 差额（磨粉棒重量-机器磅重量）
 	 */
-	private Double differentWeight;
+	private Long differentWeight;
 	/**
 	 * 创建人
 	 */

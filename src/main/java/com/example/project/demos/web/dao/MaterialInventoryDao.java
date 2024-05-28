@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -24,4 +25,10 @@ public interface MaterialInventoryDao extends BaseMapper<MaterialInventoryEntity
     int countMaterialCode(QueryByPageDTO dto);
 
     List<MaterialInventoryInfo> selectMaterialInventoryList(@Param(value = "codeList") List<String> codeList);
+
+    int checkIfMaterialCodeExist(@Param("materialCode")String materialCode, @Param("code")String code);
+
+    int addStockInventory(@Param("materialCode")String materialCode, @Param("code")String code, @Param("num")BigDecimal num);
+    int reduceStockInventory(@Param("materialCode")String materialCode, @Param("code")String code, @Param("num")BigDecimal num);
+
 }

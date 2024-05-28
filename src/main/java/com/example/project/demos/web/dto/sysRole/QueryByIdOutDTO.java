@@ -33,7 +33,7 @@ public class QueryByIdOutDTO {
      * 显示顺序
      */
     @ApiModelProperty(value = "显示顺序")
-    private Integer roleSort;
+    private String roleSort;
 
     /**
      * 角色权限类型集合

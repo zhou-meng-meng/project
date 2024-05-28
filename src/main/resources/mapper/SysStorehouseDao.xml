@@ -93,6 +93,30 @@
         where   t.id = #{id}
     </select>
 
+    <select id="selectSysStorehouseInfoByCode" resultType="com.example.project.demos.web.dto.list.SysStorehouseInfo">
+        SELECT
+            t.id,
+            t.CODE,
+            t.NAME,
+            t.address,
+            t.manage,
+            u2.user_name as manageName,
+            t.manage_tel,
+            t.factory_code,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	sys_storehouse t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.manage
+        where   t.code = #{code}
+    </select>
+
     <select id="selectStorehouseInfoList" resultType="com.example.project.demos.web.dto.list.SysStorehouseInfo">
         SELECT
         t.id,

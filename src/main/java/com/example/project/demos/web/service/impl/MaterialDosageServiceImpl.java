@@ -4,8 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.dao.MaterialDosageDao;
 import com.example.project.demos.web.dto.list.MaterialDosageInfo;
 import com.example.project.demos.web.dto.materialDosage.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialDosageEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialDosageService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +31,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("数据字段类型queryById开始");
+        log.info("物料用量queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -42,20 +46,30 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryById结束");
+        log.info("物料用量queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("数据字段类型queryByPage开始");
+        log.info("物料用量queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
-        Double grindingWeightToll = 0.00;
-        Double machineWeightToll = 0.00;
-        Double differentWeightToll = 0.00;
+        BigDecimal grindingWeightToll = new BigDecimal(0);
+        BigDecimal machineWeightToll = new BigDecimal(0);
+        BigDecimal differentWeightToll =new BigDecimal(0);
         try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区");
+                queryByPageDTO.setFactoryCode(user.getDeptId());
+            }
             //先用查询条件查询总条数
             long total = this.materialDosageDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -71,9 +85,9 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
                 outDTO.setMaterialDosageInfoList(list);
                 //计算三个合计
                 for(MaterialDosageInfo info : list){
-                    grindingWeightToll = grindingWeightToll + info.getGrindingWeight();
-                    machineWeightToll = machineWeightToll + info.getMachineWeight();
-                    differentWeightToll = differentWeightToll + info.getDifferentWeight();
+                    grindingWeightToll = grindingWeightToll.add(info.getGrindingWeight());
+                    machineWeightToll = machineWeightToll.add(info.getMachineWeight());
+                    differentWeightToll = differentWeightToll.add(info.getDifferentWeight());
                 }
             }
         }catch (Exception e){
@@ -87,7 +101,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         outDTO.setDifferentWeightToll(differentWeightToll);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryByPage结束");
+        log.info("物料用量queryByPage结束");
         return outDTO;
     }
 

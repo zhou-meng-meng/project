@@ -56,7 +56,7 @@
                t.pay_balance,
                t.pay_type,
                t.return_balance,
-               t.is_default
+               t.is_default,
                t.remark  from customer_pay_detail t
              where   t.customer_code = #{customerCode} order  by  t.id  desc  limit 0,1
     </select>

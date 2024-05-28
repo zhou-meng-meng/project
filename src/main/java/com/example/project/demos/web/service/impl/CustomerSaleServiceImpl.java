@@ -3,12 +3,16 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerSaleDao;
+import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
 import com.example.project.demos.web.dto.customerSale.*;
 import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
 import com.example.project.demos.web.dto.list.CustomerSaleInfo;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.CustomerSaleEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.CustomerAccountRelService;
 import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.service.CustomerSaleService;
@@ -68,6 +72,17 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //权限判断  总公司审核人员可查看所有数据 其他人员只能看属于自己的客户数据
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            List<String> authList = user.getAuthorityType();
+            if(authList.contains("0")){
+                log.info("具有审核权限，可以查看所有数据");
+            }else{
+                log.info("不具有审核权限，只能查看自己的客户信息");
+                queryByPageDTO.setSaler(user.getUserLogin());
+            }
             //先用查询条件查询总条数
             long total = this.customerSaleDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -101,23 +116,17 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
         try{
             CustomerSaleEntity customerSaleEntity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
-            customerSaleEntity.setCreateBy("zhangyunning");
-            customerSaleEntity.setCreateTime(new Date());
+            customerSaleEntity.setCreateBy(RequestHolder.getUserInfo().getUserLogin());
+            customerSaleEntity.setCreateTime(date);
             int i = customerSaleDao.insert(customerSaleEntity);
             //添加账号对应关系
             customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
             log.info("添加一条默认往来账信息，金额都为0");
-            com.example.project.demos.web.dto.customerPayDetail.AddDTO addDTO = new com.example.project.demos.web.dto.customerPayDetail.AddDTO();
-            addDTO.setCustomerCode(dto.getCode());
-            addDTO.setIsDefault(SysEnums.SYS_YES_FLAG.getCode());
-            addDTO.setBookBalance(new BigDecimal(0));
-            addDTO.setPayBalance(new BigDecimal(0));
-            addDTO.setReturnBalance(new BigDecimal(0));
-            addDTO.setCreateBy(Constants.SYSTEM_CODE);
-            addDTO.setRemark("默认往来账信息");
-            customerPayDetailService.insert(addDTO);
+            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",Constants.SYSTEM_CODE,Constants.SYSTEM_CODE,date,"默认往来账");
+            customerPayDetailService.addPayBySystem(addDTO);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

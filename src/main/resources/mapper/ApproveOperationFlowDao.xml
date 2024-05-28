@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.ApproveOperationFlowDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.ApproveOperationFlowEntity" id="approveOperationFlowMap">
+        <result property="id" column="id"/>
+        <result property="businessId" column="business_id"/>
+        <result property="functionId" column="function_id"/>
+        <result property="submitUser" column="submit_user"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="approveUser" column="approve_user"/>
+        <result property="approveTime" column="approve_time"/>
+        <result property="approveState" column="approve_state"/>
+        <result property="approveOpinion" column="approve_opinion"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectApproveOperationFlowInfoListByPage" resultType="com.example.project.demos.web.dto.list.ApproveOperationFlowInfo">
+        SELECT
+        t.id,
+        t.business_id,
+        t.function_id,
+        t.submit_user,
+        u2.user_name AS submitUserName,
+        t.submit_time,
+        t.approve_user,
+        u3.user_name AS approveUserName,
+        t.approve_time,
+        t.approve_state,
+        d.dict_value approveStateName,
+        t.approve_opinion,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	approve_operation_flow t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+        LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+        LEFT JOIN sys_dict_data d ON d.dict_code =  t.approve_state and  d.dict_type = 'approve_state'
+        where  1=1
+        <if test="flow.beginDate != null and flow.beginDate != ''">
+            and t.approve_time    <![CDATA[ >= ]]> #{flow.beginDate}
+        </if>
+        <if test="flow.endDate != null and flow.endDate != ''">
+            and t.approve_time    <![CDATA[ <= ]]> #{flow.endDate}
+        </if>
+        <if test="flow.submitUserName != null and flow.submitUserName != ''">
+            and u2.user_name    like concat('%', #{flow.submitUserName}, '%')
+        </if>
+        <if test="flow.approveState != null and flow.approveState != ''">
+            and t.approve_state    = #{flow.approveState}
+        </if>
+        order  by  t.approve_time
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)  FROM	approve_operation_flow t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+        where  1=1
+        <if test="beginDate != null and beginDate != ''">
+            and t.approve_time    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.approve_time    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="submitUserName != null and submitUserName != ''">
+            and u2.user_name    like concat('%', #{submitUserName}, '%')
+        </if>
+        <if test="approveState != null and approveState != ''">
+            and t.approve_state    = #{approveState}
+        </if>
+    </select>
+
+    <select id="selectApproveOperationFlowInfoById" resultType="com.example.project.demos.web.dto.list.ApproveOperationFlowInfo">
+        SELECT
+            t.id,
+            t.business_id,
+            t.function_id,
+            t.submit_user,
+            u2.user_name AS submitUserName,
+            t.submit_time,
+            t.approve_user,
+            u3.user_name AS approveUserName,
+            t.approve_time,
+            t.approve_state,
+            d.dict_value approveStateName,
+            t.approve_opinion,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	approve_operation_flow t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+                    LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+                    LEFT JOIN sys_dict_data d ON d.dict_code =  t.approve_state and  d.dict_type = 'approve_state'
+        where  t.id = #{id}
+    </select>
+
+
+</mapper>

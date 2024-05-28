@@ -112,4 +112,34 @@
         where   t.id = #{id}
     </select>
 
+    <select id="selectMaterialInfoByCode" resultType="com.example.project.demos.web.dto.list.MaterialInfo">
+        SELECT
+            t.id,
+            t.CODE,
+            t.NAME,
+            t.model,
+            d.dict_value as modelName,
+            t.unit,
+            d2.dict_value as unitName,
+            t.type,
+            d1.dict_value as typeName,
+            t.supplyer_code,
+            s.name as supplyerName,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	material_info t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    left join customer_supply   s  on  s.code = t.supplyer_code
+                    left join sys_dict_data  d on d.dict_code = t.model and d.dict_type = 'material_model'
+                    left join sys_dict_data  d1 on d1.dict_code = t.type and d1.dict_type = 'material_type'
+                    left join sys_dict_data  d2 on d2.dict_code = t.unit and d2.dict_type = 'material_unit'
+        where   t.CODE = #{code}
+    </select>
+
 </mapper>

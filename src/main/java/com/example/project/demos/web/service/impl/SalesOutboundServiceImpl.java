@@ -9,10 +9,13 @@ import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.salesOutbound.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SalesOutboundEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SalesOutboundService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -42,7 +45,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("原材料出库queryById开始");
+        log.info("销售出库queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -60,17 +63,34 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("原材料出库queryById结束");
+        log.info("销售出库queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("原材料出库queryByPage开始");
+        log.info("销售出库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //添加权限  总公司审核权限的  查看所有  厂区和仓库的 查看所属厂区或者仓库数据
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，判断是否有审核权限");
+                List<String> list = user.getAuthorityType();
+                if(list.contains("0")){
+                    log.info("具有审核权限，查询所有数据");
+                }else{
+                    log.info("不具有审核权限，查询自己提交的数据");
+                    queryByPageDTO.setSaler(user.getUserLogin());
+                }
+            }else{
+                log.info("当前登录人不属于总公司，只能查看自己提交的数据");
+                queryByPageDTO.setSaler(user.getUserLogin());
+            }
             //先用查询条件查询总条数
             long total = this.salesOutboundDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -78,8 +98,6 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
-                //转换实体入参
-                //SalesOutboundEntity SalesOutbound = BeanCopyUtils.copy(queryByPageDTO,SalesOutboundEntity.class);
                 //开始分页查询
                 Page<SalesOutboundInfo> page = new PageImpl<>(this.salesOutboundDao.selectSalesOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
@@ -97,7 +115,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("原材料出库queryByPage结束");
+        log.info("销售出库queryByPage结束");
         return outDTO;
     }
 
@@ -162,7 +180,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
     }
 
     /**
-     * 赋值原材料出库方名称
+     * 赋值销售出库方名称
      * @param list
      * @return
      */

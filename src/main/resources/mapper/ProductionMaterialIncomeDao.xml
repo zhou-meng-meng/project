@@ -66,6 +66,9 @@
         <if test="prod.producerName != null and prod.producerName != ''">
             and u2.user_name   like concat('%', #{prod.producerName}, '%')
         </if>
+        <if test="prod.inCode != null and prod.inCode != ''">
+            and t.in_code   = #{prod.inCode}
+        </if>
         order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -89,6 +92,9 @@
         </if>
         <if test="producerName != null and producerName != ''">
             and u2.user_name   like concat('%', #{producerName}, '%')
+        </if>
+        <if test="inCode != null and inCode != ''">
+            and t.in_code   = #{inCode}
         </if>
     </select>
 

@@ -1,30 +1,32 @@
 package com.example.project.demos.web.service.impl;
 
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dao.MaterialInfoDao;
 import com.example.project.demos.web.dao.MaterialInventoryDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dao.SysStorehouseDao;
-import com.example.project.demos.web.dto.list.MaterialInventoryInfo;
-import com.example.project.demos.web.dto.list.MaterialInventoryStockInfo;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
-import com.example.project.demos.web.dto.list.SysStorehouseInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.materialInventory.*;
+import com.example.project.demos.web.entity.MaterialInventoryEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialInventoryService;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.net.UnknownHostException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +40,11 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
 
     @Resource
     private SysStorehouseDao sysStorehouseDao;
+
+    @Resource
+    private MaterialInfoDao materialInfoDao;
+    @Autowired
+    private SysLogService sysLogService;
     
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
         log.info("实时库存queryByPage开始");
@@ -103,6 +110,72 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         log.info("实时库存queryByPage结束");
         return outDTO;
     }
+
+    @Override
+    public int checkIfMaterialCodeExist(String materialCode, String code) {
+        return materialInventoryDao.checkIfMaterialCodeExist(materialCode,code);
+    }
+
+    /**
+     *
+     * @param materialCode 物料编号
+     * @param code 厂区/仓库编码
+     * @param num 数量
+     * @param type 增加/减少
+     * @param date 日期
+     * @return
+     * @throws UnknownHostException
+     */
+    @Override
+    public int updateStockInventory(String materialCode, String code, BigDecimal num, String type, Date date) throws UnknownHostException {
+        log.info("更新库存开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        String userLogin = RequestHolder.getUserInfo().getUserLogin();
+        String storeName="";
+        MaterialInfo mInfo = null;
+        try{
+            log.info("判断该物料是否在仓库/厂区中");
+            int k = materialInventoryDao.checkIfMaterialCodeExist(materialCode,code);
+            if(k > 0){
+                log.info("当前厂区/仓库:"+code +" 已经存储了物料:"+materialCode);
+                if("add".equals(type)){
+                    log.info("增加库存操作");
+                    materialInventoryDao.addStockInventory(materialCode,code,num);
+                }else{
+                    log.info("减少库存操作");
+                    materialInventoryDao.reduceStockInventory(materialCode,code,num);
+                }
+            }else{
+                log.info("当前厂区/仓库:"+code +" 没有存储物料:"+materialCode+",新增库存");
+                MaterialInventoryEntity entity = new MaterialInventoryEntity();
+                entity.setMaterialCode(materialCode);
+                entity.setStockCode(code);
+                entity.setInventoryNum(num);
+                materialInventoryDao.insert(entity);
+            }
+            log.info("获取物料名称和厂区/仓库名称");
+            mInfo = materialInfoDao.selectMaterialInfoByCode(materialCode);
+            storeName = "";
+            if("F".equals(code.substring(0,1))){
+                SysFactoryInfo fInfo = sysFactoryDao.selectSysFactoryInfoByCode(code);
+                storeName = fInfo.getName();
+            }else{
+                SysStorehouseInfo sInfo = sysStorehouseDao.selectSysStorehouseInfoByCode(code);
+                storeName = sInfo.getName();
+            }
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录日志
+        String info = "物料编号:"+materialCode+",物料名称:"+mInfo.getName()+",数量:"+num.toString()+",仓库/厂区:"+storeName;
+        int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),userLogin,date,info,errorCode,errortMsg,"system");
+        log.info("更新库存结束");
+        return i;
+    }
+
 
     /**
      * 赋值实时库存  库存方名称

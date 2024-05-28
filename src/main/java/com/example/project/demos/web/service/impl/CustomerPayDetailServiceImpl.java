@@ -2,12 +2,14 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerPayDetailDao;
 import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
 import com.example.project.demos.web.entity.CustomerPayDetailEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.SysEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.CustomerAccountRelService;
 import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
@@ -91,6 +93,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         return outDTO;
     }
 
+    /**
+     * 增加往来账   财务从页面使用
+     * @param dto 实例对象
+     * @return
+     */
     @Override
     public AddOutDTO insert(AddDTO dto) {
         AddOutDTO outDTO = new AddOutDTO();
@@ -98,17 +105,13 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
-            if(SysEnums.SYS_YES_FLAG.getCode().equals(dto.getIsDefault())){
-                log.info("新增客户时，增加一条默认往来账");
-            }else{
-                //需要获取该客户最新一笔来往账信息
-                CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
-                //账面金额=上次账面余额-总金额+退回金额+打款金额
-                BigDecimal bookBalance = entity.getBookBalance().subtract(dto.getMaterialBalance()).add(dto.getReturnBalance()).add(dto.getPayBalance());
-                log.info("新的账面余额:"+entity.getBookBalance() + "-" + dto.getMaterialBalance() + "+" + dto.getReturnBalance() +"+" +  dto.getPayBalance() +"=" +bookBalance);
-                newEntity.setBookBalance(bookBalance );
-                newEntity.setCreateBy("zhangyunning");
-            }
+            //需要获取该客户最新一笔来往账信息
+            CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
+            //账面金额=上次账面余额-总金额+退回金额+打款金额
+            BigDecimal bookBalance = entity.getBookBalance().subtract(dto.getMaterialBalance()).add(dto.getReturnBalance()).add(dto.getPayBalance());
+            log.info("新的账面余额:"+entity.getBookBalance() + "-" + dto.getMaterialBalance() + "+" + dto.getReturnBalance() +"+" +  dto.getPayBalance() +"=" +bookBalance);
+            newEntity.setBookBalance(bookBalance );
+            newEntity.setCreateBy(RequestHolder.getUserInfo().getUserLogin());
             newEntity.setCreateTime(new Date());
             int i = customerPayDetailDao.insert(newEntity);
         }catch (Exception e){
@@ -120,6 +123,30 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
+
+
+    @Override
+    public int addPayBySystem(AddPayBySystemDTO dto) {
+        int i = 0;
+        if(dto.getIsDefault().equals(SysEnums.SYS_YES_FLAG.getCode())){
+            //默认往来账  直接添加
+            CustomerPayDetailEntity entity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
+            i = customerPayDetailDao.insert(entity);
+        }else{
+            CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
+            //需要获取该客户最新一笔来往账信息
+            CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
+            //账面金额=上次账面余额-总金额+退回金额+打款金额
+            BigDecimal bookBalance = entity.getBookBalance().subtract(dto.getMaterialBalance()).add(dto.getReturnBalance()).add(dto.getPayBalance());
+            log.info("新的账面余额:"+entity.getBookBalance() + "-" + dto.getMaterialBalance() + "+" + dto.getReturnBalance() +"+" +  dto.getPayBalance() +"=" +bookBalance);
+            newEntity.setBookBalance(bookBalance );
+            newEntity.setCreateBy(Constants.SYSTEM_CODE);
+            newEntity.setCreateTime(new Date());
+            i = customerPayDetailDao.insert(newEntity);
+        }
+        return i;
+    }
+
 
     @Override
     public EditOutDTO update(EditDTO dto) {

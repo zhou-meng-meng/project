@@ -63,6 +63,7 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 */
 	private String approveState;
 	private String approveOpinion;
+	private Date approveTime;
 	/**
 	 * 单据状态
 	 */

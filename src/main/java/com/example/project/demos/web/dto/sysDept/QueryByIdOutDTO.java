@@ -45,7 +45,7 @@ public class QueryByIdOutDTO {
      * 显示顺序
      */
     @ApiModelProperty(value = "显示顺序")
-    private Integer orderNum;
+    private String orderNum;
     /**
      * 负责人
      */

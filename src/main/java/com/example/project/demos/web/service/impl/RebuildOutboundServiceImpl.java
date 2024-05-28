@@ -10,10 +10,13 @@ import com.example.project.demos.web.dto.list.RebuildOutboundInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.rebuildOutbound.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.RebuildOutboundEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.RebuildOutboundService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -71,6 +74,16 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //添加权限  总公司审核权限的  查看所有  其他的角色 查看自己提交的
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
+                queryByPageDTO.setInCode(user.getDeptId());
+            }
             //先用查询条件查询总条数
             long total = this.rebuildOutboundDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -78,8 +91,6 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
-                //转换实体入参
-                //RebuildOutboundEntity RebuildOutbound = BeanCopyUtils.copy(queryByPageDTO,RebuildOutboundEntity.class);
                 //开始分页查询
                 Page<RebuildOutboundInfo> page = new PageImpl<>(this.rebuildOutboundDao.selectRebuildOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据

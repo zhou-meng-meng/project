@@ -2,6 +2,10 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.rawMaterialIncome.*;
 
+import java.math.BigDecimal;
+import java.net.UnknownHostException;
+import java.util.Date;
+
 /**
  * 原材料来料入库表
  *
@@ -32,7 +36,7 @@ public interface RawMaterialIncomeService  {
      * @param dto 实例对象
      * @return 实例对象
      */
-    AddOutDTO insert(AddDTO dto);
+    AddOutDTO insert(AddDTO dto) throws UnknownHostException;
 
     /**
      * 修改数据
@@ -40,7 +44,7 @@ public interface RawMaterialIncomeService  {
      * @param dto 实例对象
      * @return 实例对象
      */
-    EditOutDTO update(EditDTO dto);
+    EditOutDTO update(EditDTO dto) throws UnknownHostException;
 
     /**
      * 通过主键删除数据
@@ -48,7 +52,11 @@ public interface RawMaterialIncomeService  {
      * @param dto 主键
      * @return 是否成功
      */
-    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) throws UnknownHostException;
+
+
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) throws UnknownHostException;
+
 
 }
 

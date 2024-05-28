@@ -72,10 +72,19 @@
             and t.transfer_date    <![CDATA[ <= ]]> #{transfer.endDate}
         </if>
         <if test="transfer.transferType != null and transfer.transferType != ''">
-            and t.transfer_type   #{transfer.transferType}
+            and t.transfer_type  =  #{transfer.transferType}
         </if>
         <if test="transfer.confirmState != null and transfer.confirmState != ''">
-            and t.confirm_state   #{transfer.confirmState}
+            and t.confirm_state =  #{transfer.confirmState}
+        </if>
+        <if test="transfer.outCode != null and transfer.outCode != ''">
+            and t.out_code =  #{transfer.outCode}
+        </if>
+        <if test="transfer.outCode != null and transfer.outCode != ''">
+            and t.out_code =  #{transfer.outCode}
+        </if>
+        <if test="transfer.billNo != null and transfer.billNo != ''">
+            and t.bill_no =  #{transfer.billNo}
         </if>
         order  by  t.transfer_date
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -102,6 +111,9 @@
         </if>
         <if test="confirmState != null and confirmState != ''">
             and t.confirm_state   #{confirmState}
+        </if>
+        <if test="billNo != null and billNo != ''">
+            and t.bill_no =  #{billNo}
         </if>
     </select>
 

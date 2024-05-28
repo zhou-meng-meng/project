@@ -35,6 +35,8 @@ public interface SysFactoryDao extends BaseMapper<SysFactoryEntity> {
 
     SysFactoryInfo selectSysFactoryInfoById(Long id);
 
+    SysFactoryInfo selectSysFactoryInfoByCode(String code);
+
     int checkCode(@Param("code") String code);
 
     /**

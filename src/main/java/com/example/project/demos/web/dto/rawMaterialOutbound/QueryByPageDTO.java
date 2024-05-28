@@ -16,6 +16,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "单据号")
     private String billNo;
 
+    @ApiModelProperty(value = "出库方编码")
+    private String outCode;
+
 
     /**
      * 翻页数据起始位置:1

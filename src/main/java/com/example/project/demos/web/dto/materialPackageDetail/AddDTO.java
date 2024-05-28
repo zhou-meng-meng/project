@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -24,7 +25,7 @@ public class AddDTO {
      * 每锅重量
      */
     @ApiModelProperty(value = "每锅重量")
-    private Double packageWeight;
+    private BigDecimal packageWeight;
     /**
      * 创建者
      */

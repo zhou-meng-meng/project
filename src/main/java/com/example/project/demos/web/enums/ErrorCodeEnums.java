@@ -24,7 +24,8 @@ public enum ErrorCodeEnums {
     DICT_DATA_IS_EXIST("000008","输入的字典值已经存在"),
     DICT_DATA_ISDEFAULT_EXIST("000009","当前字典类型已经存在默认值"),
     FACTORY_CODE_IS_EXIST("000010","输入的厂区编号已经存在"),
-    STORE_CODE_IS_EXIST("000011","输入的仓库编号已经存在");
+    STORE_CODE_IS_EXIST("000011","输入的仓库编号已经存在"),
+    AUTH_USER_NOT_EXIST("000012","没有找到对应的审核人员");
 
 
     public static String getDescByCode(String code){

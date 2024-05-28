@@ -20,6 +20,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 单价
@@ -31,12 +33,16 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "供货商编号")
     private String supplyerCode;
+    @ApiModelProperty(value = "供货商名称")
+    private String supplyerName;
 
     /**
      * 入库方编号
      */
     @ApiModelProperty(value = "入库方编号")
     private String inCode;
+    @ApiModelProperty(value = "入库方名称")
+    private String inName;
 
     /**
      * 单据号

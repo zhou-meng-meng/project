@@ -27,6 +27,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "结束")
     private String endDate;
 
+    @ApiModelProperty(value = "入库方编码")
+    private String inCode;
+
     /**
      * 备注
      */

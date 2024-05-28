@@ -44,8 +44,6 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "付款类型  0-入款 1-出款")
     private String payType;
-    @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
-    private String isDefault;
 
     /**
      *

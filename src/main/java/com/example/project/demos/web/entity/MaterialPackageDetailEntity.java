@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -38,7 +39,7 @@ public class MaterialPackageDetailEntity implements Serializable {
 	/**
 	 * 每锅重量
 	 */
-	private Double packageWeight;
+	private BigDecimal packageWeight;
 	/**
 	 * 创建人
 	 */

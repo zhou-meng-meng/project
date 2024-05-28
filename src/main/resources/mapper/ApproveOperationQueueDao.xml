@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.ApproveOperationQueueDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.ApproveOperationQueueEntity" id="approveOperationQueueMap">
+        <result property="id" column="id"/>
+        <result property="operationFlowId" column="operation_flow_id"/>
+        <result property="businessId" column="business_id"/>
+        <result property="approveUser" column="approve_user"/>
+        <result property="functionId" column="function_id"/>
+        <result property="submitUser" column="submit_user"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectApproveOperationQueueInfoListByPage" resultType="com.example.project.demos.web.dto.list.ApproveOperationQueueInfo">
+        SELECT
+        t.id,
+        t.operation_flow_id,
+        t.business_id,
+        t.approve_user,
+        u3.user_name AS approveUserName,
+        t.function_id,
+        t.submit_user,
+        u2.user_name AS submitUserName,
+        t.submit_time,
+        t.remark
+        FROM	approve_operation_queue t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+        LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+        where  1=1  and t.approve_user = #{queue.approveUser}
+        <if test="queue.beginDate != null and queue.beginDate != ''">
+            and t.submit_time    <![CDATA[ >= ]]> #{queue.beginDate}
+        </if>
+        <if test="queue.endDate != null and queue.endDate != ''">
+            and t.submit_time    <![CDATA[ <= ]]> #{queue.endDate}
+        </if>
+        <if test="queue.submitUserName != null and queue.submitUserName != ''">
+            and u2.user_name    like concat('%', #{queue.submitUserName}, '%')
+        </if>
+        order  by  t.submit_time
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(1)  FROM	approve_operation_queue t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+        where  1=1  and t.approve_user = #{approveUser}
+        <if test="beginDate != null and beginDate != ''">
+            and t.submit_time    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.submit_time    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="submitUserName != null and submitUserName != ''">
+            and u2.user_name    like concat('%', #{submitUserName}, '%')
+        </if>
+    </select>
+
+    <select id="selectApproveOperationQueueInfoById" resultType="com.example.project.demos.web.dto.list.ApproveOperationQueueInfo">
+        SELECT
+            t.id,
+            t.operation_flow_id,
+            t.business_id,
+            t.approve_user,
+            u3.user_name AS approveUserName,
+            t.function_id,
+            t.submit_user,
+            u2.user_name AS submitUserName,
+            t.submit_time,
+            t.remark
+        FROM	approve_operation_queue t
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+                    LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+        where  t.id = #{id}
+    </select>
+
+    <delete id="deleteByFlowId">
+        delete  from approve_operation_queue where operation_flow_id = #{flowId}
+    </delete>
+
+
+</mapper>

@@ -25,6 +25,9 @@ public class QueryByPageDTO {
     private String beginDate;
     @ApiModelProperty(value = "结束日期")
     private String endDate;
+    @ApiModelProperty(value = "退回方编号")
+    private String outCode;
+
     /**
      * 翻页数据起始位置:1
      */

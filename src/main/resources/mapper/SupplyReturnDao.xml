@@ -85,6 +85,9 @@
         <if test="return.approveState != null and return.approveState != ''">
             and t.approve_state   = #{return.approveState}
         </if>
+        <if test="return.outCode != null and return.outCode != ''">
+            and t.out_code   = #{return.outCode}
+        </if>
         order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -114,6 +117,9 @@
         </if>
         <if test="approveState != null and approveState != ''">
             and t.approve_state   = #{approveState}
+        </if>
+        <if test="outCode != null and outCode != ''">
+            and t.out_code   = #{outCode}
         </if>
     </select>
 

@@ -43,7 +43,7 @@ public class SysDeptEntity implements Serializable {
 	/**
 	 * 显示顺序
 	 */
-	private Integer orderNum;
+	private String orderNum;
 	/**
 	 * 负责人
 	 */

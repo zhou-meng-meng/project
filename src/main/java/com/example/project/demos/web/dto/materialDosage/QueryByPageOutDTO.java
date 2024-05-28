@@ -5,6 +5,7 @@ import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -21,17 +22,17 @@ public class QueryByPageOutDTO {
      * 磨粉棒重量合计
      */
     @ApiModelProperty(value = "磨粉棒重量合计")
-    private Double grindingWeightToll;
+    private BigDecimal grindingWeightToll;
     /**
      * 机器磅重量合计
      */
     @ApiModelProperty(value = "机器磅重量合计")
-    private Double machineWeightToll;
+    private BigDecimal machineWeightToll;
     /**
      * 差额（磨粉棒重量-机器磅重量）合计
      */
     @ApiModelProperty(value = "差额合计")
-    private Double differentWeightToll;
+    private BigDecimal differentWeightToll;
 
     /**
      * 操作结果编码:null

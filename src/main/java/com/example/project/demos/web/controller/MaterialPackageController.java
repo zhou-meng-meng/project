@@ -18,8 +18,8 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("materialPackage")
-@Api(tags="装袋维护表")
-public class SysMaterialPackageController extends BaseController{
+@Api(tags="物料装袋维护表")
+public class MaterialPackageController extends BaseController{
     /**
      * 服务对象
      */

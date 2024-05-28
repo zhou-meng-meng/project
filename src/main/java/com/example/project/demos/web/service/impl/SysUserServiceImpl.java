@@ -274,7 +274,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                     }else{
                         log.info("密码未过期，查询用户其他信息");
                         isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
-                        //根据角色编码获取该角色权限类型
+                        log.info("根据角色编码获取该角色权限类型");
                         List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
                         outDTO.setAuthorityType(authorityType);
                         //修改当前登录IP和登录时间
@@ -296,7 +296,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
-
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         outDTO.setIsInitePwd(isInitePwd);
@@ -370,6 +369,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         outDTO.setErrorMsg(errortMsg);
         log.info("修改密码结束");
         return outDTO;
+    }
+
+    @Override
+    public List<SysUserEntity> queryUserListByRoleType(String userType, String roleType) {
+        return sysUserDao.queryUserListByRoleType(userType,roleType);
     }
 
 

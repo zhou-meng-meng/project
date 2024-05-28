@@ -30,4 +30,6 @@ public interface MaterialInfoDao extends BaseMapper<MaterialInfoEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     MaterialInfo selectMaterialInfoById(Long id);
+    MaterialInfo selectMaterialInfoByCode(String code);
+
 }

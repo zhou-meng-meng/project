@@ -2,6 +2,7 @@ package com.example.project.demos.web.controller;
 
 import com.example.project.demos.web.dto.materialDosage.*;
 import com.example.project.demos.web.service.MaterialDosageService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("materialdosage")
+@Api(tags="物料用量表")
 public class MaterialDosageController {
     /**
      * 服务对象

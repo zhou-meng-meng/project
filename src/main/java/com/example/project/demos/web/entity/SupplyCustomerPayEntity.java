@@ -16,7 +16,7 @@ import java.util.Date;
  * @date 2024-05-25 15:30:37
  */
 @Data
-@TableName("supply_coustomer_pay")
+@TableName("supply_customer_pay")
 public class SupplyCustomerPayEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -73,5 +73,15 @@ public class SupplyCustomerPayEntity implements Serializable {
 	 * 备注
 	 */
 	private String remark;
+
+	public SupplyCustomerPayEntity(Long incomeId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal incomeCount,BigDecimal tollAmount,Date incomeDate){
+		this.incomeId = incomeId;
+		this.customerCode = customerCode;
+		this.materialCode = materialCode;
+		this.unitPrice = unitPrice;
+		this.incomeCount = incomeCount;
+		this.tollAmount = tollAmount;
+		this.incomeDate = incomeDate;
+	}
 
 }

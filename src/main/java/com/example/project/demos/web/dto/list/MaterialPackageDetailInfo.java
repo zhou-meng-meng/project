@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -44,7 +45,7 @@ public class MaterialPackageDetailInfo implements Serializable {
 	 * 每锅重量
 	 */
 	@ApiModelProperty(value = "每锅重量")
-	private Double packageWeight;
+	private BigDecimal packageWeight;
 	/**
 	 * 创建者
 	 */

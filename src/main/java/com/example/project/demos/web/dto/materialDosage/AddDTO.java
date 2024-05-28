@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -45,17 +46,17 @@ public class AddDTO {
      * 磨粉棒重量
      */
     @ApiModelProperty(value = "磨粉棒重量")
-    private Double grindingWeight;
+    private BigDecimal grindingWeight;
     /**
      * 机器磅重量
      */
     @ApiModelProperty(value = "机器磅重量")
-    private Double machineWeight;
+    private BigDecimal machineWeight;
     /**
      * 差额（磨粉棒重量-机器磅重量）
      */
     @ApiModelProperty(value = "差额（磨粉棒重量-机器磅重量）")
-    private Double differentWeight;
+    private BigDecimal differentWeight;
 
     /**
      * 备注

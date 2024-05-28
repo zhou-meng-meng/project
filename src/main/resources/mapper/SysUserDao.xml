@@ -222,4 +222,19 @@
     </select>
 
 
+    <select id="queryUserListByRoleType"  resultMap="sysUserMap">
+        SELECT
+        t.id,
+        t.user_id,
+        t.user_login,
+        t.user_name,
+        t.user_type,
+        t.role_id,
+        t.dept_id
+        FROM   sys_user t
+        where  t.status = '0'  and t.user_type = #{userType}
+          AND t.role_id IN ( SELECT rt.role_id FROM sys_role_authority_type rt WHERE rt.role_authority_type = #{roleType} )
+    </select>
+
+
 </mapper>

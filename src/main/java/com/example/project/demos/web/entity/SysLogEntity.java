@@ -53,4 +53,9 @@ public class SysLogEntity implements Serializable {
 	 */
 	private String operationMsg;
 
+	/**
+	 * IP
+	 */
+	private String loginIp;
+
 }

@@ -76,7 +76,13 @@
             and s.name    like concat('%', #{sale.customerName}, '%')
         </if>
         <if test="sale.billNo != null and sale.billNo != ''">
-            and u2.user_name    like concat('%', #{sale.billNo}, '%')
+            and t.bill_no    like concat('%', #{sale.billNo}, '%')
+        </if>
+        <if test="sale.saler != null and sale.saler != ''">
+            and t.saler   = #{sale.saler}
+        </if>
+        <if test="sale.salerName != null and sale.salerName != ''">
+            and u2.user_name    like concat('%', #{sale.salerName}, '%')
         </if>
         order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -98,7 +104,13 @@
             and s.name    like concat('%', #{customerName}, '%')
         </if>
         <if test="billNo != null and billNo != ''">
-            and u2.user_name    like concat('%', #{billNo}, '%')
+            and t.bill_no    like concat('%', #{billNo}, '%')
+        </if>
+        <if test="saler != null and saler != ''">
+            and t.saler   = #{saler}
+        </if>
+        <if test="salerName != null and salerName != ''">
+            and u2.user_name    like concat('%', #{salerName}, '%')
         </if>
     </select>
 

@@ -18,6 +18,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -66,4 +69,31 @@ public class SysLogServiceImpl implements SysLogService {
         log.info("日志查询queryByPage结束");
         return outDTO;
     }
+
+    @Override
+    public int insertSysLog(String functionId, String operationType, String userCode, Date operationTime, String operationInfo, String operationResult, String operationMsg, String remark) {
+        log.info("生成操作日志开始");
+        int i = 0;
+        try {
+            SysLogEntity entity = new SysLogEntity();
+            entity.setFunctionId(functionId);
+            entity.setOperationType(operationType);
+            entity.setUserCode(userCode);
+            entity.setOperationTime(operationTime);
+            entity.setOperationInfo(operationInfo);
+            entity.setOperationResult(operationResult);
+            entity.setOperationMsg(operationMsg);
+            //获取本地ip
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            String ipAddress = inetAddress.getHostAddress();
+            entity.setLoginIp(ipAddress);
+            i = sysLogDao.insert(entity);
+        }catch (Exception e){
+            log.info(e.getMessage());
+        }
+        log.info("生成操作日志结束");
+        return i;
+    }
+
+
 }

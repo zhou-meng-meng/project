@@ -1,26 +1,30 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.RawMaterialIncomeDao;
-import com.example.project.demos.web.dao.SysFactoryDao;
-import com.example.project.demos.web.dao.SysStorehouseDao;
+import com.example.project.demos.web.dao.*;
+import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
 import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.rawMaterialIncome.*;
-import com.example.project.demos.web.entity.RawMaterialIncomeEntity;
-import com.example.project.demos.web.entity.SysFactoryEntity;
-import com.example.project.demos.web.entity.SysStorehouseEntity;
-import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.service.RawMaterialIncomeService;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
+import com.example.project.demos.web.entity.*;
+import com.example.project.demos.web.enums.*;
+import com.example.project.demos.web.handler.RequestHolder;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +40,26 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
 
     @Resource
     private SysStorehouseDao sysStorehouseDao;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+    @Resource
+    private ApproveOperationFlowDao approveOperationFlowDao;
+    @Resource
+    private ApproveOperationQueueDao approveOperationQueueDao;
+
+    @Autowired
+    private SysLogService sysLogService;
+
+    @Autowired
+    private MaterialInventoryService materialInventoryService;
+
+    @Resource
+    private SupplyCustomerPayDao supplyCustomerPayDao;
+
+    @Autowired
+    private CustomerPayDetailService customerPayDetailService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -68,6 +92,16 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                queryByPageDTO.setInCode(user.getDeptId());
+            }
             //先用查询条件查询总条数
             long total = this.rawMaterialIncomeDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -75,8 +109,6 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
-                //转换实体入参
-                //RawMaterialIncomeEntity RawMaterialIncome = BeanCopyUtils.copy(queryByPageDTO,RawMaterialIncomeEntity.class);
                 //开始分页查询
                 Page<RawMaterialIncomeInfo> page = new PageImpl<>(this.rawMaterialIncomeDao.selectRawMaterialIncomeInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
@@ -90,7 +122,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -99,47 +131,79 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     }
 
     @Override
-    public AddOutDTO insert(AddDTO dto) {
+    public AddOutDTO insert(AddDTO dto) throws UnknownHostException {
+        log.info("来料入库新增操作开始");
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        String userLogin = RequestHolder.getUserInfo().getUserLogin();
         try{
-            RawMaterialIncomeEntity RawMaterialIncomeEntity = BeanCopyUtils.copy(dto,RawMaterialIncomeEntity.class);
-            RawMaterialIncomeEntity.setCreateBy("zhangyunning");
-            RawMaterialIncomeEntity.setCreateTime(new Date());
-            int i = rawMaterialIncomeDao.insert(RawMaterialIncomeEntity);
+            log.info("查询总公司具有审核权限的人员");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode());
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                RawMaterialIncomeEntity rawMaterialIncomeEntity = BeanCopyUtils.copy(dto,RawMaterialIncomeEntity.class);
+                //设置 审核状态 创建人和创建时间
+                rawMaterialIncomeEntity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
+                rawMaterialIncomeEntity.setCreateBy(userLogin);
+                rawMaterialIncomeEntity.setCreateTime(date);
+                log.info("插入来料入库表");
+                int i = rawMaterialIncomeDao.insert(rawMaterialIncomeEntity);
+                log.info("生成审核流水记录");
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,rawMaterialIncomeEntity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userLogin,date,"system");
+                approveOperationFlowDao.insert(flowEntity);
+                log.info("生成审核队列记录");
+                List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), rawMaterialIncomeEntity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),userLogin,date,"system");
+                    queueEntityList.add(queueEntity);
+                }
+                approveOperationQueueDao.insertBatch(queueEntityList);
+            }else{
+                errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getCount().toString()+",供货商:"+dto.getSupplyerName()+",入库方:"+dto.getInName();
+        sysLogService.insertSysLog(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),userLogin,date,info,errorCode,errortMsg,"system");
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("来料入库新增操作结束");
         return outDTO;
     }
 
     @Override
-    public EditOutDTO update(EditDTO dto) {
+    public EditOutDTO update(EditDTO dto) throws UnknownHostException {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        String userLogin = RequestHolder.getUserInfo().getUserLogin();
         try{
             RawMaterialIncomeEntity RawMaterialIncomeEntity = BeanCopyUtils.copy(dto,RawMaterialIncomeEntity.class);
-            RawMaterialIncomeEntity.setCreateBy("zhangyunning");
-            RawMaterialIncomeEntity.setUpdateTime(new Date());
+            RawMaterialIncomeEntity.setUpdateBy(userLogin);
+            RawMaterialIncomeEntity.setUpdateTime(date);
             int i = rawMaterialIncomeDao.updateById(RawMaterialIncomeEntity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getCount().toString()+",供货商:"+dto.getSupplyerName()+",入库方:"+dto.getInName();
+        sysLogService.insertSysLog(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),userLogin,date,info,errorCode,errortMsg,"system");
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
 
     @Override
-    public DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) {
+    public DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) throws UnknownHostException {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -150,10 +214,45 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        Date date = new Date();
+        String userLogin = RequestHolder.getUserInfo().getUserLogin();
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getCount().toString()+",供货商:"+dto.getSupplyerName()+",入库方:"+dto.getInName();
+        sysLogService.insertSysLog(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),userLogin,date,info,errorCode,errortMsg,"system");
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
+
+    @Override
+    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice,BigDecimal tollAmount, Date date) throws UnknownHostException {
+        log.info("来料入库审核更新开始");
+        RawMaterialIncomeEntity  entity = rawMaterialIncomeDao.selectById(id);
+        entity.setUnitPrice(unitPrice);
+        entity.setTollAmout(tollAmount);
+        entity.setApproveState(result);
+        entity.setApproveOpinion(opinion);
+        entity.setApproveTime(date);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        rawMaterialIncomeDao.updateById(entity);
+        //判断审核结果
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            log.info("审核同意，开始更新库存");
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);
+            log.info("生成该客户供货记录");
+            SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), unitPrice,entity.getCount(),tollAmount,date);
+            supplyCustomerPayDao.insert(payEntity);
+            log.info("生成往来账信息");
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getSupplyerCode(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,"system");
+            customerPayDetailService.addPayBySystem(dto);
+        }else{
+            log.info("审核拒绝");
+        }
+        log.info("来料入库审核更新结束");
+        return 1;
+    }
+
 
     /**
      * 赋值来料入库方名称

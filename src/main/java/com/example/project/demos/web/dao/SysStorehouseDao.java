@@ -33,6 +33,7 @@ public interface SysStorehouseDao extends BaseMapper<SysStorehouseEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SysStorehouseInfo selectSysStorehouseInfoById(Long id);
+    SysStorehouseInfo selectSysStorehouseInfoByCode(String code);
 
     int checkCode(@Param("code") String code);
 	

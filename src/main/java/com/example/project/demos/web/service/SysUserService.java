@@ -1,6 +1,10 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.list.SysUserInfo;
 import com.example.project.demos.web.dto.sysUser.*;
+import com.example.project.demos.web.entity.SysUserEntity;
+
+import java.util.List;
 
 /**
  * 用户信息表
@@ -57,5 +61,15 @@ public interface SysUserService {
     ResetPwdOutDTO restPwd(ResetPwdDTO dto);
 
     UpdatePwdOutDTO updatePwd(UpdatePwdDTO dto);
+
+    /**
+     * 通过用户类型和权限类型获取相关人
+     * @param userType
+     * @param roleType
+     * @return
+     */
+    List<SysUserEntity> queryUserListByRoleType(String userType, String roleType);
+
+
 }
 

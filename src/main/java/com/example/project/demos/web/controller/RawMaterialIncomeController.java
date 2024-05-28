@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.net.UnknownHostException;
 
 /**
  * 来料入库维护表(raw_material_income)表控制层
@@ -61,7 +62,7 @@ public class RawMaterialIncomeController extends BaseController{
      */
     @PostMapping("/add")
     @ApiOperation("新增数据")
-    public AddOutDTO add(@RequestBody AddDTO dto) {
+    public AddOutDTO add(@RequestBody AddDTO dto) throws UnknownHostException {
         AddOutDTO outDTO = rawMaterialIncomeService.insert(dto);
         return outDTO;
     }
@@ -74,7 +75,7 @@ public class RawMaterialIncomeController extends BaseController{
      */
     @PostMapping("/edit")
     @ApiOperation("编辑数据")
-    public EditOutDTO edit(@RequestBody EditDTO dto) {
+    public EditOutDTO edit(@RequestBody EditDTO dto) throws UnknownHostException {
         EditOutDTO outDTO = rawMaterialIncomeService.update(dto);
         return outDTO;
     }
@@ -87,7 +88,7 @@ public class RawMaterialIncomeController extends BaseController{
      */
     @PostMapping("/deleteById")
     @ApiOperation("根据ID删除数据")
-    public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
+    public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) throws UnknownHostException {
         DeleteByIdOutDTO outDTO = rawMaterialIncomeService.deleteById(dto);
         return outDTO;
     }
