@@ -235,22 +235,22 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         entity.setApproveTime(date);
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
-        rawMaterialIncomeDao.updateById(entity);
+        int i =rawMaterialIncomeDao.updateById(entity);
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("审核同意，开始更新库存");
-            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);
             log.info("生成该客户供货记录");
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), unitPrice,entity.getCount(),tollAmount,date);
-            supplyCustomerPayDao.insert(payEntity);
+            i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getSupplyerCode(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,"system");
-            customerPayDetailService.addPayBySystem(dto);
+            i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");
         }
         log.info("来料入库审核更新结束");
-        return 1;
+        return i;
     }
 
 
