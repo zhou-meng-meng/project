@@ -4,6 +4,8 @@ package com.example.project.demos.web.service;
 import com.example.project.demos.web.dto.transferOutbound.*;
 
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -54,5 +56,7 @@ public interface TransferOutboundService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    int updateApprove(Long id, String result, String opinion, String userLogin, Date date) ;
 }
 

@@ -30,4 +30,6 @@ public interface ApproveOperationFlowDao extends BaseMapper<ApproveOperationFlow
     int count(QueryByPageDTO queryByPageDTO);
 
     ApproveOperationFlowInfo selectApproveOperationFlowInfoById(Long id);
+
+    int deleteByBusinessId(Long businessId);
 }

@@ -33,4 +33,6 @@ public interface ApproveOperationQueueDao extends BaseMapperPlus<ApproveOperatio
     ApproveOperationQueueInfo selectApproveOperationQueueInfoById(Long id);
 
     int deleteByFlowId(Long flowId);
+
+    int deleteByBusinessId(Long businessId);
 }

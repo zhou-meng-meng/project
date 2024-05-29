@@ -142,6 +142,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(Constants.SYSTEM_CODE);
             newEntity.setCreateTime(new Date());
+            newEntity.setRemark("系统生成");
             i = customerPayDetailDao.insert(newEntity);
         }
         return i;

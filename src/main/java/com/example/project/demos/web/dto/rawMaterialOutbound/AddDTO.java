@@ -16,6 +16,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 单价
@@ -37,12 +39,16 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "出库方编号")
     private String outCode;
+    @ApiModelProperty(value = "出库方名称")
+    private String outName;
 
     /**
      * 领用人
      */
     @ApiModelProperty(value = "领用人")
     private String receiver;
+    @ApiModelProperty(value = "领用人名称")
+    private String receiverName;
 
     /**
      * 领用时间

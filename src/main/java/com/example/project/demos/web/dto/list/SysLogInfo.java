@@ -69,5 +69,7 @@ public class SysLogInfo implements Serializable {
 	private String operationMsg;
 	@ApiModelProperty(value = "IP")
 	private String loginIp;
+	@ApiModelProperty(value = "token")
+	private String token;
 
 }

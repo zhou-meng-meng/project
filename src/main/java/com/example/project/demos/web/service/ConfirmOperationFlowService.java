@@ -51,5 +51,7 @@ public interface ConfirmOperationFlowService  {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
+    int deleteByBusinessId(Long businessId);
+
 }
 

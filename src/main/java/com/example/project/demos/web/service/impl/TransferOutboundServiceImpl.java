@@ -1,29 +1,28 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.SysFactoryDao;
-import com.example.project.demos.web.dao.SysStorehouseDao;
-import com.example.project.demos.web.dao.TransferOutboundDao;
+import com.example.project.demos.web.dao.*;
+import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.list.TransferOutboundInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.dto.transferOutbound.*;
-import com.example.project.demos.web.entity.SysFactoryEntity;
-import com.example.project.demos.web.entity.SysStorehouseEntity;
-import com.example.project.demos.web.entity.TransferOutboundEntity;
-import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.entity.*;
+import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.TransferOutboundService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +42,18 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
 
     @Resource
     private SysStorehouseDao sysStorehouseDao;
+
+    @Autowired
+    private SysLogService sysLogService;
+
+    @Autowired
+    private SysUserService sysUserService;
+    @Resource
+    private ConfirmOperationQueueDao confirmOperationQueueDao;
+    @Resource
+    private ConfirmOperationFlowDao confirmOperationFlowDao;
+    @Autowired
+    private MaterialInventoryService materialInventoryService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -106,7 +117,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -116,60 +127,136 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
 
     @Override
     public AddOutDTO insert(AddDTO dto) {
+        log.info("调拨出库新增开始");
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            TransferOutboundEntity TransferOutboundEntity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
-            TransferOutboundEntity.setCreateBy("zhangyunning");
-            TransferOutboundEntity.setCreateTime(new Date());
-            int i = transferOutboundDao.insert(TransferOutboundEntity);
-            //修改库存
+            log.info("获取调入方具有确认权限的人");
+            String userType = "";
+            String inCode = dto.getInCode();
+            if("F".equals(inCode.substring(0,1))){
+                log.info("调入方为厂区");
+                userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+            }else{
+                log.info("调入方为仓库");
+                userType = UserTypeEnums.USER_TYPE_STORE.getCode();
+            }
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),dto.getInCode());
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                TransferOutboundEntity entity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
+                entity.setCreateBy(user.getUserLogin());
+                entity.setCreateTime(date);
+                entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+                log.info("插入调拨出库表");
+                int i = transferOutboundDao.insert(entity);
+                //生成待确认流水
+                ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),null,user.getUserLogin(),date,null,null,null,null, ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                confirmOperationFlowDao.insert(flowEntity);
+                //生成待确认队列
+                List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),entity.getId(),userEntity.getUserLogin(),FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),user.getUserLogin(),date,null,null);
+                    queueEntityList.add(queueEntity);
+                }
+                confirmOperationQueueDao.insertBatch(queueEntityList);
+            }else{
+                errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getTransferCount().toString()+",调出方:"+dto.getOutName()+",调入方:"+dto.getInName()+",单据号:"+dto.getBillNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("调拨出库新增结束");
         return outDTO;
     }
 
     @Override
     public EditOutDTO update(EditDTO dto) {
+        log.info("调拨出库新增开始");
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            TransferOutboundEntity TransferOutboundEntity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
-            TransferOutboundEntity.setCreateBy("zhangyunning");
-            TransferOutboundEntity.setUpdateTime(new Date());
-            int i = transferOutboundDao.updateById(TransferOutboundEntity);
+            TransferOutboundEntity entity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            log.info("插入调拨出库表");
+            int i = transferOutboundDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getTransferCount().toString()+",调出方:"+dto.getOutName()+",调入方:"+dto.getInName()+",单据号:"+dto.getBillNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("调拨出库新增结束");
         return outDTO;
     }
 
     @Override
     public DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) {
+        log.info("调拨出库删除开始");
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             int i = transferOutboundDao.deleteById(dto.getId());
+            log.info("删除提交的待确认记录");
+            confirmOperationQueueDao.deleteByBusinessId(dto.getId());
+            confirmOperationFlowDao.deleteByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getTransferCount().toString()+",调出方:"+dto.getOutName()+",调入方:"+dto.getInName()+",单据号:"+dto.getBillNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("调拨出库删除结束");
         return outDTO;
+    }
+
+    @Override
+    public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
+        log.info("调拨出库确认更新开始");
+        TransferOutboundEntity entity = transferOutboundDao.selectById(id);
+        entity.setConfirmState(result);
+        entity.setConfirmUser(userLogin);
+        entity.setConfirmOpinion(opinion);
+        entity.setConfirmTime(date);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        int i =transferOutboundDao.updateById(entity);
+        //判断确认结果
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            log.info("确认同意，开始更新调入方库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getTransferCount(),"add",date);
+            log.info("开始更新调出方库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getTransferCount(),"reduce",date);
+        }else{
+            log.info("确认拒绝");
+        }
+        log.info("调拨出库确认更新结束");
+        return i;
     }
 
     /**

@@ -90,5 +90,9 @@
         delete  from confirm_operation_queue where confirm_flow_id = #{flowId}
     </delete>
 
+    <delete id="deleteByBusinessId">
+        delete  from confirm_operation_queue where business_id = #{businessId}
+    </delete>
+
 
 </mapper>

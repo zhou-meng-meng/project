@@ -99,7 +99,6 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try{
             ApproveOperationFlowEntity approveOperationFlowEntity = BeanCopyUtils.copy(dto,ApproveOperationFlowEntity.class);
-
             int i = approveOperationFlowDao.insert(approveOperationFlowEntity);
         }catch (Exception e){
             log.info(e.getMessage());
@@ -146,6 +145,11 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+    @Override
+    public int deleteByBusinessId(Long businessId) {
+        return approveOperationFlowDao.deleteByBusinessId(businessId);
     }
 
 

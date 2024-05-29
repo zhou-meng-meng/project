@@ -74,4 +74,15 @@ public class SalesCustomerPayEntity implements Serializable {
 	 */
 	private String remark;
 
+	public SalesCustomerPayEntity(Long id,Long saleId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal saleCount,BigDecimal tollAmount,Date saleDate){
+		this.id = id;
+		this.saleId = saleId;
+		this.customerCode = customerCode;
+		this.materialCode = materialCode;
+		this.unitPrice = unitPrice;
+		this.saleCount = saleCount;
+		this.tollAmount = tollAmount;
+		this.saleDate = saleDate;
+	}
+
 }

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -30,5 +31,7 @@ public interface RawMaterialIncomeDao extends BaseMapper<RawMaterialIncomeEntity
     int count(QueryByPageDTO queryByPageDTO);
 
     RawMaterialIncomeInfo selectRawMaterialIncomeInfoById(Long id);
+
+    BigDecimal getAvgUnitPriceOfMaterial(@Param("materialCode") String materialCode);
 	
 }

@@ -234,6 +234,9 @@
         FROM   sys_user t
         where  t.status = '0'  and t.user_type = #{userType}
           AND t.role_id IN ( SELECT rt.role_id FROM sys_role_authority_type rt WHERE rt.role_authority_type = #{roleType} )
+        <if test="deptId != null and deptId != ''">
+            and t.dept_id = #{deptId}
+        </if>
     </select>
 
 

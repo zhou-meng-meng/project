@@ -1,6 +1,8 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.approveOperationQueue.DealApproveQueueDTO;
+import com.example.project.demos.web.dto.approveOperationQueue.DealApproveQueueOutDTO;
 import com.example.project.demos.web.dto.confirmOperationQueue.*;
 
 import java.util.Map;
@@ -30,27 +32,16 @@ public interface ConfirmOperationQueueService {
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
 
     /**
-     * 新增数据
-     *
-     * @param dto 实例对象
-     * @return 实例对象
-     */
-    AddOutDTO insert(AddDTO dto);
-
-    /**
-     * 修改数据
-     *
-     * @param dto 实例对象
-     * @return 实例对象
-     */
-    //EditOutDTO update(EditDTO dto);
-
-    /**
      * 通过主键删除数据
      *
      * @param dto 主键
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    int deleteByBusinessId(Long businessId);
+
+    DealConfirmQueueOutDTO dealConfirmQueue(DealConfirmQueueDTO dto) ;
+
 }
 

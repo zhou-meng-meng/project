@@ -22,6 +22,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 入库数量
@@ -33,6 +35,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "生产员工")
     private String producer;
+    @ApiModelProperty(value = "生产员工姓名")
+    private String producerName;
 
     /**
      * 生产日期
@@ -45,6 +49,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "厂区编号")
     private String factoryCode;
+    @ApiModelProperty(value = "厂区名称")
+    private String factoryName;
 
     /**
      * 备注

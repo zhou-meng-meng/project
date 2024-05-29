@@ -17,6 +17,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 出库数量
@@ -35,12 +37,16 @@ public class AddDTO {
     private BigDecimal tollAmount;
     @ApiModelProperty(value = "购货客户编号")
     private String customerCode;
+    @ApiModelProperty(value = "购货客户名称")
+    private String customerName;
 
     /**
      * 出库方编号
      */
     @ApiModelProperty(value = "出库方编号")
     private String outCode;
+    @ApiModelProperty(value = "出库方名称")
+    private String outName;
 
     /**
      * 销售员英文名
@@ -70,6 +76,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "运输方式")
     private String transportType;
+    @ApiModelProperty(value = "运输方式")
+    private String transportTypeName;
     /**
      * 运费
      */

@@ -61,6 +61,7 @@ public class SalesOutboundEntity implements Serializable {
 	 * 审批状态
 	 */
 	private String approveState;
+	private Date approveTime;
 	/**
 	 * 审批意见
 	 */

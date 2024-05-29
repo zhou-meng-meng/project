@@ -53,6 +53,13 @@ public interface ApproveOperationFlowService  {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
+    /**
+     * 录入员提交的待审核数据   删除时  需要将待审核流水也删除掉
+     * @param businessid
+     * @return
+     */
+    int deleteByBusinessId(Long businessid);
+
 
 }
 

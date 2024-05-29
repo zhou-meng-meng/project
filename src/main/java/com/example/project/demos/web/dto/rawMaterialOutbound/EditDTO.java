@@ -23,33 +23,30 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
-    /**
-     * 单价
-     */
-    @ApiModelProperty(value = "单价")
-    private BigDecimal unitPrice;
     /**
      * 出库数量
      */
     @ApiModelProperty(value = "出库数量")
     private BigDecimal count;
-    /**
-     * 总金额
-     */
-    @ApiModelProperty(value = "总金额")
-    private BigDecimal tollAmount;
+
     /**
      * 出库方编号
      */
     @ApiModelProperty(value = "出库方编号")
     private String outCode;
+    @ApiModelProperty(value = "出库方编号")
+    private String outName;
 
     /**
      * 领用人
      */
     @ApiModelProperty(value = "领用人")
     private String receiver;
+    @ApiModelProperty(value = "领用人")
+    private String receiverName;
 
     /**
      * 领用时间

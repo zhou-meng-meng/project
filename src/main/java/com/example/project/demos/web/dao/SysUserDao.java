@@ -43,6 +43,8 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
 
     int selectUserByPwd(@Param(value = "id") Long id,@Param(value = "password") String password);
 
-    List<SysUserEntity> queryUserListByRoleType(@Param(value = "userType") String userType,@Param(value = "roleType") String roleType);
+    List<SysUserEntity> queryUserListByRoleType(@Param(value = "userType") String userType,
+                                                @Param(value = "roleType") String roleType,
+                                                @Param(value = "deptId") String deptId);
 
 }

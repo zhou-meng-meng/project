@@ -22,6 +22,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 调拨数量
@@ -43,37 +45,22 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "单据号")
     private String billNo;
-    /**
-     * 单据(确认)状态
-     */
-    @ApiModelProperty(value = "单据(确认)状态 0-未确认 ;1-已确认；2-拒绝确认")
-    private String confirmState;
-
-
-    /**
-     * 单据(确认)状态时间
-     */
-    @ApiModelProperty(value = "单据(确认)状态时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date confirmTime;
-
-    /**
-     * 单据(确认)理由
-     */
-    @ApiModelProperty(value = "单据(确认)理由")
-    private String confirmOpinion;
 
     /**
      * 调出厂(仓库)编号
      */
     @ApiModelProperty(value = "调出厂(仓库)编号")
     private String outCode;
+    @ApiModelProperty(value = "调出厂(仓库)名称")
+    private String outName;
 
     /**
      * 调入厂（仓库）编号
      */
     @ApiModelProperty(value = "调入厂（仓库）编号")
     private String inCode;
+    @ApiModelProperty(value = "调入厂（仓库）名称")
+    private String inName;
 
 
     /**

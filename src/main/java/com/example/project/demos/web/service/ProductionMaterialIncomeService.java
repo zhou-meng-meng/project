@@ -2,6 +2,8 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.productionMaterialIncome.*;
 
+import java.net.UnknownHostException;
+
 /**
  * 
  *
@@ -33,7 +35,7 @@ public interface ProductionMaterialIncomeService  {
      * @param dto 实例对象
      * @return 实例对象
      */
-    AddOutDTO insert(AddDTO dto);
+    AddOutDTO insert(AddDTO dto) ;
 
     /**
      * 修改数据
@@ -41,7 +43,7 @@ public interface ProductionMaterialIncomeService  {
      * @param dto 实例对象
      * @return 实例对象
      */
-    EditOutDTO update(EditDTO dto);
+    EditOutDTO update(EditDTO dto) ;
 
     /**
      * 通过主键删除数据
@@ -49,6 +51,6 @@ public interface ProductionMaterialIncomeService  {
      * @param dto 主键
      * @return 是否成功
      */
-    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) ;
 }
 

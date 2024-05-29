@@ -22,6 +22,6 @@ public interface SysLogService  {
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
 
-    int insertSysLog(String functionId, String operationType, String userCode, Date operationTime,String operationInfo,String operationResult,String operationMsg,String remark) throws UnknownHostException;
+    int insertSysLog(String functionId, String operationType, String userCode, Date operationTime,String operationInfo,String operationResult,String operationMsg,String ip,String token,String remark);
 }
 

@@ -3,6 +3,9 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.salesOutbound.*;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  * 销售出库表
  *
@@ -51,5 +54,7 @@ public interface SalesOutboundService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
 }
 

@@ -128,4 +128,8 @@
         where  t.id = #{id}
     </select>
 
+    <delete id="deleteByBusinessId">
+        delete  from confirm_operation_flow where business_id = #{businessId}
+    </delete>
+
 </mapper>

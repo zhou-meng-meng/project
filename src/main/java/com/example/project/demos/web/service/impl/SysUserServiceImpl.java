@@ -372,8 +372,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
     }
 
     @Override
-    public List<SysUserEntity> queryUserListByRoleType(String userType, String roleType) {
-        return sysUserDao.queryUserListByRoleType(userType,roleType);
+    public List<SysUserEntity> queryUserListByRoleType(String userType, String roleType,String deptId) {
+        return sysUserDao.queryUserListByRoleType(userType,roleType,deptId);
     }
 
 

@@ -7,6 +7,7 @@ import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dao.SysStorehouseDao;
 import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.materialInventory.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialInventoryEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
@@ -127,11 +128,11 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
      * @throws UnknownHostException
      */
     @Override
-    public int updateStockInventory(String materialCode, String code, BigDecimal num, String type, Date date) throws UnknownHostException {
+    public int updateStockInventory(String materialCode, String code, BigDecimal num, String type, Date date)  {
         log.info("更新库存开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
-        String userLogin = RequestHolder.getUserInfo().getUserLogin();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         String storeName="";
         MaterialInfo mInfo = null;
         try{
@@ -171,7 +172,7 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         }
         //记录日志
         String info = "物料编号:"+materialCode+",物料名称:"+mInfo.getName()+",数量:"+num.toString()+",仓库/厂区:"+storeName;
-        int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),userLogin,date,info,errorCode,errortMsg,"system");
+        int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("更新库存结束");
         return i;
     }

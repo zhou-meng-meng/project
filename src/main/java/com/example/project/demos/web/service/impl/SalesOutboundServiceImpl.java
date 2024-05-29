@@ -1,30 +1,30 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.SalesOutboundDao;
-import com.example.project.demos.web.dao.SysFactoryDao;
-import com.example.project.demos.web.dao.SysStorehouseDao;
+import com.example.project.demos.web.dao.*;
+import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.salesOutbound.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
-import com.example.project.demos.web.entity.SalesOutboundEntity;
-import com.example.project.demos.web.entity.SysFactoryEntity;
-import com.example.project.demos.web.entity.SysStorehouseEntity;
-import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.entity.*;
+import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.SalesOutboundService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +42,26 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
     @Resource
     private SysStorehouseDao sysStorehouseDao;
 
+    @Resource
+    private ApproveOperationFlowDao approveOperationFlowDao;
+    @Resource
+    private ApproveOperationQueueDao approveOperationQueueDao;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+    @Autowired
+    private SysLogService sysLogService;
+
+    @Autowired
+    private MaterialInventoryService materialInventoryService;
+
+    @Autowired
+    private CustomerPayDetailService customerPayDetailService;
+
+    @Resource
+    private SalesCustomerPayDao salesCustomerPayDao;
+
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -54,6 +74,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             List<SalesOutboundInfo> list = new ArrayList<>();
             list.add(SalesOutboundInfo);
             list = setSalesOutboundObject(list);
+            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -88,8 +109,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                     queryByPageDTO.setSaler(user.getUserLogin());
                 }
             }else{
-                log.info("当前登录人不属于总公司，只能查看自己提交的数据");
-                queryByPageDTO.setSaler(user.getUserLogin());
+                log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库提交的数据");
+                queryByPageDTO.setOutCode(user.getDeptId());
             }
             //先用查询条件查询总条数
             long total = this.salesOutboundDao.count(queryByPageDTO);
@@ -104,6 +125,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 List<SalesOutboundInfo> list = page.toList();
                 //赋值出库方名称
                 list = setSalesOutboundObject(list);
+                list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
                 //出参赋值
                 outDTO.setSalesOutboundInfoList(list);
             }
@@ -120,23 +142,46 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
     }
 
 
-
     @Override
     public AddOutDTO insert(AddDTO dto) {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SalesOutboundEntity SalesOutboundEntity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
-            SalesOutboundEntity.setCreateBy("zhangyunning");
-            SalesOutboundEntity.setCreateTime(new Date());
-            int i = salesOutboundDao.insert(SalesOutboundEntity);
-            //修改库存
+            log.info("查询总公司具有审核权限的人员");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                SalesOutboundEntity entity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
+                //设置 审核状态 创建人和创建时间
+                entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
+                entity.setCreateBy(user.getUserLogin());
+                entity.setCreateTime(date);
+                log.info("插入销售出库表");
+                int i = salesOutboundDao.insert(entity);
+                log.info("生成审核流水记录");
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.SALES_OUTBOUND.getCode(),user.getUserLogin(),date,"system");
+                approveOperationFlowDao.insert(flowEntity);
+                log.info("生成审核队列记录");
+                List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALES_OUTBOUND.getCode(),userEntity.getUserLogin(),user.getUserLogin(),date,"system");
+                    queueEntityList.add(queueEntity);
+                }
+                approveOperationQueueDao.insertBatch(queueEntityList);
+            }else{
+                errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getOutCount().toString()+",购货方:"+dto.getCustomerName()+",出库方:"+dto.getOutName()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight().toString()+",单据号:"+dto.getBillNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -147,16 +192,21 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SalesOutboundEntity SalesOutboundEntity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
-            SalesOutboundEntity.setCreateBy("zhangyunning");
-            SalesOutboundEntity.setUpdateTime(new Date());
-            int i = salesOutboundDao.updateById(SalesOutboundEntity);
+            SalesOutboundEntity entity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = salesOutboundDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getOutCount().toString()+",购货方:"+dto.getCustomerName()+",出库方:"+dto.getOutName()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight().toString()+",单据号:"+dto.getBillNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -174,10 +224,45 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        //记录操作日志
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getOutCount().toString()+",购货方:"+dto.getCustomerName()+",出库方:"+dto.getOutName()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight().toString()+",单据号:"+dto.getBillNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
+
+    @Override
+    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice,BigDecimal tollAmount, Date date)  {
+        log.info("销售出库审核更新开始");
+        SalesOutboundEntity  entity = salesOutboundDao.selectById(id);
+        entity.setUnitPrice(unitPrice);
+        entity.setTollAmount(tollAmount);
+        entity.setApproveState(result);
+        entity.setApproveOpinion(opinion);
+        entity.setApproveTime(date);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        int i =salesOutboundDao.updateById(entity);
+        //判断审核结果
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            log.info("审核同意，开始更新库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);
+            log.info("生成该客户销售记录");
+            SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getOutCount(),tollAmount,date);
+            i = salesCustomerPayDao.insert(payEntity);
+            log.info("生成往来账信息");
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,"system");
+            i = customerPayDetailService.addPayBySystem(dto);
+        }else{
+            log.info("审核拒绝");
+        }
+        log.info("销售出库审核更新结束");
+        return i;
+    }
+
 
     /**
      * 赋值销售出库方名称
@@ -205,6 +290,26 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                         info.setOutName(sInfo.getName());
                     }
                 }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
+     * @param list
+     * @param userInfo
+     * @return
+     */
+    private List<SalesOutboundInfo> formatPriceByRoleType(List<SalesOutboundInfo> list, UserLoginOutDTO userInfo){
+        List<String> typeList = userInfo.getAuthorityType();
+        if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+            log.info("具有单价权限,不处理");
+        }else{
+            log.info("没有单价权限，将单价和总金额置为0");
+            for(SalesOutboundInfo info : list){
+                info.setUnitPrice(new BigDecimal(0));
+                info.setTollAmount(new BigDecimal(0));
             }
         }
         return list;

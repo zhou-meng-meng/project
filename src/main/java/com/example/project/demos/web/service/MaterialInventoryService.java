@@ -33,7 +33,7 @@ public interface MaterialInventoryService  {
      */
     int checkIfMaterialCodeExist(String materialCode,String code);
 
-    int updateStockInventory(String materialCode, String code, BigDecimal num,String type, Date date) throws UnknownHostException;
+    int updateStockInventory(String materialCode, String code, BigDecimal num,String type, Date date) ;
 
 
 }

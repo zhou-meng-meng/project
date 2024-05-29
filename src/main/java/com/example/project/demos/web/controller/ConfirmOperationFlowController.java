@@ -1,7 +1,7 @@
 package com.example.project.demos.web.controller;
 
-import com.example.project.demos.web.dto.productionMaterialIncome.*;
-import com.example.project.demos.web.service.ProductionMaterialIncomeService;
+import com.example.project.demos.web.dto.confirmOperationFlow.*;
+import com.example.project.demos.web.service.ConfirmOperationFlowService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.net.UnknownHostException;
 
 /**
- * 产量入库维护表(production_material_income)表控制层
+ * 确认流水表
  *
- * @author makejava
- * @since 2024-02-26 20:37:53
+ * @author Mark
+ * @email sunlightcs@gmail.com
+ * @date 2024-05-08 17:08:07
  */
 @RestController
-@RequestMapping("productionMaterialIncome")
-@Api(tags="产量入库维护表")
-public class ProductionMaterialIncomeController extends BaseController{
+@RequestMapping("confirmOperationFlow")
+@Api(tags="确认记录查询-确认流水")
+public class ConfirmOperationFlowController {
     /**
      * 服务对象
      */
     @Resource
-    private ProductionMaterialIncomeService productionMaterialIncomeService;
+    private ConfirmOperationFlowService confirmOperationFlowService;
 
     /**
      * 分页查询
@@ -34,10 +34,10 @@ public class ProductionMaterialIncomeController extends BaseController{
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    @PostMapping("/queryPageList")
+    @PostMapping("/queryConfirmOperationFlowList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
-        QueryByPageOutDTO outDTO = this.productionMaterialIncomeService.queryByPage(queryByPageDTO);
+        QueryByPageOutDTO outDTO = this.confirmOperationFlowService.queryByPage(queryByPageDTO);
         return outDTO;
     }
 
@@ -50,7 +50,7 @@ public class ProductionMaterialIncomeController extends BaseController{
     @PostMapping("/queryById")
     @ApiOperation("通过主键查询单条数据")
     public QueryByIdOutDTO queryById(@RequestBody QueryByIdDTO dto) {
-        QueryByIdOutDTO outDTO = this.productionMaterialIncomeService.queryById(dto.getId());
+        QueryByIdOutDTO outDTO = this.confirmOperationFlowService.queryById(dto.getId());
         return outDTO;
     }
 
@@ -62,8 +62,8 @@ public class ProductionMaterialIncomeController extends BaseController{
      */
     @PostMapping("/add")
     @ApiOperation("新增数据")
-    public AddOutDTO add(@RequestBody AddDTO dto) throws UnknownHostException {
-        AddOutDTO outDTO = productionMaterialIncomeService.insert(dto);
+    public AddOutDTO add(@RequestBody AddDTO dto) {
+        AddOutDTO outDTO = confirmOperationFlowService.insert(dto);
         return outDTO;
     }
 
@@ -75,8 +75,8 @@ public class ProductionMaterialIncomeController extends BaseController{
      */
     @PostMapping("/edit")
     @ApiOperation("编辑数据")
-    public EditOutDTO edit(@RequestBody EditDTO dto) throws UnknownHostException {
-        EditOutDTO outDTO = productionMaterialIncomeService.update(dto);
+    public EditOutDTO edit(@RequestBody EditDTO dto) {
+        EditOutDTO outDTO = confirmOperationFlowService.update(dto);
         return outDTO;
     }
 
@@ -88,10 +88,9 @@ public class ProductionMaterialIncomeController extends BaseController{
      */
     @PostMapping("/deleteById")
     @ApiOperation("根据ID删除数据")
-    public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) throws UnknownHostException {
-        DeleteByIdOutDTO outDTO = productionMaterialIncomeService.deleteById(dto);
+    public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
+        DeleteByIdOutDTO outDTO = confirmOperationFlowService.deleteById(dto);
         return outDTO;
     }
 
 }
-

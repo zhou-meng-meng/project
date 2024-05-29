@@ -91,4 +91,19 @@ public class ConfirmOperationFlowEntity implements Serializable {
 	 */
 	private String remark;
 
+	public ConfirmOperationFlowEntity(Long id,Long businessId,String functionId,Long approveOperationId,String submitUser,Date submitTime,String approveUser,Date approveTime,String approveState,String approveOpinion,String confirmState,String remark){
+		this.id = id;
+		this.businessId = businessId;
+		this.functionId = functionId;
+		this.approveOperationId = approveOperationId;
+		this.submitUser = submitUser;
+		this.submitTime = submitTime;
+		this.approveUser = approveUser;
+		this.approveState = approveState;
+		this.approveTime = approveTime;
+		this.approveOpinion = approveOpinion;
+		this.confirmState = confirmState;
+		this.remark = remark;
+	}
+
 }

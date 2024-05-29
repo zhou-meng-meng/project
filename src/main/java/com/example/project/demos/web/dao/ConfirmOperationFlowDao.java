@@ -30,4 +30,6 @@ public interface ConfirmOperationFlowDao extends BaseMapper<ConfirmOperationFlow
     int count(QueryByPageDTO queryByPageDTO);
 
     ConfirmOperationFlowInfo selectConfirmOperationFlowInfoById(Long id);
+
+    int deleteByBusinessId(Long businessId);
 }

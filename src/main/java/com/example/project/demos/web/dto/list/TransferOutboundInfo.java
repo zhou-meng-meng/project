@@ -67,6 +67,10 @@ public class TransferOutboundInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "单据号")
 	private String billNo;
+	@ApiModelProperty(value = "确认人英文名")
+	private String confirmUser;
+	@ApiModelProperty(value = "确认人姓名")
+	private String confirmUserName;
 	/**
 	 * 单据(确认)状态
 	 */

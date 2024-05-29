@@ -71,7 +71,7 @@ public class SysLogServiceImpl implements SysLogService {
     }
 
     @Override
-    public int insertSysLog(String functionId, String operationType, String userCode, Date operationTime, String operationInfo, String operationResult, String operationMsg, String remark) {
+    public int insertSysLog(String functionId, String operationType, String userCode, Date operationTime, String operationInfo, String operationResult, String operationMsg, String ip,String token,String remark) {
         log.info("生成操作日志开始");
         int i = 0;
         try {
@@ -83,10 +83,8 @@ public class SysLogServiceImpl implements SysLogService {
             entity.setOperationInfo(operationInfo);
             entity.setOperationResult(operationResult);
             entity.setOperationMsg(operationMsg);
-            //获取本地ip
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            String ipAddress = inetAddress.getHostAddress();
-            entity.setLoginIp(ipAddress);
+            entity.setLoginIp(ip);
+            entity.setToken(token);
             i = sysLogDao.insert(entity);
         }catch (Exception e){
             log.info(e.getMessage());

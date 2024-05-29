@@ -44,14 +44,12 @@ public class TransferOutboundEntity implements Serializable {
 	 * 调拨日期
 	 */
 	private String transferDate;
-	/**
-	 * 单位
-	 */
-	private String unit;
+
 	/**
 	 * 单据号
 	 */
 	private String billNo;
+	private String confirmUser;
 	/**
 	 * 单据(确认)状态
 	 */

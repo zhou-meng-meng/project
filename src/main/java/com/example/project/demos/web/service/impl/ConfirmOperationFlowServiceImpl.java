@@ -136,5 +136,10 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
         return outDTO;
     }
 
+    @Override
+    public int deleteByBusinessId(Long businessId) {
+        return confirmOperationFlowDao.deleteByBusinessId(businessId);
+    }
+
 
 }

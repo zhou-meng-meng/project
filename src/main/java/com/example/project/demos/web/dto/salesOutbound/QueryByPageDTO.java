@@ -15,6 +15,8 @@ public class QueryByPageDTO {
 
     @ApiModelProperty(value = "单据号")
     private String billNo;
+    @ApiModelProperty(value = "出库方编号")
+    private String outCode;
 
     @ApiModelProperty(value = "销售员登录名")
     private String saler;

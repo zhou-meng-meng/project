@@ -81,5 +81,9 @@
         delete  from approve_operation_queue where operation_flow_id = #{flowId}
     </delete>
 
+    <delete id="deleteByBusinessId">
+        delete  from approve_operation_queue t where  t.business_id = #{businessId}
+    </delete>
+
 
 </mapper>

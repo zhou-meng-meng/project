@@ -57,4 +57,16 @@ public class ConfirmOperationQueueEntity implements Serializable {
 	 */
 	private Date approveTime;
 
+	public ConfirmOperationQueueEntity(Long id,Long confirmFlowId,Long businessId,String confirmUser,String functionId,String submitUser,Date submitTime,String approveUser,Date approveTime){
+		this.id = id;
+		this.businessId = businessId;
+		this.functionId = functionId;
+		this.confirmFlowId = confirmFlowId;
+		this.submitUser = submitUser;
+		this.submitTime = submitTime;
+		this.confirmUser = confirmUser;
+		this.approveUser = approveUser;
+		this.approveTime = approveTime;
+	}
+
 }

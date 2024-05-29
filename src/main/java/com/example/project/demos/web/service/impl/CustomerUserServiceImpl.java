@@ -12,7 +12,6 @@ import com.example.project.demos.web.dao.CustomerUserDao;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.CustomerUserService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
-import com.example.project.demos.web.utils.PageQuery;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

@@ -113,5 +113,9 @@
         where  t.id = #{id}
     </select>
 
+    <delete id="deleteByBusinessId">
+        delete  from approve_operation_flow t where  t.business_id = #{businessId}
+    </delete>
+
 
 </mapper>

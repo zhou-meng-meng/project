@@ -15,6 +15,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 调拨数量
@@ -42,12 +44,16 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "调出厂(仓库)编号")
     private String outCode;
+    @ApiModelProperty(value = "调出厂(仓库)名称")
+    private String outName;
 
     /**
      * 调入厂（仓库）编号
      */
     @ApiModelProperty(value = "调入厂（仓库）编号")
     private String inCode;
+    @ApiModelProperty(value = "调入厂（仓库）名称")
+    private String inName;
 
     /**
      * 备注

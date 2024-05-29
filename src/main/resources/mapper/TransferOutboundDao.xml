@@ -11,6 +11,7 @@
         <result property="transferType" column="transfer_type"/>
         <result property="transferDate" column="transfer_date"/>
         <result property="billNo" column="bill_no"/>
+        <result property="confirmUser" column="confirm_user"/>
         <result property="confirmState" column="confirm_state"/>
         <result property="confirmTime" column="confirm_time"/>
         <result property="confirmOpinion" column="confirm_opinion"/>
@@ -39,6 +40,8 @@
         t.bill_no,
         t.confirm_state,
         d1.dict_value confirmStateName,
+        t.confirm_user,
+        u2.user_name AS confirmUserName,
         t.confirm_time,
         t.confirm_opinion,
         t.out_code,
@@ -53,6 +56,7 @@
         FROM	transfer_outbound t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.confirm_user
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_dict_data d ON d.dict_code = t.transfer_type and  d.dict_type = 'transfer_type'
         LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.confirm_state and  d1.dict_type = 'confirm_state'
@@ -133,6 +137,8 @@
         t.bill_no,
         t.confirm_state,
         d1.dict_value confirmStateName,
+        t.confirm_user,
+        u2.user_name AS confirmUserName,
         t.confirm_time,
         t.confirm_opinion,
         t.out_code,
@@ -147,6 +153,7 @@
         FROM	transfer_outbound t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.confirm_user
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_dict_data d ON d.dict_code = t.transfer_type and  d.dict_type = 'transfer_type'
         LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.confirm_state and  d1.dict_type = 'confirm_state'

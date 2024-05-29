@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.ApproveOperationFlowDao;
 import com.example.project.demos.web.dao.ApproveOperationQueueDao;
 import com.example.project.demos.web.dto.approveOperationQueue.*;
@@ -15,15 +16,14 @@ import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.ApproveOperationQueueService;
 import com.example.project.demos.web.service.RawMaterialIncomeService;
+import com.example.project.demos.web.service.SalesOutboundService;
 import com.example.project.demos.web.service.SysLogService;
-import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -41,6 +41,8 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     private RawMaterialIncomeService rawMaterialIncomeService;
     @Autowired
     private SysLogService sysLogService;
+    @Autowired
+    private SalesOutboundService salesOutboundService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -102,25 +104,28 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     }
 
     @Override
-    public DealApproveQueueOutDTO dealApproveQueue(DealApproveQueueDTO dto) throws UnknownHostException {
+    public DealApproveQueueOutDTO dealApproveQueue(DealApproveQueueDTO dto)  {
         log.info("审核提交开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         DealApproveQueueOutDTO outDTO = new DealApproveQueueOutDTO();
         log.info("获取流水详情");
         ApproveOperationQueueEntity entity = approveOperationQueueDao.selectById(dto.getId());
-        String userLogin = RequestHolder.getUserInfo().getUserLogin();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         Date date = new Date();
         try{
             String functionId = entity.getFunctionId();
             Long businessId = entity.getBusinessId();
             if(functionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode())){
                 log.info("来料入库操作");
-                rawMaterialIncomeService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),userLogin,dto.getUnitPrice(),dto.getTollAmount(),date);
+                rawMaterialIncomeService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+            }else if(functionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode())){
+                log.info("销售出库操作");
+                salesOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
             }
             log.info("更新审核流水表");
             ApproveOperationFlowEntity flowEntity = approveOperationFlowDao.selectById(entity.getOperationFlowId());
-            flowEntity.setApproveUser(userLogin);
+            flowEntity.setApproveUser(user.getUserLogin());
             flowEntity.setApproveState(dto.getResult());
             flowEntity.setApproveTime(date);
             flowEntity.setApproveOpinion(dto.getOpinion());
@@ -134,14 +139,12 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
         }
         //记录审核日志
         String info = "业务类型:"+FunctionTypeEnums.getDescByCode(entity.getFunctionId())+",审核结果:"+ ApproveConfirmResultEnums.getDescByCode(dto.getResult()) +",审核意见:"+dto.getOpinion();
-        int i =sysLogService.insertSysLog(FunctionTypeEnums.APPROVE_OPERATION_FLOW.getCode(), OperationTypeEnums.OPERATION_TYPE_APPROVE.getCode(),userLogin,date,info,errorCode,errortMsg,"system");
+        int i =sysLogService.insertSysLog(FunctionTypeEnums.APPROVE_OPERATION_FLOW.getCode(), OperationTypeEnums.OPERATION_TYPE_APPROVE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(), user.getToken(),Constants.SYSTEM_CODE);
         log.info("审核提交结束");
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
-
-
 
     @Override
     public int deleteByFlowId(Long flowId) {
@@ -149,6 +152,11 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
         int i = approveOperationQueueDao.deleteByFlowId(flowId);
         log.info("删除审核队列结束");
         return i;
+    }
+
+    @Override
+    public int deleteByBusinessId(Long businessId) {
+        return approveOperationQueueDao.deleteByBusinessId(businessId);
     }
 
 

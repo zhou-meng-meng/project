@@ -68,7 +68,7 @@ public interface SysUserService {
      * @param roleType
      * @return
      */
-    List<SysUserEntity> queryUserListByRoleType(String userType, String roleType);
+    List<SysUserEntity> queryUserListByRoleType(String userType, String roleType,String deptId);
 
 
 }

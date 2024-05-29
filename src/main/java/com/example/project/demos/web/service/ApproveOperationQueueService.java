@@ -29,8 +29,15 @@ public interface ApproveOperationQueueService {
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
 
-    DealApproveQueueOutDTO dealApproveQueue(DealApproveQueueDTO dto) throws UnknownHostException;
+    DealApproveQueueOutDTO dealApproveQueue(DealApproveQueueDTO dto) ;
 
     int deleteByFlowId(Long flowId);
+
+    /**
+     * 录入员提交的待审核数据   删除时  需要将待审核队列也删除掉
+     * @param businessid
+     * @return
+     */
+    int deleteByBusinessId(Long businessid);
 }
 
