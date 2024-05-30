@@ -40,5 +40,22 @@ public class MaterialInventoryController extends BaseController{
         return outDTO;
     }
 
+
+    /**
+     * 分页查询
+     *
+     * @param dto 筛选条件
+     * @return 查询结果
+     */
+    @PostMapping("/queryPagePopList")
+    @ApiOperation("弹窗查询列表(分页)")
+    public QueryByPagePopOutDTO queryPagePopList(@RequestBody QueryByPagePopDTO dto) {
+        QueryByPagePopOutDTO outDTO = this.MaterialInventoryService.queryPagePopList(dto);
+        return outDTO;
+    }
+
+
+
+
 }
 

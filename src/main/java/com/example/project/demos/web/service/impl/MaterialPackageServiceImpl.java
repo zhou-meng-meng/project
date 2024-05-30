@@ -1,5 +1,6 @@
 package com.example.project.demos.web.service.impl;
 
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.MaterialPackageDao;
 import com.example.project.demos.web.dto.list.MaterialPackageDetailInfo;
 import com.example.project.demos.web.dto.list.MaterialPackageInfo;
@@ -7,10 +8,13 @@ import com.example.project.demos.web.dto.materialPackage.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialPackageEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.enums.UserTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialPackageDetailService;
 import com.example.project.demos.web.service.MaterialPackageService;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +33,10 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
 
     @Resource
     private MaterialPackageDao materialPackageDao;
-
     @Autowired
     private MaterialPackageDetailService materialPackageDetailService;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -94,7 +99,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -107,18 +112,23 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            MaterialPackageEntity materialPackageEntity = BeanCopyUtils.copy(dto,MaterialPackageEntity.class);
-            materialPackageEntity.setCreateBy("zhangyunning");
-            materialPackageEntity.setCreateTime(new Date());
-            int i = materialPackageDao.insert(materialPackageEntity);
+            MaterialPackageEntity entity = BeanCopyUtils.copy(dto,MaterialPackageEntity.class);
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            int i = materialPackageDao.insert(entity);
             log.info("添加装袋明细表");
-            materialPackageDetailService.insertBatch(materialPackageEntity.getId(),dto.getDetailInfoList());
+            materialPackageDetailService.insertBatch(entity.getId(),dto.getDetailInfoList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -129,20 +139,25 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            MaterialPackageEntity materialPackageEntity = BeanCopyUtils.copy(dto,MaterialPackageEntity.class);
-            materialPackageEntity.setCreateBy("zhangyunning");
-            materialPackageEntity.setUpdateTime(new Date());
-            int i = materialPackageDao.updateById(materialPackageEntity);
+            MaterialPackageEntity entity = BeanCopyUtils.copy(dto,MaterialPackageEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = materialPackageDao.updateById(entity);
             log.info("先删除原装袋表明细");
             materialPackageDetailService.deleteByPackageId(dto.getId());
             log.info("重新插入装袋表明细");
-            materialPackageDetailService.insertBatch(materialPackageEntity.getId(),dto.getDetailInfoList());
+            materialPackageDetailService.insertBatch(entity.getId(),dto.getDetailInfoList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        //记录操作日志
+        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -153,6 +168,8 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = materialPackageDao.deleteById(dto.getId());
             log.info("删除装袋明细");
@@ -162,6 +179,9 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        //记录操作日志
+        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;

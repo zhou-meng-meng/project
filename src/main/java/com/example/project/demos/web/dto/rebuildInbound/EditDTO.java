@@ -1,6 +1,8 @@
-package com.example.project.demos.web.dto.rebuildOutbound;
+package com.example.project.demos.web.dto.rebuildInbound;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,8 +10,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class AddDTO {
-
+public class EditDTO {
+    /**
+     * 自增主键
+     */
+    @ApiModelProperty(value = "自增主键")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
     /**
      * 物料编号
      */
@@ -26,20 +33,19 @@ public class AddDTO {
     /**
      * 重造时间
      */
-    @ApiModelProperty(value = "重造时间")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @ApiModelProperty(value = "重造日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date rebuildDate;
-    @ApiModelProperty(value = "出库方编号")
-    private String outCode;
-    @ApiModelProperty(value = "出库方名称")
-    private String outName;
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
+    @ApiModelProperty(value = "入库方名称")
+    private String inName;
     @ApiModelProperty(value = "班组编号")
     private String dutyCode;
     @ApiModelProperty(value = "班组名称")
     private String dutyName;
     @ApiModelProperty(value = "机器号")
     private String machineCode;
-
 
     /**
      * 单据号

@@ -22,6 +22,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "厂区编号")
     private String factoryCode;
+    @ApiModelProperty(value = "厂区名称")
+    private String factoryName;
     /**
      * 班组日期
      */
@@ -33,6 +35,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "班组 0-白班 1-中班 2-夜班")
     private String dutyCode;
+    @ApiModelProperty(value = "班组名称")
+    private String dutyName;
     /**
      * 机器编号
      */

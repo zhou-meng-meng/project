@@ -214,7 +214,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             int i = rawMaterialIncomeDao.deleteById(dto.getId());
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
-            approveOperationQueueDao.deleteByFlowId(dto.getId());
+            approveOperationQueueDao.deleteByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

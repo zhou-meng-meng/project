@@ -1,7 +1,5 @@
 package com.example.project.demos.web.dto.list;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -20,7 +18,7 @@ import java.util.Date;
  * @date 2024-05-11 11:13:27
  */
 @Data
-public class RebuildOutboundInfo implements Serializable {
+public class RebuildInboundInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -59,10 +57,10 @@ public class RebuildOutboundInfo implements Serializable {
 	/**
 	 * 入库方编号
 	 */
-	@ApiModelProperty(value = "出库方编号")
-	private String outCode;
-	@ApiModelProperty(value = "出库方名称")
-	private String outName;
+	@ApiModelProperty(value = "入库方编号")
+	private String inCode;
+	@ApiModelProperty(value = "入库方名称")
+	private String inName;
 	@ApiModelProperty(value = "班组编号")
 	private String dutyCode;
 	@ApiModelProperty(value = "班组名称")

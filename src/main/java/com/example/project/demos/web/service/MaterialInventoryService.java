@@ -1,8 +1,7 @@
 package com.example.project.demos.web.service;
 
 
-import com.example.project.demos.web.dto.materialInventory.QueryByPageDTO;
-import com.example.project.demos.web.dto.materialInventory.QueryByPageOutDTO;
+import com.example.project.demos.web.dto.materialInventory.*;
 
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
@@ -24,6 +23,7 @@ public interface MaterialInventoryService  {
      * @return 查询结果
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPagePopOutDTO queryPagePopList(QueryByPagePopDTO queryByPageDTO);
 
     /**
      *

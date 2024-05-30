@@ -22,6 +22,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * 重造出库数量
@@ -31,14 +33,19 @@ public class EditDTO {
     /**
      * 重造时间
      */
-    @ApiModelProperty(value = "重造时间")
+    @ApiModelProperty(value = "重造日期")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date rebuildDate;
-    /**
-     * 入库方编号
-     */
-    @ApiModelProperty(value = "入库方编号")
-    private String inCode;
+    @ApiModelProperty(value = "出库方编号")
+    private String outCode;
+    @ApiModelProperty(value = "出库方名称")
+    private String outName;
+    @ApiModelProperty(value = "班组编号")
+    private String dutyCode;
+    @ApiModelProperty(value = "班组名称")
+    private String dutyName;
+    @ApiModelProperty(value = "机器号")
+    private String machineCode;
 
     /**
      * 单据号

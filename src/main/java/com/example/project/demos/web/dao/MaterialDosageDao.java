@@ -2,6 +2,7 @@ package com.example.project.demos.web.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.project.demos.web.dto.list.MaterialDosageInfo;
+import com.example.project.demos.web.dto.list.MaterialDosageTollAmountInfo;
 import com.example.project.demos.web.dto.materialDosage.QueryByPageDTO;
 import com.example.project.demos.web.entity.MaterialDosageEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,4 +31,6 @@ public interface MaterialDosageDao extends BaseMapper<MaterialDosageEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     MaterialDosageInfo selectMaterialDosageInfoById(Long id);
+
+    MaterialDosageTollAmountInfo queryTollAmount(QueryByPageDTO queryByPageDTO);
 }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.project.demos.web.dao.RebuildOutboundDao">
+<mapper namespace="com.example.project.demos.web.dao.RebuildInboundDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.example.project.demos.web.entity.RebuildOutboundEntity" id="rebuildOutboundMap">
+    <resultMap type="com.example.project.demos.web.entity.RebuildInboundEntity" id="RebuildInboundMap">
         <result property="id" column="id"/>
         <result property="materialCode" column="material_code"/>
         <result property="rebuildCount" column="rebuild_count"/>
         <result property="rebuildDate" column="rebuild_date"/>
-        <result property="outCode" column="out_code"/>
+        <result property="inCode" column="in_code"/>
         <result property="dutyCode" column="duty_code"/>
         <result property="machineCode" column="machine_code"/>
         <result property="billNo" column="bill_no"/>
@@ -21,7 +21,7 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
-    <select id="selectRebuildOutboundInfoListByPage" resultType="com.example.project.demos.web.dto.list.RebuildOutboundInfo">
+    <select id="selectRebuildInboundInfoListByPage" resultType="com.example.project.demos.web.dto.list.RebuildInboundInfo">
         SELECT
             t.id,
             t.material_code,
@@ -32,7 +32,7 @@
             d3.dict_value unitName,
             t.rebuild_count,
             t.rebuild_date,
-            t.out_code,
+            t.in_code,
             t.duty_code,
             d4.dict_value dutyName,
             t.machine_code,
@@ -45,7 +45,7 @@
             u1.user_name AS updateByName,
             t.update_time,
             t.remark
-        FROM	rebuild_outbound t
+        FROM	rebuild_inbound t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         LEFT JOIN material_info m ON m.CODE = t.material_code
@@ -65,8 +65,8 @@
         <if test="rebuild.endDate != null and rebuild.endDate != ''">
             and t.rebuild_date    <![CDATA[ <= ]]> #{rebuild.endDate}
         </if>
-        <if test="rebuild.outCode != null and rebuild.outCode != ''">
-            and t.out_code   = #{rebuild.outCode}
+        <if test="rebuild.inCode != null and rebuild.inCode != ''">
+            and t.in_code   = #{rebuild.inCode}
         </if>
         <if test="rebuild.dutyCode != null and rebuild.dutyCode != ''">
             and t.duty_code   = #{rebuild.dutyCode}
@@ -79,7 +79,7 @@
     </select>
 
     <select id="count" resultType="java.lang.Integer">
-        SELECT count(1)  FROM	rebuild_outbound t
+        SELECT count(1)  FROM	rebuild_inbound t
         LEFT JOIN material_info m ON m.CODE = t.material_code
         where  1=1
         <if test="materialCode != null and materialCode != ''">
@@ -94,8 +94,8 @@
         <if test="endDate != null and endDate != ''">
             and t.rebuild_date    <![CDATA[ <= ]]> #{endDate}
         </if>
-        <if test="outCode != null and outCode != ''">
-            and t.out_code   = #{outCode}
+        <if test="inCode != null and inCode != ''">
+            and t.in_code   = #{inCode}
         </if>
         <if test="dutyCode != null and dutyCode != ''">
             and t.duty_code   = #{dutyCode}
@@ -105,7 +105,7 @@
         </if>
     </select>
 
-    <select id="selectRebuildOutboundInfoById" resultType="com.example.project.demos.web.dto.list.RebuildOutboundInfo">
+    <select id="selectRebuildInboundInfoById" resultType="com.example.project.demos.web.dto.list.RebuildInboundInfo">
         SELECT
         t.id,
         t.material_code,
@@ -116,7 +116,7 @@
         d3.dict_value unitName,
         t.rebuild_count,
         t.rebuild_date,
-        t.out_code,
+        t.in_code,
         t.duty_code,
         d4.dict_value dutyName,
         t.machine_code,
@@ -129,7 +129,7 @@
         u1.user_name AS updateByName,
         t.update_time,
         t.remark
-        FROM	rebuild_outbound t
+        FROM	rebuild_inbound t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         LEFT JOIN material_info m ON m.CODE = t.material_code

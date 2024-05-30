@@ -1,18 +1,24 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.MaterialDosageDao;
 import com.example.project.demos.web.dto.list.MaterialDosageInfo;
+import com.example.project.demos.web.dto.list.MaterialDosageTollAmountInfo;
 import com.example.project.demos.web.dto.materialDosage.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialDosageEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.enums.UserTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialDosageService;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,8 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
 
     @Resource
     private MaterialDosageDao materialDosageDao;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -56,9 +64,6 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
-        BigDecimal grindingWeightToll = new BigDecimal(0);
-        BigDecimal machineWeightToll = new BigDecimal(0);
-        BigDecimal differentWeightToll =new BigDecimal(0);
         try {
             //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -83,22 +88,18 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
                 List<MaterialDosageInfo> list = page.toList();
                 //出参赋值
                 outDTO.setMaterialDosageInfoList(list);
-                //计算三个合计
-                for(MaterialDosageInfo info : list){
-                    grindingWeightToll = grindingWeightToll.add(info.getGrindingWeight());
-                    machineWeightToll = machineWeightToll.add(info.getMachineWeight());
-                    differentWeightToll = differentWeightToll.add(info.getDifferentWeight());
-                }
+                //获取三个合计数量
+                MaterialDosageTollAmountInfo tollInfo = materialDosageDao.queryTollAmount(queryByPageDTO);
+                outDTO.setGrindingWeightToll(tollInfo.getGrindingWeightToll());
+                outDTO.setMachineWeightToll(tollInfo.getMachineWeightToll());
+                outDTO.setDifferentWeightToll(tollInfo.getDifferentWeightToll());
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
-        outDTO.setGrindingWeightToll(grindingWeightToll);
-        outDTO.setMachineWeightToll(machineWeightToll);
-        outDTO.setDifferentWeightToll(differentWeightToll);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         log.info("物料用量queryByPage结束");
@@ -107,58 +108,77 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
 
     @Override
     public AddOutDTO insert(AddDTO dto) {
+        log.info("物料用量表新增开始");
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            MaterialDosageEntity materialDosageEntity = BeanCopyUtils.copy(dto,MaterialDosageEntity.class);
-            materialDosageEntity.setCreateBy("zhangyunning");
-            materialDosageEntity.setCreateTime(new Date());
-            int i = materialDosageDao.insert(materialDosageEntity);
+            MaterialDosageEntity entity = BeanCopyUtils.copy(dto,MaterialDosageEntity.class);
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            int i = materialDosageDao.insert(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("物料用量表新增结束");
         return outDTO;
     }
 
     @Override
     public EditOutDTO update(EditDTO dto) {
+        log.info("物料用量表修改开始");
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            MaterialDosageEntity materialDosageEntity = BeanCopyUtils.copy(dto,MaterialDosageEntity.class);
-            materialDosageEntity.setCreateBy("zhangyunning");
-            materialDosageEntity.setUpdateTime(new Date());
-            int i = materialDosageDao.updateById(materialDosageEntity);
+            MaterialDosageEntity entity = BeanCopyUtils.copy(dto,MaterialDosageEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = materialDosageDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("物料用量表修改结束");
         return outDTO;
     }
 
     @Override
     public DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) {
+        log.info("物料用量表删除开始");
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = materialDosageDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        log.info("物料用量表删除结束");
         return outDTO;
     }
 

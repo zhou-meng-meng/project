@@ -3,6 +3,7 @@ package com.example.project.demos.web.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.project.demos.web.dto.list.MaterialInventoryInfo;
 import com.example.project.demos.web.dto.materialInventory.QueryByPageDTO;
+import com.example.project.demos.web.dto.materialInventory.QueryByPagePopDTO;
 import com.example.project.demos.web.entity.MaterialInventoryEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -30,5 +31,7 @@ public interface MaterialInventoryDao extends BaseMapper<MaterialInventoryEntity
 
     int addStockInventory(@Param("materialCode")String materialCode, @Param("code")String code, @Param("num")BigDecimal num);
     int reduceStockInventory(@Param("materialCode")String materialCode, @Param("code")String code, @Param("num")BigDecimal num);
+    int countPop(QueryByPagePopDTO dto);
+    List<MaterialInventoryInfo> selectMaterialByPagePop (@Param("stock") QueryByPagePopDTO dto, @Param("pageable") Pageable pageable);
 
 }

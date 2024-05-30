@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -54,15 +55,15 @@ public class MaterialDosageEntity implements Serializable {
 	/**
 	 * 磨粉棒重量
 	 */
-	private Long grindingWeight;
+	private BigDecimal grindingWeight;
 	/**
 	 * 机器磅重量
 	 */
-	private Long machineWeight;
+	private BigDecimal machineWeight;
 	/**
 	 * 差额（磨粉棒重量-机器磅重量）
 	 */
-	private Long differentWeight;
+	private BigDecimal differentWeight;
 	/**
 	 * 创建人
 	 */

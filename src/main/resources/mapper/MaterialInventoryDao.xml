@@ -84,6 +84,49 @@
     </update>
 
 
+    <select id="countPop" resultType="java.lang.Integer">
+        select count(1) from  	material_inventory t,	material_info m
+        WHERE t.material_code = m.code
+        <if test="materialCode != null and materialCode != ''">
+            and m.code    like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="stockCode != null and stockCode != ''">
+            and t.stock_code    = #{stockCode}
+        </if>
+        <if test="materialType != null and materialType != ''">
+            and m.type    = #{materialType}
+        </if>
+    </select>
 
+    <select id="selectMaterialByPagePop" resultType="com.example.project.demos.web.dto.list.MaterialInventoryInfo">
+        SELECT
+        m.CODE as materialCode,
+        m.NAME as materialName,
+        m.model,
+        d1.dict_value as modelName,
+        m.unit,
+        d.dict_value as unitName,
+        t.inventory_num
+        FROM	material_inventory t,	material_info m
+        left join  sys_dict_data   d on d.dict_code = m.model and   d.dict_type = 'material_model'
+        left join  sys_dict_data   d1 on d1.dict_code = m.unit and   d1.dict_type = 'material_unit'
+        WHERE t.material_code = m.code
+        <if test="stock.materialCode != null and stock.materialCode != ''">
+            and m.code    like concat('%', #{stock.materialCode}, '%')
+        </if>
+        <if test="stock.materialName != null and stock.materialName != ''">
+            and m.name    like concat('%', #{stock.materialName}, '%')
+        </if>
+        <if test="stock.stockCode != null and stock.stockCode != ''">
+            and t.stock_code    = #{stock.stockCode}
+        </if>
+        <if test="stock.materialType != null and stock.materialType != ''">
+            and m.type    = #{stock.materialType}
+        </if>
+        order  by m.code
+    </select>
 
 </mapper>

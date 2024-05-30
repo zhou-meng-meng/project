@@ -1,4 +1,4 @@
-package com.example.project.demos.web.dto.rebuildOutbound;
+package com.example.project.demos.web.dto.rebuildInbound;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,8 +14,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "物料名称")
     private String materialName;
 
-    @ApiModelProperty(value = "出库方编号")
-    private String outCode;
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
+
     @ApiModelProperty(value = "班组编号")
     private String dutyCode;
     @ApiModelProperty(value = "机器号")

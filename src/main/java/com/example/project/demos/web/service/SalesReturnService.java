@@ -3,6 +3,8 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.salesReturn.*;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -53,5 +55,6 @@ public interface SalesReturnService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+    //int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
 }
 

@@ -62,7 +62,7 @@
             and t.duty_code   =#{info.dutyCode}
         </if>
         <if test="info.machineCode != null and info.machineCode != ''">
-            and t.machine_code    =#{info.machineCode}
+            and t.machine_code    like concat('%', #{info.machineCode}, '%')
         </if>
         <if test="info.billNo != null and info.billNo != ''">
             and t.bill_no    like concat('%', #{info.billNo}, '%')
@@ -89,7 +89,7 @@
             and t.duty_code   =#{dutyCode}
         </if>
         <if test="machineCode != null and machineCode != ''">
-            and t.machine_code    =#{machineCode}
+            and t.machine_code  like concat('%',  #{machineCode} , '%')
         </if>
         <if test="billNo != null and billNo != ''">
             and t.bill_no    like concat('%', #{billNo}, '%')
@@ -98,6 +98,38 @@
             and t.stock_bill_no    like concat('%', #{stockBillNo}, '%')
         </if>
     </select>
+
+    <!--获取三个合计数量-->
+    <select id="queryTollAmount" resultType="com.example.project.demos.web.dto.list.MaterialDosageTollAmountInfo">
+        select
+        IFNULL(sum(t.grinding_weight),0) as grindingWeightToll,
+        IFNULL(sum(machine_weight),0) as machineWeightToll,
+        IFNULL(sum(different_weight),0) as differentWeightToll
+         from  material_dosage  t
+        where  1=1
+        <if test="factoryCode != null and factoryCode != ''">
+            and t.factory_code    = #{factoryCode}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.duty_date   <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.duty_date   <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="dutyCode != null and dutyCode != ''">
+            and t.duty_code   =#{dutyCode}
+        </if>
+        <if test="machineCode != null and machineCode != ''">
+            and t.machine_code  like concat('%',  #{machineCode} , '%')
+        </if>
+        <if test="billNo != null and billNo != ''">
+            and t.bill_no    like concat('%', #{billNo}, '%')
+        </if>
+        <if test="stockBillNo != null and stockBillNo != ''">
+            and t.stock_bill_no    like concat('%', #{stockBillNo}, '%')
+        </if>
+    </select>
+
 
 
     <select id="selectMaterialDosageInfoById" resultType="com.example.project.demos.web.dto.list.MaterialDosageInfo">

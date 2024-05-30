@@ -1,4 +1,4 @@
-package com.example.project.demos.web.dto.rebuildOutbound;
+package com.example.project.demos.web.dto.rebuildInbound;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,10 +29,10 @@ public class AddDTO {
     @ApiModelProperty(value = "重造时间")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date rebuildDate;
-    @ApiModelProperty(value = "出库方编号")
-    private String outCode;
-    @ApiModelProperty(value = "出库方名称")
-    private String outName;
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
+    @ApiModelProperty(value = "入库方名称")
+    private String inName;
     @ApiModelProperty(value = "班组编号")
     private String dutyCode;
     @ApiModelProperty(value = "班组名称")

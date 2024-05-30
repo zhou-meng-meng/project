@@ -1,10 +1,10 @@
-package com.example.project.demos.web.dto.rebuildOutbound;
+package com.example.project.demos.web.dto.materialInventory;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class QueryByPageDTO {
+public class QueryByPagePopDTO {
 
     /**
      * 物料编号
@@ -14,18 +14,11 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "物料名称")
     private String materialName;
 
-    @ApiModelProperty(value = "出库方编号")
-    private String outCode;
-    @ApiModelProperty(value = "班组编号")
-    private String dutyCode;
-    @ApiModelProperty(value = "机器号")
-    private String machineCode;
+    @ApiModelProperty(value = "厂区/仓库编号")
+    private String stockCode;
 
-    @ApiModelProperty(value = "开始日期")
-    private String beginDate;
-
-    @ApiModelProperty(value = "结束")
-    private String endDate;
+    @ApiModelProperty(value = "物料类型：0-原材料；1-产量；2-不合格")
+    private String materialType;
 
     /**
      * 翻页数据起始位置:1

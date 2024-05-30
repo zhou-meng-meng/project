@@ -14,10 +14,7 @@ import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.ApproveOperationQueueService;
-import com.example.project.demos.web.service.RawMaterialIncomeService;
-import com.example.project.demos.web.service.SalesOutboundService;
-import com.example.project.demos.web.service.SysLogService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +40,8 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     private SysLogService sysLogService;
     @Autowired
     private SalesOutboundService salesOutboundService;
+    @Autowired
+    private SupplyReturnService supplyReturnService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -122,6 +121,9 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             }else if(functionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode())){
                 log.info("销售出库操作");
                 salesOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+            }else if(functionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
+                log.info("供应商退回操作");
+                supplyReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
             }
             log.info("更新审核流水表");
             ApproveOperationFlowEntity flowEntity = approveOperationFlowDao.selectById(entity.getOperationFlowId());

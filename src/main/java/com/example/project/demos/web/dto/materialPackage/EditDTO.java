@@ -24,6 +24,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "厂区编码")
     private String factoryCode;
+    @ApiModelProperty(value = "厂区名称")
+    private String factoryName;
 
     /**
      * 机子号
@@ -41,7 +43,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "班次枚举值")
     private String dutyCode;
-
+    @ApiModelProperty(value = "班次名称")
+    private String dutyName;
     /**
      * 锅数
      */

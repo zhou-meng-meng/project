@@ -1,19 +1,17 @@
 package com.example.project.demos.web.service;
 
 
-import com.example.project.demos.web.dto.supplyReturn.*;
-
-import java.math.BigDecimal;
-import java.util.Date;
+import com.example.project.demos.web.dto.rebuildInbound.*;
 
 /**
  * 
  *
  * @author Mark
  * @email sunlightcs@gmail.com
- * @date 2024-05-23 10:56:52
+ * @date 2024-05-11 11:13:27
  */
-public interface SupplyReturnService  {
+public interface RebuildInboundService {
+
     /**
      * 通过ID查询单条数据
      *
@@ -53,7 +51,5 @@ public interface SupplyReturnService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
-
-    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
 }
 

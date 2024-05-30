@@ -4,11 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -16,11 +15,11 @@ import java.util.Date;
  * 
  * @author Mark
  * @email sunlightcs@gmail.com
- * @date 2024-05-23 10:56:52
+ * @date 2024-05-11 11:13:27
  */
 @Data
-@TableName("supply_return")
-public class SupplyReturnEntity implements Serializable {
+@TableName("rebuild_inbound")
+public class RebuildInboundEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -29,35 +28,24 @@ public class SupplyReturnEntity implements Serializable {
 	@TableId
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
-
-	@ApiModelProperty(value = "客户编号")
-	private String customerCode;
-
 	/**
 	 * 物料编号
 	 */
 	private String materialCode;
 	/**
-	 * 单价
+	 * 重造出库数量
 	 */
-	private BigDecimal unitPrice;
+	private BigDecimal rebuildCount;
 	/**
-	 * 退回数量
+	 * 重造时间
 	 */
-	private BigDecimal returnCount;
+	private Date rebuildDate;
 	/**
-	 * 总金额
+	 * 入库方编号
 	 */
-	private BigDecimal tollAmount;
-	/**
-	 * 审核状态
-	 */
-	private String approveState;
-	/**
-	 * 审批意见
-	 */
-	private String approveOpinion;
-	private Date approveTime;
+	private String inCode;
+	private String dutyCode;
+	private String machineCode;
 	/**
 	 * 单据号
 	 */
@@ -66,18 +54,6 @@ public class SupplyReturnEntity implements Serializable {
 	 * 单据状态
 	 */
 	private String billState;
-	/**
-	 * 退回方编号
-	 */
-	private String outCode;
-	/**
-	 * 退回人
-	 */
-	private String returnUser;
-	/**
-	 * 退货时间
-	 */
-	private Date returnTime;
 	/**
 	 * 创建人
 	 */

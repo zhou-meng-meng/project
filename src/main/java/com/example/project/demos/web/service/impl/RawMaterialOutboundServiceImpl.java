@@ -167,8 +167,16 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            //修改了数量  要更新库存
             RawMaterialOutboundEntity entity = rawMaterialOutboundDao.selectById(dto.getId());
+            RawMaterialOutboundEntity newEntity = BeanCopyUtils.copy(dto,RawMaterialOutboundEntity.class);
+            //原单价不变   重新计算总金额
+            BigDecimal tollAmount = entity.getUnitPrice().multiply(dto.getCount());
+            newEntity.setTollAmount(tollAmount);
+            newEntity.setUpdateBy(user.getUserLogin());
+            newEntity.setUpdateTime(date);
+            int i = rawMaterialOutboundDao.updateById(newEntity);
+
+            //修改了数量  要更新库存
             BigDecimal count = entity.getCount();
             log.info("原数量:"+count.toString());
             BigDecimal updateCount = dto.getCount();
@@ -185,13 +193,6 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             }else{
                 log.info("修改数量等于原数量，不需要增加库存");
             }
-            RawMaterialOutboundEntity newEntity = BeanCopyUtils.copy(dto,RawMaterialOutboundEntity.class);
-            //原单价不变   重新计算总金额
-            BigDecimal tollAmount = entity.getUnitPrice().multiply(dto.getCount());
-            newEntity.setTollAmount(tollAmount);
-            newEntity.setUpdateBy(user.getUserLogin());
-            newEntity.setUpdateTime(date);
-            int i = rawMaterialOutboundDao.updateById(newEntity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

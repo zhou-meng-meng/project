@@ -113,6 +113,40 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
     }
 
     @Override
+    public QueryByPagePopOutDTO queryPagePopList(QueryByPagePopDTO queryByPageDTO) {
+        log.info("实时库存queryByPage开始");
+        QueryByPagePopOutDTO outDTO = new QueryByPagePopOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        try {
+            //先用查询条件查询物料总条数
+            long total = this.materialInventoryDao.countPop(queryByPageDTO);
+            outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
+            //存在数据的   继续查询
+            if(total != 0L){
+                //分页信息
+                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                //开始分页查询
+                Page<MaterialInventoryInfo> page = new PageImpl<>(this.materialInventoryDao.selectMaterialByPagePop(queryByPageDTO, pageRequest), pageRequest, total);
+                //获取物料编号数据
+                List<MaterialInventoryInfo> list  = page.toList();
+                //出参赋值
+                outDTO.setMaterialInventoryInfoList(list);
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("实时库存queryByPage结束");
+        return outDTO;
+    }
+
+
+    @Override
     public int checkIfMaterialCodeExist(String materialCode, String code) {
         return materialInventoryDao.checkIfMaterialCodeExist(materialCode,code);
     }
@@ -176,6 +210,11 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         log.info("更新库存结束");
         return i;
     }
+
+
+
+
+
 
 
     /**
