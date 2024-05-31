@@ -169,10 +169,12 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         String storeName="";
         MaterialInfo mInfo = null;
+        String operationType="";
         try{
             log.info("判断该物料是否在仓库/厂区中");
             int k = materialInventoryDao.checkIfMaterialCodeExist(materialCode,code);
             if(k > 0){
+                operationType = OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode();
                 log.info("当前厂区/仓库:"+code +" 已经存储了物料:"+materialCode);
                 if("add".equals(type)){
                     log.info("增加库存操作");
@@ -182,11 +184,13 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
                     materialInventoryDao.reduceStockInventory(materialCode,code,num);
                 }
             }else{
+                operationType = OperationTypeEnums.OPERATION_TYPE_ADD.getCode();
                 log.info("当前厂区/仓库:"+code +" 没有存储物料:"+materialCode+",新增库存");
                 MaterialInventoryEntity entity = new MaterialInventoryEntity();
                 entity.setMaterialCode(materialCode);
                 entity.setStockCode(code);
                 entity.setInventoryNum(num);
+                entity.setLastUpdateTime(date);
                 materialInventoryDao.insert(entity);
             }
             log.info("获取物料名称和厂区/仓库名称");
@@ -206,7 +210,7 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         }
         //记录日志
         String info = "物料编号:"+materialCode+",物料名称:"+mInfo.getName()+",数量:"+num.toString()+",仓库/厂区:"+storeName;
-        int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), operationType,user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("更新库存结束");
         return i;
     }

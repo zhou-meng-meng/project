@@ -142,7 +142,7 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getRebuildCount()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMaterialCode()+",入库方:"+dto.getOutName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getRebuildCount()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",入库方:"+dto.getOutName();
         sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_OUTBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -157,25 +157,25 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
+            RebuildOutboundEntity entity1 = rebuildOutboundDao.selectById(dto.getId());
             RebuildOutboundEntity entity = BeanCopyUtils.copy(dto,RebuildOutboundEntity.class);
             entity.setUpdateBy(user.getUserLogin());
             entity.setUpdateTime(date);
             int i = rebuildOutboundDao.updateById(entity);
             //修改了数量 要实时更新库存
-            RebuildOutboundEntity entity1 = rebuildOutboundDao.selectById(dto.getId());
-            BigDecimal count = entity.getRebuildCount();
+            BigDecimal count = entity1.getRebuildCount();
             log.info("原数量:"+count.toString());
             BigDecimal updateCount = dto.getRebuildCount();
             log.info("修改后数量:"+updateCount.toString());
             BigDecimal num = updateCount.subtract(count);
             log.info("修改后数量-原数量:"+num.toString());
             if(num.compareTo(new BigDecimal(0)) > 0){
-                log.info("修改数量大于原数量，需要增加:"+num+"的库存");
-                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"add",date);
-            }else if(num.compareTo(new BigDecimal(0)) < 0){
-                log.info("修改数量小于原数量，需要减少:"+num+"的库存");
-                num  = num.multiply(new BigDecimal(-1));
+                log.info("修改数量大于原数量，需要减少:"+num+"的库存");
                 materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"reduce",date);
+            }else if(num.compareTo(new BigDecimal(0)) < 0){
+                num  = num.multiply(new BigDecimal(-1));
+                log.info("修改数量小于原数量，需要增加:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"add",date);
             }else{
                 log.info("修改数量等于原数量，不需要增加库存");
             }
@@ -185,7 +185,7 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getRebuildCount()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMaterialCode()+",入库方:"+dto.getOutName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getRebuildCount()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",入库方:"+dto.getOutName();
         sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_OUTBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -200,14 +200,16 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
+            RebuildOutboundEntity entity = rebuildOutboundDao.selectById(dto.getId());
             int i = rebuildOutboundDao.deleteById(dto.getId());
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getRebuildCount(),"add",date);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getRebuildCount()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMaterialCode()+",入库方:"+dto.getOutName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getRebuildCount()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",入库方:"+dto.getOutName();
         sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_OUTBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

@@ -28,8 +28,8 @@ public class DeleteByIdDTO {
     /**
      * 机器编号
      */
-    @ApiModelProperty(value = "机器编号")
-    private String machineCode;
+    @ApiModelProperty(value = "机器号")
+    private String machineName;
     /**
      * 进货单号
      */

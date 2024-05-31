@@ -2,6 +2,7 @@ package com.example.project.demos.web.dto.list;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,6 +64,9 @@ public class MaterialInventoryInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "合计")
 	private BigDecimal tollNum;
+	@ApiModelProperty(value = "最后更新时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date lastUpdateTime;
 
 	/**
 	 * 备注

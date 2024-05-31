@@ -28,6 +28,7 @@
             t.factory_code,
             f.name as  factoryName,
             t.machine_code,
+            d1.dict_value machineName,
             t.package_date,
             t.duty_code,
             d.dict_value AS dutyName,
@@ -48,6 +49,7 @@
                     LEFT JOIN sys_dict_data d ON d.dict_code = t.duty_code 	AND d.dict_type = 'duty'
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.machine_code and  d1.dict_type = 'machine_code'
             where  1=1
         <if test="package.factoryCode != null and package.factoryCode != ''">
             and t.factory_code    = #{package.factoryCode}
@@ -86,6 +88,37 @@
         <if test="machineCode != null and machineCode != ''">
             and t.machine_code    =#{machineCode}
         </if>
+    </select>
+
+    <select id="selectMaterialPackageInfoById" resultType="com.example.project.demos.web.dto.list.MaterialPackageInfo">
+        SELECT
+        t.id,
+        t.factory_code,
+        f.name as  factoryName,
+        t.machine_code,
+        d1.dict_value machineName,
+        t.package_date,
+        t.duty_code,
+        d.dict_value AS dutyName,
+        t.pot_num,
+        t.toll_weight,
+        t.should_num,
+        t.actual_num,
+        t.balance_num,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	material_package t
+        left join  sys_factory  f on  f.code = t.factory_code
+        LEFT JOIN sys_dict_data d ON d.dict_code = t.duty_code 	AND d.dict_type = 'duty'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.machine_code and  d1.dict_type = 'machine_code'
+        where   t.id = #{id}
     </select>
 
 

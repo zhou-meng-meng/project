@@ -29,6 +29,6 @@ public interface MaterialPackageDao extends BaseMapper<MaterialPackageEntity> {
      * @return 总行数
      */
     int count(QueryByPageDTO queryByPageDTO);
+    MaterialPackageInfo selectMaterialPackageInfoById(Long id);
 
-    //SysFactoryInfo selectSysFactoryInfoById(Long id);
 }

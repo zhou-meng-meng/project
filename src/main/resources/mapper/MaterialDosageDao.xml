@@ -31,6 +31,7 @@
             t.duty_code,
             d.dict_value as dutyName,
             t.machine_code,
+            d1.dict_value machineName,
             t.stock_bill_no,
             t.bill_no,
             t.grinding_weight,
@@ -48,6 +49,7 @@
                     left join  sys_dict_data   d on  d.dict_code = t.duty_code  and   d.dict_type = 'duty'
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.machine_code and  d1.dict_type = 'machine_code'
          where 1=1
         <if test="info.factoryCode != null and info.factoryCode != ''">
             and t.factory_code    = #{info.factoryCode}
@@ -141,6 +143,7 @@
         t.duty_code,
         d.dict_value as dutyName,
         t.machine_code,
+        d1.dict_value machineName,
         t.stock_bill_no,
         t.bill_no,
         t.grinding_weight,
@@ -158,6 +161,7 @@
         left join  sys_dict_data   d on  d.dict_code = t.duty_code  and   d.dict_type = 'duty'
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.machine_code and  d1.dict_type = 'machine_code'
         where  t.id = #{id}
     </select>
 

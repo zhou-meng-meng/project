@@ -9,6 +9,7 @@
         <result property="materialCode" column="material_code"/>
         <result property="stockCode" column="stock_code"/>
         <result property="inventoryNum" column="inventory_num"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
         <result property="remark" column="remark"/>
     </resultMap>
 
@@ -52,7 +53,9 @@
         d2.dict_value modelName,
         m.unit,
         d3.dict_value unitName,
-        t.stock_code,t.inventory_num,t.remark
+        t.stock_code,t.inventory_num,
+        t.last_update_time,
+        t.remark
         from material_inventory  t
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
@@ -72,14 +75,16 @@
     <!--增加库存-->
     <update id="addStockInventory">
         update material_inventory  t
-        set t.inventory_num = t.inventory_num + #{num}
+        set t.inventory_num = t.inventory_num + #{num},
+            t.last_update_time = SYSDATE()
         where t.material_code = #{materialCode} and  t.stock_code = #{code}
     </update>
 
     <!--减少库存-->
     <update id="reduceStockInventory">
         update material_inventory  t
-        set t.inventory_num = t.inventory_num  - #{num}
+        set t.inventory_num = t.inventory_num  - #{num},
+            t.last_update_time = SYSDATE()
         where t.material_code = #{materialCode} and  t.stock_code = #{code}
     </update>
 

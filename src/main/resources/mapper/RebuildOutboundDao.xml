@@ -36,6 +36,7 @@
             t.duty_code,
             d4.dict_value dutyName,
             t.machine_code,
+
             t.bill_no,
             t.bill_state ,
             t.create_by,

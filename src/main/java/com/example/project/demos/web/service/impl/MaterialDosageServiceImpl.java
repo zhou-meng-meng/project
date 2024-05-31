@@ -125,7 +125,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
+        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -151,7 +151,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
-        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
+        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -174,7 +174,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
-        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
+        String info = "日期:"+dto.getDutyDate()+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",磨粉棒重量:"+dto.getGrindingWeight()+",机器磅重量:"+dto.getMachineWeight()+",差额:"+dto.getDifferentWeight();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

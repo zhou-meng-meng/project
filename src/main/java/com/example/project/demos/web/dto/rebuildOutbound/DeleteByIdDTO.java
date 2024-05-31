@@ -36,6 +36,6 @@ public class DeleteByIdDTO {
     @ApiModelProperty(value = "班组名称")
     private String dutyName;
     @ApiModelProperty(value = "机器号")
-    private String machineCode;
+    private String machineName;
 
 }

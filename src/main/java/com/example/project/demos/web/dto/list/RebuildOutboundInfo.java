@@ -69,6 +69,8 @@ public class RebuildOutboundInfo implements Serializable {
 	private String dutyName;
 	@ApiModelProperty(value = "机器号")
 	private String machineCode;
+	@ApiModelProperty(value = "机器号")
+	private String machineName;
 
 	/**
 	 * 单据号

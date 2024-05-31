@@ -29,12 +29,14 @@ public class DeleteByIdDTO {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date rebuildDate;
 
+    @ApiModelProperty(value = "入库方编号")
+    private String inCode;
     @ApiModelProperty(value = "入库方名称")
     private String inName;
 
     @ApiModelProperty(value = "班组名称")
     private String dutyName;
     @ApiModelProperty(value = "机器号")
-    private String machineCode;
+    private String machineName;
 
 }

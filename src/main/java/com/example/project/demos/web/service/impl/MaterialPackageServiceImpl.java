@@ -1,12 +1,16 @@
 package com.example.project.demos.web.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.MaterialPackageDao;
-import com.example.project.demos.web.dto.list.MaterialPackageDetailInfo;
-import com.example.project.demos.web.dto.list.MaterialPackageInfo;
+import com.example.project.demos.web.dao.SysFactoryDao;
+import com.example.project.demos.web.dao.SysStorehouseDao;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.materialPackage.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialPackageEntity;
+import com.example.project.demos.web.entity.SysFactoryEntity;
+import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +42,11 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
     private MaterialPackageDetailService materialPackageDetailService;
     @Autowired
     private SysLogService sysLogService;
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -44,15 +54,18 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
-        /*try{
-            MaterialPackageInfo materialPackageInfo = materialPackageDao.selectMaterialPackageInfoById(id);
-            outDTO = BeanUtil.copyProperties(materialPackageInfo, QueryByIdOutDTO.class);
+        try{
+            MaterialPackageInfo info = materialPackageDao.selectMaterialPackageInfoById(id);
+            List<MaterialPackageInfo> list = new ArrayList<>();
+            list.add(info);
+            list = setRebuildInboundObject(list);
+            outDTO = BeanUtil.copyProperties(list.get(0),QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
-        }*/
+        }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         log.info("装袋表queryById结束");
@@ -127,7 +140,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -156,7 +169,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -180,11 +193,42 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineCode()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+    /**
+     * 赋值重造出库  入库方名称
+     * @param list
+     * @return
+     */
+    private List<MaterialPackageInfo> setRebuildInboundObject(List<MaterialPackageInfo> list){
+        //获取厂区和仓库集合
+        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+        for(MaterialPackageInfo info : list){
+            //入库方
+            String inCode = info.getFactoryCode();
+            if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                //工厂
+                for(SysFactoryInfo fInfo : factoryInfoList){
+                    if(inCode.equals(fInfo.getCode())){
+                        info.setFactoryName(fInfo.getName());
+                    }
+                }
+            }else{
+                //仓库
+                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                    if(inCode.equals(sInfo.getCode())){
+                        info.setFactoryName(sInfo.getName());
+                    }
+                }
+            }
+        }
+        return list;
     }
 
 }

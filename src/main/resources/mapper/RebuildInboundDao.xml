@@ -36,6 +36,7 @@
             t.duty_code,
             d4.dict_value dutyName,
             t.machine_code,
+            d5.dict_value machineName,
             t.bill_no,
             t.bill_state ,
             t.create_by,
@@ -52,6 +53,7 @@
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
+        LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
         where  1=1
         <if test="rebuild.materialCode != null and rebuild.materialCode != ''">
             and t.material_code    like concat('%', #{rebuild.materialCode}, '%')
@@ -120,6 +122,7 @@
         t.duty_code,
         d4.dict_value dutyName,
         t.machine_code,
+        d5.dict_value machineName,
         t.bill_no,
         t.bill_state ,
         t.create_by,
@@ -136,6 +139,7 @@
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
+        LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
         where  t.id = #{id}
     </select>
 

@@ -37,6 +37,7 @@ public class MaterialInventoryEntity implements Serializable {
 	 * 库存数量
 	 */
 	private BigDecimal inventoryNum;
+	private Date lastUpdateTime;
 	/**
 	 * 备注
 	 */

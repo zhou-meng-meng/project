@@ -31,6 +31,8 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "机子号")
     private String machineCode;
+    @ApiModelProperty(value = "机器号")
+    private String machineName;
     /**
      * 日期
      */
