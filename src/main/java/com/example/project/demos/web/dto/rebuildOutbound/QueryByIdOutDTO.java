@@ -45,7 +45,7 @@ public class QueryByIdOutDTO {
      * 重造时间
      */
     @ApiModelProperty(value = "重造日期")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date rebuildDate;
     @ApiModelProperty(value = "出库方编号")
     private String outCode;

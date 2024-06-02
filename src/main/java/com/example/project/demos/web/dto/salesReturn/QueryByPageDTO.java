@@ -22,6 +22,8 @@ public class QueryByPageDTO {
     private String returnUser;
     @ApiModelProperty(value = "退回人姓名")
     private String returnUserName;
+    @ApiModelProperty(value = "退回仓库/产区编号")
+    private String inCode;
 
     @ApiModelProperty(value = "开始日期")
     private String beginDate;

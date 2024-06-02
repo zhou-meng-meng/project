@@ -14,6 +14,7 @@ import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialInventoryService;
 import com.example.project.demos.web.service.SysLogService;
@@ -53,6 +54,16 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //添加权限  总公司的  查看所有  其他的角色 查看自己所在厂区/仓库的数据
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
+                queryByPageDTO.setStockCode(user.getDeptId());
+            }
             //先用查询条件查询物料总条数
             long total = this.materialInventoryDao.countMaterialCode(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -104,7 +115,7 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

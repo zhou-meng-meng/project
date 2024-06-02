@@ -21,11 +21,15 @@ public class EditDTO {
 
     @ApiModelProperty(value = "客户编号")
     private String customerCode;
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
     /**
      * 物料编号
      */
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
 
     /**
@@ -70,11 +74,15 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "退回方编号")
     private String inCode;
+    @ApiModelProperty(value = "退回方名称")
+    private String inName;
     /**
      * 退回人
      */
     @ApiModelProperty(value = "退回人")
     private String returnUser;
+    @ApiModelProperty(value = "退回人姓名")
+    private String returnUserName;
     /**
      * 退货时间
      */

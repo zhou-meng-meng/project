@@ -24,19 +24,25 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "型号编号")
     private String model;
+    @ApiModelProperty(value = "型号名称")
+    private String modelName;
 
     /**
      * 单位
      */
-    @ApiModelProperty(value = "单位")
+    @ApiModelProperty(value = "单位编码")
     private String unit;
+    @ApiModelProperty(value = "单位名称")
+    private String unitName;
 
 
     /**
      * 物料类型  0-原材料；1-销售产品
      */
-    @ApiModelProperty(value = "物料类型  0-原材料；1-销售产品")
+    @ApiModelProperty(value = "物料类型编码  0-原材料；1-销售产品")
     private String type;
+    @ApiModelProperty(value = "物料类型名称  0-原材料；1-销售产品")
+    private String typeName;
 
     /**
      * 供应商编号（来料使用）

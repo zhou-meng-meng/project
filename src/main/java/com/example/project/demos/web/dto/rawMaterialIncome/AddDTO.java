@@ -59,7 +59,7 @@ public class AddDTO {
      * 进货时间
      */
     @ApiModelProperty(value = "进货时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date materialBuytime;
     /**
      * 审批状态

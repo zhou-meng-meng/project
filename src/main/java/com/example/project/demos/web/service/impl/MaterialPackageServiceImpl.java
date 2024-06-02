@@ -20,6 +20,7 @@ import com.example.project.demos.web.service.MaterialPackageDetailService;
 import com.example.project.demos.web.service.MaterialPackageService;
 import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        String info = "日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getPackageDate())+",厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -169,7 +170,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        String info = "日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getPackageDate())+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -193,7 +194,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "厂区:"+dto.getFactoryName()+"日期:"+dto.getPackageDate()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
+        String info = "日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getPackageDate())+",厂区:"+dto.getFactoryName()+",班组:"+dto.getDutyName()+",机器号:"+dto.getMachineName()+",锅数:"+dto.getPotNum()+",合计重量:"+dto.getTollWeight()+",应出袋数:"+dto.getShouldNum()+",实际袋数:"+dto.getActualNum()+",差额:"+dto.getBalanceNum();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_PACKAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

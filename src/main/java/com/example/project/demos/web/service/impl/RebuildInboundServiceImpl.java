@@ -22,6 +22,7 @@ import com.example.project.demos.web.service.MaterialInventoryService;
 import com.example.project.demos.web.service.RebuildInboundService;
 import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",机器号:"+dto.getMachineName()+",班组:"+dto.getDutyName()+",数量:"+dto.getRebuildCount()+",入库方:"+dto.getInName();
+        String info = "日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getRebuildDate()) +",物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",机器号:"+dto.getMachineName()+",班组:"+dto.getDutyName()+",数量:"+dto.getRebuildCount()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_INBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -183,7 +184,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",机器号:"+dto.getMachineName()+",班组:"+dto.getDutyName()+",数量:"+dto.getRebuildCount()+",入库方:"+dto.getInName();
+        String info = "日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getRebuildDate()) +",物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",机器号:"+dto.getMachineName()+",班组:"+dto.getDutyName()+",数量:"+dto.getRebuildCount()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_INBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -207,7 +208,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",机器号:"+dto.getMachineName()+",班组:"+dto.getDutyName()+",数量:"+dto.getRebuildCount()+",入库方:"+dto.getInName();
+        String info = "日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getRebuildDate()) +",物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",机器号:"+dto.getMachineName()+",班组:"+dto.getDutyName()+",数量:"+dto.getRebuildCount()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_INBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

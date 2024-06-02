@@ -1,5 +1,6 @@
 package com.example.project.demos.web.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.dao.SysLogDao;
 import com.example.project.demos.web.dto.list.SysLogInfo;
 import com.example.project.demos.web.dto.sysLog.QueryByPageDTO;
@@ -53,7 +54,11 @@ public class SysLogServiceImpl implements SysLogService {
                 for(SysLogInfo info : list){
                     info.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
                     info.setOperationTypeName(OperationTypeEnums.getDescByCode(info.getOperationType()));
-                    info.setOperationResultName(SysEnums.getDescByCode(info.getOperationResult()));
+                    if(ObjectUtil.isNull(info.getOperationResult())){
+                        info.setOperationResultName("未知");
+                    }else{
+                        info.setOperationResultName(ErrorCodeEnums.getDescByCode(info.getOperationResult()));
+                    }
                 }
                 //出参赋值
                 outDTO.setSysLogInfoList(list);

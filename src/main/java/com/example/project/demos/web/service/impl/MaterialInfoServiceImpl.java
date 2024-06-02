@@ -1,15 +1,23 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.MaterialInfoDao;
 import com.example.project.demos.web.dto.list.MaterialInfo;
 import com.example.project.demos.web.dto.materialInfo.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialInfoEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialInfoService;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -23,10 +31,12 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
 
     @Resource
     private MaterialInfoDao materialInfoDao;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("数据字段类型queryById开始");
+        log.info("物料维护queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -37,17 +47,17 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryById结束");
+        log.info("物料维护queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("数据字段类型queryByPage开始");
+        log.info("物料维护queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -72,11 +82,11 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("数据字段类型queryByPage结束");
+        log.info("物料维护queryByPage结束");
         return outDTO;
     }
 
@@ -85,16 +95,21 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             MaterialInfoEntity materialInfo = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
-            materialInfo.setCreateBy("zhangyunning");
-            materialInfo.setCreateTime(new Date());
+            materialInfo.setCreateBy(user.getUserLogin());
+            materialInfo.setCreateTime(date);
             int i = materialInfoDao.insert(materialInfo);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getCode()+",物料名称:"+dto.getName()+",型号:"+dto.getModelName()+",单位:"+dto.getUnitName();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INFO.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -105,6 +120,8 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             MaterialInfoEntity materialInfo = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
             materialInfo.setCreateBy("zhangyunning");
@@ -113,8 +130,11 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getCode()+",物料名称:"+dto.getName()+",型号:"+dto.getModelName()+",单位:"+dto.getUnitName();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INFO.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -125,13 +145,18 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = materialInfoDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "物料编号:"+dto.getCode()+",物料名称:"+dto.getName()+",型号:"+dto.getModelName()+",单位:"+dto.getUnitName();
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INFO.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
