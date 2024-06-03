@@ -7,10 +7,12 @@ import com.example.project.demos.web.dto.list.SysUserInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.exception.CustomException;
+import com.example.project.demos.web.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -42,7 +44,7 @@ public class OauthSupport {
      * @throws Throwable
      */
     public boolean tokenIsExpired(String token) throws Throwable {
-        UserLoginOutDTO user = (UserLoginOutDTO) redisTemplate.opsForValue().get(token);
+        UserLoginOutDTO user = (UserLoginOutDTO) redisTemplate.opsForValue().get(TokenUtils.buildToken(TokenUtils.USER_LOGIN_TOKEN, token));
         if (ObjectUtil.isEmpty(user)) {
             return true;
         }
@@ -50,7 +52,7 @@ public class OauthSupport {
     }
 
     public UserLoginOutDTO getUserInfoByToken(String token) throws Throwable {
-        return (UserLoginOutDTO) redisTemplate.opsForValue().get(token);
+        return (UserLoginOutDTO) redisTemplate.opsForValue().get(TokenUtils.buildToken(TokenUtils.USER_LOGIN_TOKEN, token));
     }
 
 
@@ -64,7 +66,7 @@ public class OauthSupport {
         if (ObjectUtils.isEmpty(user)) {
             throw new CustomException(500, ErrorCodeEnums.USER_IS_NOT_EXIST.getDesc(), null);
         }
-        UserLoginOutDTO userDto  = new UserLoginOutDTO();
+        UserLoginOutDTO userDto = new UserLoginOutDTO();
         BeanUtils.copyProperties(user, userDto);
         String token = IdUtil.simpleUUID();
         redisTemplate.opsForValue().set(token, userDto, 5, TimeUnit.MINUTES);
@@ -74,8 +76,9 @@ public class OauthSupport {
     /**
      * 持久化token
      */
-    public String persistenceToken(UserLoginOutDTO dto,String token) {
-        redisTemplate.opsForValue().set(token, dto, 120, TimeUnit.MINUTES);
+    public String persistenceToken(UserLoginOutDTO dto, String token) {
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.opsForValue().set(TokenUtils.buildToken(TokenUtils.USER_LOGIN_TOKEN, token), dto, 120, TimeUnit.MINUTES);
         return token;
     }
 
