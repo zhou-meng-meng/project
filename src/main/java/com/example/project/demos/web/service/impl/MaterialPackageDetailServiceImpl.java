@@ -101,7 +101,7 @@ public class MaterialPackageDetailServiceImpl  implements MaterialPackageDetailS
             MaterialPackageDetailEntity entity = new MaterialPackageDetailEntity();
             entity.setPackageId(packageId);
             entity.setMaterialCode(info.getMaterialCode());
-            entity.setPackageWeight(info.getPackageWeight());
+            entity.setPotWeight(info.getPotWeight());
             entityList.add(entity);
             //创建人待添加
             entity.setCreateBy("zhangyunning");

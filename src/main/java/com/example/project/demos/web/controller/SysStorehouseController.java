@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysStorehouse")
 @Api(tags="仓库维护表")
-public class SysStorehouseController extends BaseController{
+public class SysStorehouseController {
 
     @Resource
     private SysStorehouseService sysStorehouseService;

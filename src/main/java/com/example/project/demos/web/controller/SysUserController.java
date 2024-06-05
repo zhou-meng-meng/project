@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysUser")
 @Api(tags="用户维护表")
-public class SysUserController extends BaseController{
+public class SysUserController {
     /**
      * 服务对象
      */

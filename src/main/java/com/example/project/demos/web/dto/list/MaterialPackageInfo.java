@@ -54,14 +54,16 @@ public class MaterialPackageInfo implements Serializable {
 	 * 班次
 	 */
 	@ApiModelProperty(value = "班次枚举值")
-	private String packageDuty;
-	@ApiModelProperty(value = "班次")
-	private String packageDutyName;
+	private String dutyCode;
+	@ApiModelProperty(value = "班次名称")
+	private String dutyName;
 	/**
 	 * 锅数
 	 */
 	@ApiModelProperty(value = "锅数")
 	private BigDecimal potNum;
+	@ApiModelProperty(value = "每袋重量")
+	private BigDecimal packageWeight;
 	/**
 	 * 合计重量
 	 */

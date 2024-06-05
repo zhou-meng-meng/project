@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * 供货商往来账(supply_return)表控制层
+ * 供货商往来账(supply_customer_pay)表控制层
  *
  * @author makejava
  * @since 2024-02-26 20:37:53
@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("supplyCustomerPay")
 @Api(tags="供货商往来账维护")
-public class SupplyCustomerPayController extends BaseController{
+public class SupplyCustomerPayController {
     /**
      * 服务对象
      */
@@ -58,7 +58,7 @@ public class SupplyCustomerPayController extends BaseController{
      *
      * @param dto 实体
      * @return 新增结果
-     */
+     *//*
     @PostMapping("/add")
     @ApiOperation("新增数据")
     public AddOutDTO add(@RequestBody AddDTO dto) {
@@ -66,12 +66,12 @@ public class SupplyCustomerPayController extends BaseController{
         return outDTO;
     }
 
-    /**
+    *//**
      * 编辑数据
      *
      * @param dto 实体
      * @return 编辑结果
-     */
+     *//*
     @PostMapping("/edit")
     @ApiOperation("编辑数据")
     public EditOutDTO edit(@RequestBody EditDTO dto) {
@@ -79,18 +79,18 @@ public class SupplyCustomerPayController extends BaseController{
         return outDTO;
     }
 
-    /**
+    *//**
      * 删除数据
      *
      * @param dto 主键
      * @return 删除是否成功
-     */
+     *//*
     @PostMapping("/deleteById")
     @ApiOperation("根据ID删除数据")
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = supplyCustomerPayService.deleteById(dto);
         return outDTO;
-    }
+    }*/
 
 }
 

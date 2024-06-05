@@ -31,7 +31,7 @@ public class EditDTO {
      * 每锅重量
      */
     @ApiModelProperty(value = "每锅重量")
-    private BigDecimal packageWeight;
+    private BigDecimal potWeight;
     /**
      * 创建者
      */

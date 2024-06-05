@@ -26,6 +26,7 @@ public enum FunctionTypeEnums {
 
     SUPPLY_COUSTOMER_PAY("030001","供货客户往来账"),
     SALES_COUSTOMER_PAY("030002","销售方客户往来账"),
+    COUSTOMER_PAY_DETAIL("030003","客户往来账"),
 
     CUSTOMER_SALE("040001","销售客户维护"),
     CUSTOMER_SUPPLY("040002","供货方客户维护"),

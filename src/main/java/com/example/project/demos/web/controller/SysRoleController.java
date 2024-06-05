@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysRole")
 @Api(tags="角色维护表")
-public class SysRoleController extends BaseController{
+public class SysRoleController {
     /**
      * 服务对象
      */

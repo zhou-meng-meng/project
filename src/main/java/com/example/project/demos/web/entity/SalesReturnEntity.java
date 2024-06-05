@@ -2,8 +2,10 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -52,10 +54,20 @@ public class SalesReturnEntity implements Serializable {
 	 * 审批状态
 	 */
 	private String approveState;
+	private Date approveTime;
 	/**
 	 * 审批意见
 	 */
 	private String approveOpinion;
+
+	@ApiModelProperty(value = "确认状态")
+	private String confirmState;
+	@ApiModelProperty(value = "确认时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date confirmTime;
+	@ApiModelProperty(value = "确认意见")
+	private String confirmOpinion;
+
 	/**
 	 * 单据号
 	 */
@@ -68,6 +80,7 @@ public class SalesReturnEntity implements Serializable {
 	 * 退回方编号
 	 */
 	private String inCode;
+	private String returnType;
 	/**
 	 * 退回人
 	 */

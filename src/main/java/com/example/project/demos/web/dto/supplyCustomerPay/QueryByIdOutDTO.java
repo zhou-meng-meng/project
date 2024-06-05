@@ -75,10 +75,7 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
-    @ApiModelProperty(value = "经办人英文名")
-    private String operator;
-    @ApiModelProperty(value = "经办人姓名")
-    private String operatorName;
+
     /**
      * 创建者
      */

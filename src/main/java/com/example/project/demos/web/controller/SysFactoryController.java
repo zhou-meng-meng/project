@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysFactory")
 @Api(tags="工厂维护表")
-public class SysFactoryController extends BaseController{
+public class SysFactoryController {
     /**
      * 服务对象
      */

@@ -67,9 +67,9 @@ public class SupplyReturnEntity implements Serializable {
 	 */
 	private String billState;
 	/**
-	 * 退回方编号
+	 * 退回入库方编号
 	 */
-	private String outCode;
+	private String inCode;
 	/**
 	 * 退回人
 	 */

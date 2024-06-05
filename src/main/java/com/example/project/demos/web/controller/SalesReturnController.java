@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("salesReturn")
 @Api(tags="销售退回维护表")
-public class SalesReturnController extends BaseController{
+public class SalesReturnController {
     /**
      * 服务对象
      */

@@ -38,6 +38,7 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SysUserInfo selectSysUserInfoById(Long id);
+    SysUserInfo selectSysUserInfoByParam(@Param(value = "userLogin") String userLogin);
 
     SysUserInfo selectUserForLogin(@Param(value = "userLogin") String userLogin,@Param(value = "password") String password);
 

@@ -40,6 +40,12 @@ public class CustomerPayDetailInfo {
      */
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
+
+    @ApiModelProperty(value = "经办人英文名")
+    private String operatorBy;
+    @ApiModelProperty(value = "经办人名字")
+    private String operatorByName;
+
     /**
      * 付款类型  0-入款 1-出款
      */

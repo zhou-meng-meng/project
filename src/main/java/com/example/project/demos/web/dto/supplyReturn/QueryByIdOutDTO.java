@@ -17,7 +17,6 @@ public class QueryByIdOutDTO {
     /**
      * 自增主键
      */
-    @TableId
     @ApiModelProperty(value = "自增主键")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
@@ -67,11 +66,24 @@ public class QueryByIdOutDTO {
     private String approveState;
     @ApiModelProperty(value = "审核状态")
     private String approveStateName;
+    @ApiModelProperty(value = "审核时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date approveTime;
     /**
      * 审批意见
      */
     @ApiModelProperty(value = "审批意见")
     private String approveOpinion;
+
+    @ApiModelProperty(value = "确认状态")
+    private String confirmState;
+    @ApiModelProperty(value = "确认状态")
+    private String confirmStateName;
+    @ApiModelProperty(value = "确认时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date confirmTime;
+    @ApiModelProperty(value = "确认意见")
+    private String confirmOpinion;
     /**
      * 单据号
      */
@@ -87,10 +99,10 @@ public class QueryByIdOutDTO {
     /**
      * 退回方编号
      */
-    @ApiModelProperty(value = "退回方编号")
-    private String outCode;
-    @ApiModelProperty(value = "退回方名称")
-    private String outName;
+    @ApiModelProperty(value = "退回位置编号")
+    private String inCode;
+    @ApiModelProperty(value = "退回位置")
+    private String inName;
     /**
      * 退回人
      */
@@ -102,7 +114,7 @@ public class QueryByIdOutDTO {
      * 退货时间
      */
     @ApiModelProperty(value = "退货时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date returnTime;
     /**
      * 创建者

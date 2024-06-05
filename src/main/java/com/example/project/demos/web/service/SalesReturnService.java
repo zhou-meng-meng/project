@@ -55,6 +55,7 @@ public interface SalesReturnService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
-    //int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
+    int updateConfirm(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
 }
 

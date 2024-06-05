@@ -15,6 +15,7 @@ import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.ConfirmOperationQueueService;
+import com.example.project.demos.web.service.SalesReturnService;
 import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.service.TransferOutboundService;
 import com.example.project.demos.web.utils.PageRequest;
@@ -38,6 +39,8 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
     private ConfirmOperationFlowDao confirmOperationFlowDao;
     @Autowired
     private TransferOutboundService transferOutboundService;
+    @Autowired
+    private SalesReturnService salesReturnService;
     @Autowired
     private SysLogService sysLogService;
 
@@ -133,6 +136,9 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
             if(functionId.equals(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode())){
                 log.info("调拨出库操作");
                 transferOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
+            }else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())){
+                log.info("销售退回操作");
+                salesReturnService.updateConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date);
             }
             log.info("更新确认流水表");
             ConfirmOperationFlowEntity flowEntity = confirmOperationFlowDao.selectById(entity.getConfirmFlowId());

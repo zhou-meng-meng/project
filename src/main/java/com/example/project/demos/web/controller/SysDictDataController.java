@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysDictData")
 @Api(tags="数据字典数值表")
-public class SysDictDataController extends BaseController{
+public class SysDictDataController {
     /**
      * 服务对象
      */

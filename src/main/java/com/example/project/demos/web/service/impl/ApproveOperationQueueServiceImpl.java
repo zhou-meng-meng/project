@@ -1,20 +1,18 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.ApproveOperationFlowDao;
-import com.example.project.demos.web.dao.ApproveOperationQueueDao;
+import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.approveOperationQueue.*;
 import com.example.project.demos.web.dto.list.ApproveOperationQueueInfo;
+import com.example.project.demos.web.dto.list.SysUserInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
-import com.example.project.demos.web.entity.ApproveOperationFlowEntity;
-import com.example.project.demos.web.entity.ApproveOperationQueueEntity;
-import com.example.project.demos.web.enums.ApproveConfirmResultEnums;
-import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.enums.FunctionTypeEnums;
-import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.entity.*;
+import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
+import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +41,18 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     private SalesOutboundService salesOutboundService;
     @Autowired
     private SupplyReturnService supplyReturnService;
+    @Autowired
+    private SalesReturnService salesReturnService;
+    @Resource
+    private SalesReturnDao salesReturnDao;
+    @Autowired
+    private SysUserService sysUserService;
+    @Resource
+    private ConfirmOperationQueueDao confirmOperationQueueDao;
+    @Resource
+    private ConfirmOperationFlowDao confirmOperationFlowDao;
+    @Resource
+    private SysUserDao sysUserDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -124,6 +135,44 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             }else if(functionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
                 log.info("供应商退回操作");
                 supplyReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+            } else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())) {
+                log.info("销售退回,判断是销售员退回还是厂区退回");
+                SalesReturnEntity entity1 = salesReturnDao.selectById(businessId);
+                String returnType = entity1.getReturnType();
+                if("0".equals(returnType)){
+                    log.info("销售员退回，审核通过后需要退回入库方的录入员确认，生成确认队列");
+                    log.info("获取退回入库方具有确认权限的人");
+                    String userType = "";
+                    String inCode = dto.getInCode();
+                    if("F".equals(inCode.substring(0,1))){
+                        log.info("调入方为厂区");
+                        userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+                    }else{
+                        log.info("调入方为仓库");
+                        userType = UserTypeEnums.USER_TYPE_STORE.getCode();
+                    }
+                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),dto.getInCode());
+                    if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                        //生成待确认流水
+                        ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALES_RETURN.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                        confirmOperationFlowDao.insert(flowEntity);
+                        //生成待确认队列
+                        List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                        for(SysUserEntity userEntity : userList){
+                            ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALES_RETURN.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
+                            queueEntityList.add(queueEntity);
+                        }
+                        confirmOperationQueueDao.insertBatch(queueEntityList);
+                        //更新销售退回表
+                        salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+                    }else{
+                        errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                        errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+                    }
+                }else{
+                    log.info("仓库/厂区退回的，审核通过后结束");
+                    salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+                }
             }
             log.info("更新审核流水表");
             ApproveOperationFlowEntity flowEntity = approveOperationFlowDao.selectById(entity.getOperationFlowId());

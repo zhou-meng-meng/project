@@ -45,6 +45,8 @@ public class AddPayBySystemDTO {
     private String payType;
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;
+    @ApiModelProperty(value = "经办人英文名")
+    private String operatorBy;
 
     /**
      *

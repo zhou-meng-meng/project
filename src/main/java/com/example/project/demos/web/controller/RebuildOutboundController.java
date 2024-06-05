@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("rebuildOutbound")
 @Api(tags="重造出库维护表")
-public class RebuildOutboundController extends BaseController{
+public class RebuildOutboundController {
     /**
      * 服务对象
      */

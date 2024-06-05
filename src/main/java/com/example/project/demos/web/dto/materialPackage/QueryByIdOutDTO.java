@@ -51,6 +51,8 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "锅数")
     private BigDecimal potNum;
+    @ApiModelProperty(value = "每袋重量")
+    private BigDecimal packageWeight;
     /**
      * 合计重量
      */

@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("transferOutbound")
 @Api(tags="调拨出库维护表")
-public class TransferOutboundController extends BaseController{
+public class TransferOutboundController {
     /**
      * 服务对象
      */

@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("materialInventory")
 @Api(tags="实时库存")
-public class MaterialInventoryController extends BaseController{
+public class MaterialInventoryController {
     /**
      * 服务对象
      */

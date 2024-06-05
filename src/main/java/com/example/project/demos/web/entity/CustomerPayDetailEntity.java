@@ -48,6 +48,7 @@ public class CustomerPayDetailEntity implements Serializable {
 	 * 付款类型  入款 出款
 	 */
 	private String payType;
+	private String operatorBy;
 	private String isDefault;
 	/**
 	 * 创建人/经办人

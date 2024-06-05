@@ -27,7 +27,7 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("供应商退回queryById开始");
+        log.info("销售记录queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -42,13 +42,13 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("供应商退回queryById结束");
+        log.info("销售记录queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("供应商退回queryByPage开始");
+        log.info("销售记录queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -75,11 +75,11 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("供应商退回queryByPage结束");
+        log.info("销售记录queryByPage结束");
         return outDTO;
     }
 
-    @Override
+    /*@Override
     public AddOutDTO insert(AddDTO dto) {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -135,6 +135,6 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
-    }
+    }*/
 
 }

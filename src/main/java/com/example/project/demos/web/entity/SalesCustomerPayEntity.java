@@ -16,7 +16,7 @@ import java.util.Date;
  * @date 2024-05-25 15:30:37
  */
 @Data
-@TableName("sales_coustomer_pay")
+@TableName("sales_customer_pay")
 public class SalesCustomerPayEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 

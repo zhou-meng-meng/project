@@ -32,23 +32,23 @@ public interface SupplyCustomerPayService {
      *
      * @param dto 实例对象
      * @return 实例对象
-     */
+     *//*
     AddOutDTO insert(AddDTO dto);
 
-    /**
+    *//**
      * 修改数据
      *
      * @param dto 实例对象
      * @return 实例对象
-     */
+     *//*
     EditOutDTO update(EditDTO dto);
 
-    /**
+    *//**
      * 通过主键删除数据
      *
      * @param dto 主键
      * @return 是否成功
-     */
-    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+     *//*
+    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);*/
 }
 

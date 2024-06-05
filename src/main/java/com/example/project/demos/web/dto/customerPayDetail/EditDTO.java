@@ -25,6 +25,8 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "客户编号")
     private String customerCode;
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 
     /**
      * 账面余额
@@ -48,6 +50,11 @@ public class EditDTO {
     private String payType;
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;
+
+    @ApiModelProperty(value = "经办人英文名")
+    private String operatorBy;
+    @ApiModelProperty(value = "经办人名字")
+    private String operatorByName;
 
     /**
      * 备注

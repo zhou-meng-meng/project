@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
 @RestController
 @RequestMapping("productionMaterialIncome")
 @Api(tags="产量入库维护表")
-public class ProductionMaterialIncomeController extends BaseController{
+public class ProductionMaterialIncomeController {
     /**
      * 服务对象
      */

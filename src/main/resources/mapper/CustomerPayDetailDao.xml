@@ -10,6 +10,7 @@
         <result property="bookBalance" column="book_balance"/>
         <result property="payBalance" column="pay_balance"/>
         <result property="returnBalance" column="return_balance"/>
+        <result property="operatorBy" column="operator_by"/>
         <result property="payType" column="pay_type"/>
         <result property="isDefault" column="is_default"/>
         <result property="createBy" column="create_by"/>
@@ -29,6 +30,8 @@
         t.pay_type,
         t.return_balance,
         t.is_default,
+        t.operator_by,
+        u2.user_name AS operatorByName,
         t.create_by,
         u.user_name AS createByName,
         t.create_time,
@@ -39,7 +42,9 @@
         FROM	customer_pay_detail t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        where   t.costomer_code = #{customerCode}
+        LEFT JOIN sys_user u2 ON u2.user_login = t.operator_by
+        where   t.customer_code = #{customerCode}
+        order  by t.id asc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
@@ -60,5 +65,16 @@
                t.remark  from customer_pay_detail t
              where   t.customer_code = #{customerCode} order  by  t.id  desc  limit 0,1
     </select>
+
+    <update id="reduceBookBalance">
+        update customer_pay_detail set  book_balance = book_balance - #{amount}
+        where  id > #{id}
+    </update>
+
+    <update id="addBookBalance">
+        update customer_pay_detail set  book_balance = book_balance + #{amount}
+        where  id > #{id}
+    </update>
+
 
 </mapper>

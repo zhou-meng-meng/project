@@ -48,6 +48,7 @@ public class MaterialPackageEntity implements Serializable {
 	 * 锅数
 	 */
 	private BigDecimal potNum;
+	private BigDecimal packageWeight;
 	/**
 	 * 合计重量
 	 */

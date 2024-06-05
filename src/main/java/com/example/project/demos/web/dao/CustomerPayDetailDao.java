@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -33,5 +34,8 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
     int count(@Param("customerCode") String customerCode);
 
     CustomerPayDetailEntity selectLatestPayDetail(@Param("customerCode") String customerCode);
+
+    int reduceBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
+    int addBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
 
 }

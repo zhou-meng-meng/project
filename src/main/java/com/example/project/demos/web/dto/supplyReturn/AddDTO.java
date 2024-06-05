@@ -47,9 +47,9 @@ public class AddDTO {
      * 退回方编号
      */
     @ApiModelProperty(value = "退回方编号")
-    private String outCode;
+    private String inCode;
     @ApiModelProperty(value = "退回方名称")
-    private String outName;
+    private String inName;
     /**
      * 退回人
      */

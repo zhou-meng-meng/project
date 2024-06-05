@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysMenu")
 @Api(tags="菜单维护表")
-public class SysMenuController extends BaseController{
+public class SysMenuController {
     /**
      * 服务对象
      */

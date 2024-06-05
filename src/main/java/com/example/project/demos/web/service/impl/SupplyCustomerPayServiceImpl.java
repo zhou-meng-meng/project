@@ -4,8 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.dao.SupplyCustomerPayDao;
 import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
 import com.example.project.demos.web.dto.supplyCustomerPay.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SupplyCustomerPayEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SupplyCustomerPayService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -19,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+/**
+ * 此功能的数据 在来料入库审核时系统添加，不涉及增删改
+ */
 @Slf4j
 @Service("supplyCoustomerPayService")
 public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
@@ -29,7 +33,7 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("供应商退回queryById开始");
+        log.info("进货记录queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -44,13 +48,13 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("供应商退回queryById结束");
+        log.info("进货记录queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("供应商退回queryByPage开始");
+        log.info("进货记录queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -73,25 +77,26 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("供应商退回queryByPage结束");
+        log.info("进货记录queryByPage结束");
         return outDTO;
     }
 
-    @Override
+    /*@Override
     public AddOutDTO insert(AddDTO dto) {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SupplyCustomerPayEntity SupplyCustomerPayEntity = BeanCopyUtils.copy(dto,SupplyCustomerPayEntity.class);
-            SupplyCustomerPayEntity.setCreateBy("zhangyunning");
-            SupplyCustomerPayEntity.setCreateTime(new Date());
-            int i = supplyCustomerPayDao.insert(SupplyCustomerPayEntity);
-            //修改库存
+            SupplyCustomerPayEntity entity = BeanCopyUtils.copy(dto,SupplyCustomerPayEntity.class);
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            int i = supplyCustomerPayDao.insert(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -137,7 +142,7 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
-    }
+    }*/
 
 
 

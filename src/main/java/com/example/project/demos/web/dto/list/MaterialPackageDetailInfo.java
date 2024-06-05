@@ -45,7 +45,7 @@ public class MaterialPackageDetailInfo implements Serializable {
 	 * 每锅重量
 	 */
 	@ApiModelProperty(value = "每锅重量")
-	private BigDecimal packageWeight;
+	private BigDecimal potWeight;
 	/**
 	 * 创建者
 	 */

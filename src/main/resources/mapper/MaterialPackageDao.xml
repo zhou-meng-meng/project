@@ -11,6 +11,7 @@
         <result property="packageDate" column="package_date"/>
         <result property="dutyCode" column="duty_code"/>
         <result property="potNum" column="pot_num"/>
+        <result property="packageWeight" column="package_weight"/>
         <result property="tollWeight" column="toll_weight"/>
         <result property="shouldNum" column="should_num"/>
         <result property="actualNum" column="actual_num"/>
@@ -33,6 +34,7 @@
             t.duty_code,
             d.dict_value AS dutyName,
             t.pot_num,
+            t.package_weight,
             t.toll_weight,
             t.should_num,
             t.actual_num,
@@ -101,6 +103,7 @@
         t.duty_code,
         d.dict_value AS dutyName,
         t.pot_num,
+        t.package_weight,
         t.toll_weight,
         t.should_num,
         t.actual_num,

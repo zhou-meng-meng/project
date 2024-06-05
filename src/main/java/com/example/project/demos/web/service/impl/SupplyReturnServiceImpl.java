@@ -93,7 +93,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 log.info("当前登录人属于总公司，可以查看所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                queryByPageDTO.setOutCode(user.getDeptId());
+                queryByPageDTO.setInCode(user.getDeptId());
             }
             //先用查询条件查询总条数
             long total = this.supplyReturnDao.count(queryByPageDTO);
@@ -160,7 +160,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getOutName()+",退回人:"+dto.getReturnUserName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getInName()+",退回人:"+dto.getReturnUserName();
         sysLogService.insertSysLog(FunctionTypeEnums.SUPPLY_RETURN.getCode(),OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -185,7 +185,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getOutName()+",退回人:"+dto.getReturnUserName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getInName()+",退回人:"+dto.getReturnUserName();
         sysLogService.insertSysLog(FunctionTypeEnums.SUPPLY_RETURN.getCode(),OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -210,7 +210,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         Date date = new Date();
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getOutName()+",退回人:"+dto.getReturnUserName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getInName()+",退回人:"+dto.getReturnUserName();
         sysLogService.insertSysLog(FunctionTypeEnums.SUPPLY_RETURN.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -232,9 +232,9 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("审核同意，开始更新库存");
-            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getReturnCount(),"reduce",date);
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"reduce",date);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),tollAmount,new BigDecimal(0),new BigDecimal(0),tollAmount,"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,"system");
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),tollAmount,new BigDecimal(0),new BigDecimal(0),tollAmount,"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");
@@ -254,19 +254,19 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
         for(SupplyReturnInfo info : list){
             //退货方
-            String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+            String inCode = info.getInCode();
+            if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
                 //工厂
                 for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
+                    if(inCode.equals(fInfo.getCode())){
+                        info.setInName(fInfo.getName());
                     }
                 }
             }else{
                 //仓库
                 for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
+                    if(inCode.equals(sInfo.getCode())){
+                        info.setInName(sInfo.getName());
                     }
                 }
             }

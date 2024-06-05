@@ -51,6 +51,10 @@ public class QueryByIdOutDTO {
     private String payType;
     @ApiModelProperty(value = "付款类型")
     private String payTypeName;
+    @ApiModelProperty(value = "经办人英文名")
+    private String operatorBy;
+    @ApiModelProperty(value = "经办人名字")
+    private String operatorByName;
     /**
      * 创建者
      */

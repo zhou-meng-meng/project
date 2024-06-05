@@ -4,7 +4,7 @@
 <mapper namespace="com.example.project.demos.web.dao.SalesCustomerPayDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.example.project.demos.web.entity.SalesCustomerPayEntity" id="salesCoustomerPayMap">
+    <resultMap type="com.example.project.demos.web.entity.SalesCustomerPayEntity" id="salesCustomerPayMap">
         <result property="id" column="id"/>
         <result property="saleId" column="sale_id"/>
         <result property="customerCode" column="customer_code"/>
@@ -23,7 +23,7 @@
     <select id="selectSalesCustomerPayInfoListByPage" resultType="com.example.project.demos.web.dto.list.SalesCustomerPayInfo">
         SELECT
         t.id,
-        t.sale_d,
+        t.sale_id,
         t.customer_code,
         c.name as customerName,
         t.material_code,
@@ -43,13 +43,13 @@
         u1.user_name AS updateByName,
         t.update_time,
         t.remark
-        FROM	sales_coustomer_pay t
+        FROM	sales_customer_pay t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
-        left join customer_supply  c on  c.code = t.customer_code
+        left join customer_sale  c on  c.code = t.customer_code
         where  1=1
         <if test="pay.materialName != null and pay.materialName != ''">
             and m.name    like concat('%', #{pay.materialName}, '%')
@@ -68,9 +68,9 @@
     </select>
 
     <select id="count" resultType="java.lang.Integer">
-        SELECT  count(1)    FROM	sales_coustomer_pay t
+        SELECT  count(1)    FROM	sales_customer_pay t
         LEFT JOIN material_info m ON m.CODE = t.material_code
-        left join customer_supply  c on  c.code = t.customer_code
+        left join customer_sale  c on  c.code = t.customer_code
         where  1=1
         <if test="materialName != null and materialName != ''">
             and m.name    like concat('%', #{materialName}, '%')
@@ -89,7 +89,7 @@
     <select id="selectSalesCustomerPayInfoById" resultType="com.example.project.demos.web.dto.list.SalesCustomerPayInfo">
         SELECT
             t.id,
-            t.sale_d,
+            t.sale_id,
             t.customer_code,
             c.name as customerName,
             t.material_code,
@@ -109,13 +109,13 @@
             u1.user_name AS updateByName,
             t.update_time,
             t.remark
-        FROM	sales_coustomer_pay t
+        FROM	sales_customer_pay t
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                     LEFT JOIN material_info m ON m.CODE = t.material_code
                     LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
                     LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
-                    left join customer_supply  c on  c.code = t.customer_code
+                    left join customer_sale  c on  c.code = t.customer_code
         where  t.id = #{id}
     </select>
 

@@ -8,7 +8,7 @@
         <result property="id" column="id"/>
         <result property="packageId" column="package_id"/>
         <result property="materialCode" column="material_code"/>
-        <result property="packageWeight" column="package_weight"/>
+        <result property="potWeight" column="pot_weight"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -22,7 +22,7 @@
             t.package_id,
             t.material_code,
             d.dict_value as materialName,
-            t.package_weight,
+            t.pot_weight,
             t.create_by,
             u.user_name AS createByName,
             t.create_time,

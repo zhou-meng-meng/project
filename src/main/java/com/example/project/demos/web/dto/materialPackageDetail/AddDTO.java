@@ -11,11 +11,6 @@ import java.util.Date;
 public class AddDTO {
 
     /**
-     * 装袋表主键
-     */
-    @ApiModelProperty(value = "装袋表主键")
-    private Long packageId;
-    /**
      * 物料枚举值
      */
     @ApiModelProperty(value = "物料枚举值")
@@ -25,7 +20,7 @@ public class AddDTO {
      * 每锅重量
      */
     @ApiModelProperty(value = "每锅重量")
-    private BigDecimal packageWeight;
+    private BigDecimal potWeight;
     /**
      * 创建者
      */

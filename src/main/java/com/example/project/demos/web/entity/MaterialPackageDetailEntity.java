@@ -39,7 +39,7 @@ public class MaterialPackageDetailEntity implements Serializable {
 	/**
 	 * 每锅重量
 	 */
-	private BigDecimal packageWeight;
+	private BigDecimal potWeight;
 	/**
 	 * 创建人
 	 */

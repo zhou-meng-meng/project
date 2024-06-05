@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("sysLog")
 @Api(tags="操作日志查询表")
-public class SysLogController extends BaseController{
+public class SysLogController {
     /**
      * 服务对象
      */
