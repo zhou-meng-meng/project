@@ -61,6 +61,12 @@ public class CustomerAccountRelInfo implements Serializable {
 	private String status;
 	@ApiModelProperty(value = "账号状态")
 	private String statusName;
+
+	@ApiModelProperty(value = "创建人")
+	private String createBy;
+	@ApiModelProperty(value = "创建人")
+	private String createByName;
+
 	/**
 	 * 创建时间
 	 */

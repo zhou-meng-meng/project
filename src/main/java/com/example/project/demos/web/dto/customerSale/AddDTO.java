@@ -78,6 +78,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "所属销售")
     private String saler;
+    @ApiModelProperty(value = "所属销售")
+    private String salerName;
 
     /**
      * 备注

@@ -26,6 +26,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "所属销售")
     private String saler;
 
+    @ApiModelProperty(value = "审核状态编码")
+    private String approveState;
+
     /**
      * 翻页数据起始位置:1
      */

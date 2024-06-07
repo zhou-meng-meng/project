@@ -7,14 +7,16 @@ import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
 import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
 import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
 import com.example.project.demos.web.dto.customerSupply.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.CustomerSupplyEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.CustomerAccountRelService;
-import com.example.project.demos.web.service.CustomerPayDetailService;
-import com.example.project.demos.web.service.CustomerSupplyService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,10 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
 
     @Autowired
     private CustomerPayDetailService customerPayDetailService;
+    @Autowired
+    private SysUserService sysUserService;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public QueryByIdOutDTO queryById(QueryByIdDTO dto) {
@@ -54,7 +60,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -104,21 +110,25 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            CustomerSupplyEntity CustomerSupplyEntity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
-            CustomerSupplyEntity.setCreateBy(RequestHolder.getUserInfo().getUserLogin());
-            CustomerSupplyEntity.setCreateTime(date);
-            int i = customerSupplyDao.insert(CustomerSupplyEntity);
+            CustomerSupplyEntity entity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            int i = customerSupplyDao.insert(entity);
             //添加账号对应关系
             customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
             log.info("添加一条默认往来账信息，金额都为0");
-            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",Constants.SYSTEM_CODE,Constants.SYSTEM_CODE,date,"默认往来账");
+            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,"默认往来账");
             customerPayDetailService.addPayBySystem(addDTO);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "客户编号:"+ dto.getCode() +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",传真:"+dto.getFaxNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SUPPLY.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -129,11 +139,13 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            CustomerSupplyEntity CustomerSupplyEntity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
-            CustomerSupplyEntity.setCreateBy("zhangyunning");
-            CustomerSupplyEntity.setUpdateTime(new Date());
-            int i = customerSupplyDao.updateById(CustomerSupplyEntity);
+            CustomerSupplyEntity entity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = customerSupplyDao.updateById(entity);
             //先删除原账号对应关系
             customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
             //重新插入账号对应关系
@@ -141,8 +153,11 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "客户编号:"+ dto.getCode() +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",传真:"+dto.getFaxNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SUPPLY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -153,6 +168,8 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = customerSupplyDao.deleteById(dto.getId());
             //删除该客户账户
@@ -160,8 +177,11 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "客户编号:"+ dto.getCode() +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",传真:"+dto.getFaxNo();
+        sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SUPPLY.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;

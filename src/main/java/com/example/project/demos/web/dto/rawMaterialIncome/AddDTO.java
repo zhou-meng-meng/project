@@ -52,8 +52,10 @@ public class AddDTO {
     /**
      * 进货人
      */
-    @ApiModelProperty(value = "进货人")
+    @ApiModelProperty(value = "进货人编号")
     private String materialBuyer;
+    @ApiModelProperty(value = "进货人")
+    private String materialBuyerName;
 
     /**
      * 进货时间

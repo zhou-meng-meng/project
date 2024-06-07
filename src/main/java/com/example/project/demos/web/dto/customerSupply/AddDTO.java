@@ -77,11 +77,6 @@ public class AddDTO {
 
     @ApiModelProperty(value = "传真")
     private String faxNo;
-    /**
-     * 所属销售
-     */
-    @ApiModelProperty(value = "所属销售")
-    private String saler;
 
     /**
      * 备注

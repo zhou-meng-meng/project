@@ -99,6 +99,24 @@ public class CustomerSaleInfo implements Serializable {
 	private String saler;
 	@ApiModelProperty(value = "所属销售")
 	private String salerName;
+
+	@ApiModelProperty(value = "审核状态编码")
+	private String approveState;
+	@ApiModelProperty(value = "审核状态")
+	private String approveStateName;
+
+	@ApiModelProperty(value = "审核人编码")
+	private String approveUser;
+	@ApiModelProperty(value = "审核人")
+	private String approveUserName;
+
+	@ApiModelProperty(value = "审核时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date approveTime;
+
+	@ApiModelProperty(value = "审核意见")
+	private String approveOpinion;
+
 	/**
 	 * 创建者
 	 */

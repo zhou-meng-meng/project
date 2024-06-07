@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 
-@Service("costomerAccountRelService")
+@Service("customerAccountRelService")
 public class CustomerAccountRelServiceImpl implements CustomerAccountRelService {
 
     @Resource

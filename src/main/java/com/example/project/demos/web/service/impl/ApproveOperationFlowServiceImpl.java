@@ -30,9 +30,6 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
     @Resource
     private ApproveOperationFlowDao approveOperationFlowDao;
 
-    @Autowired
-    private RawMaterialIncomeService rawMaterialIncomeService;
-
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("审核流水queryById开始");

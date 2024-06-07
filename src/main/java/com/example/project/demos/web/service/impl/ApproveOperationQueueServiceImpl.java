@@ -53,6 +53,8 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     private ConfirmOperationFlowDao confirmOperationFlowDao;
     @Resource
     private SysUserDao sysUserDao;
+    @Autowired
+    private CustomerSaleService customerSaleService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -135,6 +137,9 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             }else if(functionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
                 log.info("供应商退回操作");
                 supplyReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+            } else if (functionId.equals(FunctionTypeEnums.CUSTOMER_SALE.getCode())) {
+                log.info("销售客户维护操作");
+                customerSaleService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
             } else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())) {
                 log.info("销售退回,判断是销售员退回还是厂区退回");
                 SalesReturnEntity entity1 = salesReturnDao.selectById(businessId);

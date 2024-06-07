@@ -102,8 +102,8 @@
         <if test="return.inCode != null and return.inCode != ''">
             and t.in_code   = #{return.inCode}
         </if>
-        <if test="return.retutnType != null and return.retutnType != ''">
-            and t.retutn_type   = #{return.retutnType}
+        <if test="return.returnType != null and return.returnType != ''">
+            and t.return_type   = #{return.returnType}
         </if>
         order  by  t.return_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -138,8 +138,8 @@
         <if test="inCode != null and inCode != ''">
             and t.in_code   = #{inCode}
         </if>
-        <if test="retutnType != null and retutnType != ''">
-            and t.retutn_type   = #{retutnType}
+        <if test="returnType != null and returnType != ''">
+            and t.return_type   = #{returnType}
         </if>
     </select>
 

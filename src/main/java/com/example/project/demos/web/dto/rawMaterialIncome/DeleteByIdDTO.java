@@ -20,6 +20,9 @@ public class DeleteByIdDTO {
     @ApiModelProperty(value = "总数量")
     private BigDecimal count;
 
+    @ApiModelProperty(value = "进货人")
+    private String materialBuyerName;
+
     @ApiModelProperty(value = "供货商名称")
     private String supplyerName;
     @ApiModelProperty(value = "入库方名称")

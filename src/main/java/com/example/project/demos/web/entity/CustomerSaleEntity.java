@@ -2,8 +2,10 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -76,6 +78,15 @@ public class CustomerSaleEntity implements Serializable {
 	 * 所属销售
 	 */
 	private String saler;
+
+	/**
+	 * 审核相关
+	 */
+	private String approveState;
+	private String approveUser;
+	private Date approveTime;
+	private String approveOpinion;
+
 	/**
 	 * 创建人
 	 */
