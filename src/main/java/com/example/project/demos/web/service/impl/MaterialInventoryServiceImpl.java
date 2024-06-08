@@ -141,6 +141,8 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
                 Page<MaterialInventoryInfo> page = new PageImpl<>(this.materialInventoryDao.selectMaterialByPagePop(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取物料编号数据
                 List<MaterialInventoryInfo> list  = page.toList();
+                //赋值厂区/仓库名称
+                list = setMaterialInventoryObject(list);
                 //出参赋值
                 outDTO.setMaterialInventoryInfoList(list);
             }
@@ -225,12 +227,6 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
         log.info("更新库存结束");
         return i;
     }
-
-
-
-
-
-
 
     /**
      * 赋值实时库存  库存方名称

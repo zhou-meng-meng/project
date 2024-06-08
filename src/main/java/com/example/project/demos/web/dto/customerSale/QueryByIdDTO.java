@@ -8,5 +8,4 @@ import lombok.Data;
 public class QueryByIdDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
-    private String code;
 }

@@ -113,6 +113,7 @@
         m.model,
         d1.dict_value as modelName,
         m.unit,
+        t.stock_code,
         d.dict_value as unitName,
         t.inventory_num
         FROM	material_inventory t,	material_info m

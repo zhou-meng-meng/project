@@ -57,10 +57,10 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            CustomerSaleInfo customerSaleInfo = customerSaleDao.selectCustomerSaleInfoById(dto.getId());
-            outDTO = BeanUtil.copyProperties(customerSaleInfo, QueryByIdOutDTO.class);
+            CustomerSaleInfo info = customerSaleDao.selectCustomerSaleInfoById(dto.getId());
+            outDTO = BeanUtil.copyProperties(info, QueryByIdOutDTO.class);
             //查询对应账户
-            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getCode());
+            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(info.getCode());
             outDTO.setAccountRelList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
