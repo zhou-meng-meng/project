@@ -1,0 +1,285 @@
+package com.example.project.demos.web.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dao.*;
+import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
+import com.example.project.demos.web.dto.list.SalersOrderInfo;
+import com.example.project.demos.web.dto.list.SysFactoryInfo;
+import com.example.project.demos.web.dto.list.SysStorehouseInfo;
+import com.example.project.demos.web.dto.salersOrder.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
+import com.example.project.demos.web.entity.*;
+import com.example.project.demos.web.enums.*;
+import com.example.project.demos.web.handler.RequestHolder;
+import com.example.project.demos.web.service.*;
+import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DateUtils;
+import com.example.project.demos.web.utils.PageRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Slf4j
+@Service("salersOrderService")
+public class SalersOrderServiceImpl  implements SalersOrderService {
+
+    @Resource
+    private SalersOrderDao salersOrderDao;
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
+    @Autowired
+    private MaterialInventoryService materialInventoryService;
+    @Autowired
+    private SysLogService sysLogService;
+
+    @Resource
+    private ApproveOperationFlowDao approveOperationFlowDao;
+    @Resource
+    private ApproveOperationQueueDao approveOperationQueueDao;
+    @Autowired
+    private SysUserService sysUserService;
+    @Autowired
+    private CustomerPayDetailService customerPayDetailService;
+
+    @Override
+    public QueryByIdOutDTO queryById(Long id) {
+        log.info("销售员下单queryById开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
+        try{
+            SalersOrderInfo info = salersOrderDao.selectSalersOrderInfoById(id);
+            //处理出库方
+            List<SalersOrderInfo> list = new ArrayList<>();
+            list.add(info);
+            list = setSalersOrderObject(list);
+            outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
+        }catch(Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("销售员下单queryById结束");
+        return outDTO;
+    }
+
+    @Override
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+        log.info("销售员下单queryByPage开始");
+        QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        try {
+            //添加权限  总公司审核权限的  查看所有  销售员只能查看自己的数据
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
+                queryByPageDTO.setSaler(user.getUserLogin());
+            }
+            //先用查询条件查询总条数
+            long total = this.salersOrderDao.count(queryByPageDTO);
+            outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
+            //存在数据的   继续查询
+            if(total != 0L){
+                //分页信息
+                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                //开始分页查询
+                Page<SalersOrderInfo> page = new PageImpl<>(this.salersOrderDao.selectSalersOrderInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                //获取分页数据
+                List<SalersOrderInfo> list = page.toList();
+                list = setSalersOrderObject(list);
+                //出参赋值
+                outDTO.setSalersOrderInfoList(list);
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("销售员下单queryByPage结束");
+        return outDTO;
+    }
+
+    @Override
+    public AddOutDTO insert(AddDTO dto) {
+        AddOutDTO outDTO = new AddOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try{
+            log.info("查询总公司具有审核权限的人员");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                SalersOrderEntity entity = BeanCopyUtils.copy(dto,SalersOrderEntity.class);
+                entity.setCreateBy(user.getUserLogin());
+                entity.setCreateTime(date);
+                log.info("插入销售员下单表");
+                int i = salersOrderDao.insert(entity);
+                log.info("生成审核流水记录");
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALERS_ORDER.getCode(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                approveOperationFlowDao.insert(flowEntity);
+                log.info("生成审核队列记录");
+                List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALERS_ORDER.getCode(),userEntity.getUserLogin(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                    queueEntityList.add(queueEntity);
+                }
+                approveOperationQueueDao.insertBatch(queueEntityList);
+            }else{
+                errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
+            }
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",销售员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    @Override
+    public EditOutDTO update(EditDTO dto) {
+        EditOutDTO outDTO = new EditOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try{
+            SalersOrderEntity entity = BeanCopyUtils.copy(dto,SalersOrderEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = salersOrderDao.updateById(entity);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",销售员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    @Override
+    public DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) {
+        DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try{
+            int i = salersOrderDao.deleteById(dto.getId());
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",销售员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    @Override
+    public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
+        log.info("销售员下单审核更新开始");
+        SalersOrderEntity  entity = salersOrderDao.selectById(id);
+        entity.setApproveState(result);
+        entity.setApproveOpinion(opinion);
+        entity.setApproveTime(date);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        int i =salersOrderDao.updateById(entity);
+        log.info("销售员下单审核更新结束");
+        return i;
+    }
+
+    @Override
+    public int updateConfirm(Long id, String result, String opinion, String userLogin, Date date)  {
+        log.info("销售员下单确认更新开始");
+        SalersOrderEntity  entity = salersOrderDao.selectById(id);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        entity.setConfirmState(result);
+        entity.setConfirmOpinion(opinion);
+        entity.setConfirmTime(date);
+        int i = salersOrderDao.updateById(entity);
+        //判断确认结果
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            log.info("确认同意，开始更新库存");
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getLoadNum(),"reduce",date);
+            log.info("生成往来账信息");
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER.getDesc());
+            customerPayDetailService.addPayBySystem(dto);
+        }else{
+            log.info("确认拒绝");
+        }
+        log.info("销售员下单确认更新结束");
+        return i;
+    }
+
+    /**
+     * 赋值销售员下单  出库方名称
+     * @param list
+     * @return
+     */
+    private List<SalersOrderInfo> setSalersOrderObject(List<SalersOrderInfo> list){
+        //获取厂区和仓库集合
+        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+        for(SalersOrderInfo info : list){
+            //出库方
+            String outCode = info.getOutCode();
+            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                //工厂
+                for(SysFactoryInfo fInfo : factoryInfoList){
+                    if(outCode.equals(fInfo.getCode())){
+                        info.setOutName(fInfo.getName());
+                    }
+                }
+            }else{
+                //仓库
+                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                    if(outCode.equals(sInfo.getCode())){
+                        info.setOutName(sInfo.getName());
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+}

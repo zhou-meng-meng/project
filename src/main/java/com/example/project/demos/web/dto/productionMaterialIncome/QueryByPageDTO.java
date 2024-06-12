@@ -30,6 +30,12 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "入库方编码")
     private String inCode;
 
+    @ApiModelProperty(value = "班组编号")
+    private String dutyCode;
+
+    @ApiModelProperty(value = "机器编号")
+    private String machineCode;
+
     /**
      * 备注
      */

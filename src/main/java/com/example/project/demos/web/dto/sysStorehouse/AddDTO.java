@@ -26,6 +26,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "仓库负责人英文名")
     private String manage;
+    @ApiModelProperty(value = "仓库负责人姓名")
+    private String manageName;
 
     /**
      * 仓库负责人电话

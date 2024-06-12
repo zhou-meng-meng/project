@@ -4,8 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.dao.ConfirmOperationFlowDao;
 import com.example.project.demos.web.dto.confirmOperationFlow.*;
 import com.example.project.demos.web.dto.list.ConfirmOperationFlowInfo;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.ConfirmOperationFlowEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.ConfirmOperationFlowService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -52,6 +55,16 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //权限判断  总公司人员可查看所有数据  厂区人员只能查看自己确认的数据
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看自己确认的数据");
+                queryByPageDTO.setConfirmUser(user.getUserLogin());
+            }
             //先用查询条件查询总条数
             long total = this.confirmOperationFlowDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -65,7 +78,6 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
                 List<ConfirmOperationFlowInfo> list = page.toList();
                 //出参赋值
                 outDTO.setConfirmOperationFlowInfoList(list);
-
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值

@@ -37,7 +37,7 @@ public enum FunctionTypeEnums {
     SYS_ROLE("900002","角色管理"),
     SYS_MENU("900003","菜单管理"),
     SYS_DEPT("900004","部门管理"),
-    SYS_DICT_TYPE("900005","字段类型管理"),
+    SYS_DICT_TYPE("900005","字典类型管理"),
     SYS_FACTORY("900006","厂区管理"),
     SYS_STOREHOUSE("900007","仓库管理"),
     SYS_LOG("900008","操作日志管理"),

@@ -38,6 +38,8 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "客户证件类型")
     private String certType;
+    @ApiModelProperty(value = "客户证件类型")
+    private String certTypeName;
 
     /**
      * 客户证件号码
@@ -65,6 +67,8 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "客户等级")
     private String level;
+    @ApiModelProperty(value = "客户等级")
+    private String levelName;
     /**
      * 客户邮箱
      */
@@ -100,7 +104,7 @@ public class QueryByIdOutDTO {
     private String approveUserName;
 
     @ApiModelProperty(value = "审核时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date approveTime;
 
     @ApiModelProperty(value = "审核意见")
@@ -120,7 +124,7 @@ public class QueryByIdOutDTO {
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新者
@@ -133,7 +137,7 @@ public class QueryByIdOutDTO {
      * 更新时间
      */
     @ApiModelProperty(value = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 备注

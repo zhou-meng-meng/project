@@ -11,6 +11,8 @@
         <result property="producer" column="producer"/>
         <result property="produceTime" column="produce_time"/>
         <result property="inCode" column="in_code"/>
+        <result property="dutyCode" column="duty_code"/>
+        <result property="machineCode" column="machine_code"/>
         <result property="approveState" column="approve_state"/>
         <result property="billState" column="bill_state"/>
         <result property="createBy" column="create_by"/>
@@ -34,6 +36,10 @@
             u2.user_name AS producerName,
             t.produce_time,
             t.in_code,
+            t.duty_code,
+            d4.dict_value dutyName,
+            t.machine_code,
+            d5.dict_value as machineName,
             t.approve_state,
             t.bill_state ,
             t.create_by,
@@ -50,6 +56,8 @@
                 LEFT JOIN material_info m ON m.CODE = t.material_code
                 LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
                 LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+                LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
+                LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
           where  1=1  
         <if test="prod.materialCode != null and prod.materialCode != ''">
             and t.material_code    like concat('%', #{prod.materialCode}, '%')
@@ -68,6 +76,12 @@
         </if>
         <if test="prod.inCode != null and prod.inCode != ''">
             and t.in_code   = #{prod.inCode}
+        </if>
+        <if test="prod.dutyCode != null and prod.dutyCode != ''">
+            and t.duty_code   = #{prod.dutyCode}
+        </if>
+        <if test="prod.machineCode != null and prod.machineCode != ''">
+            and t.machine_code   = #{prod.machineCode}
         </if>
         order  by  t.id
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -96,6 +110,12 @@
         <if test="inCode != null and inCode != ''">
             and t.in_code   = #{inCode}
         </if>
+        <if test="dutyCode != null and dutyCode != ''">
+            and t.duty_code   = #{dutyCode}
+        </if>
+        <if test="machineCode != null and machineCode != ''">
+            and t.machine_code   = #{machineCode}
+        </if>
     </select>
 
     <select id="selectProductionMaterialIncomeInfoById"  resultType="com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo">
@@ -112,6 +132,10 @@
             u2.user_name AS producerName,
             t.produce_time,
             t.in_code,
+            t.duty_code,
+            d4.dict_value dutyName,
+            t.machine_code,
+            d5.dict_value as machineName,
             t.approve_state,
             t.bill_state ,
             t.create_by,
@@ -128,6 +152,8 @@
                    LEFT JOIN material_info m ON m.CODE = t.material_code
                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
                    LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+                   LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
+                   LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
         where    t.id = #{id}
     </select>
 

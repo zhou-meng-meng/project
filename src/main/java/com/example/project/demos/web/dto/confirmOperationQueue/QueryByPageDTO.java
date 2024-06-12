@@ -6,22 +6,13 @@ import lombok.Data;
 @Data
 public class QueryByPageDTO {
 
-    /**
-     * 客户编号
-     */
-    @ApiModelProperty(value = "客户编号")
-    private String code;
-    /**
-     * 客户名称
-     */
-    @ApiModelProperty(value = "客户名称")
-    private String name;
+    @ApiModelProperty(value = "提交开始日期")
+    private String beginDate;
+    @ApiModelProperty(value = "提交结束日期")
+    private String endDate;
 
-    /**
-     * 联系人
-     */
-    @ApiModelProperty(value = "联系人")
-    private String linkUser;
+    @ApiModelProperty(value = "提交人姓名")
+    private String submitUserName;
 
     /**
      * 翻页数据起始位置:1

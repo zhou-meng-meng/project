@@ -31,13 +31,13 @@ public class ConfirmOperationQueueInfo implements Serializable {
 	/**
 	 * 确认流水id
 	 */
-	@ApiModelProperty(value = "自增主键")
+	@ApiModelProperty(value = "确认流水id")
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long confirmFlowId;
 	/**
 	 * 各确认业务主键
 	 */
-	@ApiModelProperty(value = "自增主键")
+	@ApiModelProperty(value = "各确认业务主键")
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long businessId;
 	/**

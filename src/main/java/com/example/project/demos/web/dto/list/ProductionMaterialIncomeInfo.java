@@ -87,6 +87,16 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "单据状态")
 	private String billState;
+
+	@ApiModelProperty(value = "班组编号")
+	private String dutyCode;
+	@ApiModelProperty(value = "班组名称")
+	private String dutyName;
+	@ApiModelProperty(value = "机器编号")
+	private String machineCode;
+	@ApiModelProperty(value = "机器名称")
+	private String machineName;
+
 	/**
 	 * 创建者
 	 */
@@ -98,7 +108,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	 * 创建时间
 	 */
 	@ApiModelProperty(value = "创建时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
 	/**
 	 * 更新者
@@ -111,7 +121,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	 * 更新时间
 	 */
 	@ApiModelProperty(value = "更新时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date updateTime;
 	/**
 	 * 备注

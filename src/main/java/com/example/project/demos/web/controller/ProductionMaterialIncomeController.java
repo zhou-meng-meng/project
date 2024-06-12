@@ -62,7 +62,7 @@ public class ProductionMaterialIncomeController {
      */
     @PostMapping("/add")
     @ApiOperation("新增数据")
-    public AddOutDTO add(@RequestBody AddDTO dto) throws UnknownHostException {
+    public AddOutDTO add(@RequestBody AddDTO dto)  {
         AddOutDTO outDTO = productionMaterialIncomeService.insert(dto);
         return outDTO;
     }

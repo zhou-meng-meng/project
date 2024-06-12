@@ -1,18 +1,25 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysDictDataDao;
 import com.example.project.demos.web.dao.SysDictTypeDao;
 import com.example.project.demos.web.dto.list.SysDictDataInfo;
 import com.example.project.demos.web.dto.list.SysDictDataKeyValueInfo;
 import com.example.project.demos.web.dto.list.SysDictTypeInfo;
 import com.example.project.demos.web.dto.sysDictType.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SysDictTypeEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SysDictTypeService;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -28,6 +35,9 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
     private SysDictTypeDao sysDictTypeDao;
     @Resource
     private SysDictDataDao sysDictDataDao;
+
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -90,6 +100,8 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             //判断录入的type值是否已经存在
             int k = sysDictTypeDao.checkByType(dto.getDictType());
@@ -97,16 +109,19 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
                 errorCode = ErrorCodeEnums.DICT_TYPE_IS_EXIST.getCode();
                 errortMsg = ErrorCodeEnums.DICT_TYPE_IS_EXIST.getDesc();
             }else{
-                SysDictTypeEntity sysDictTypeEntity = BeanCopyUtils.copy(dto,SysDictTypeEntity.class);
-                sysDictTypeEntity.setCreateBy("zhangyunning");
-                sysDictTypeEntity.setCreateTime(new Date());
-                int i = sysDictTypeDao.insert(sysDictTypeEntity);
+                SysDictTypeEntity entity = BeanCopyUtils.copy(dto,SysDictTypeEntity.class);
+                entity.setCreateBy(user.getUserLogin());
+                entity.setCreateTime(date);
+                int i = sysDictTypeDao.insert(entity);
             }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "字典名称:"+ dto.getDictName() +",字典类型:"+dto.getDictType();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_DICT_TYPE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -117,16 +132,21 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SysDictTypeEntity sysDictTypeEntity = BeanCopyUtils.copy(dto,SysDictTypeEntity.class);
-            sysDictTypeEntity.setCreateBy("zhangyunning");
-            sysDictTypeEntity.setUpdateTime(new Date());
-            int i = sysDictTypeDao.updateById(sysDictTypeEntity);
+            SysDictTypeEntity entity = BeanCopyUtils.copy(dto,SysDictTypeEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = sysDictTypeDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "字典名称:"+ dto.getDictName() +",字典类型:"+dto.getDictType();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_DICT_TYPE.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -137,6 +157,8 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             //获取数据
             SysDictTypeEntity entity = sysDictTypeDao.selectById(dto.getId());
@@ -146,8 +168,11 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "字典名称:"+ dto.getDictName() +",字典类型:"+dto.getDictType();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_DICT_TYPE.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;

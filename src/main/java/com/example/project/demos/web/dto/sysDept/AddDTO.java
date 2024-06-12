@@ -38,6 +38,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "负责人登录名")
     private String leader;
+    @ApiModelProperty(value = "负责人姓名")
+    private String leaderName;
     /**
      * 联系电话
      */

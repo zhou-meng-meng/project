@@ -14,4 +14,21 @@ public class ResetPwdDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 用户工号
+     */
+    @ApiModelProperty(value = "用户工号")
+    private String userId;
+    /**
+     * 用户英文登录名
+     */
+    @ApiModelProperty(value = "用户英文登录名")
+    private String userLogin;
+    /**
+     * 用户姓名
+     */
+    @ApiModelProperty(value = "用户姓名")
+    private String userName;
+
+
 }

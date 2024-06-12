@@ -14,7 +14,10 @@ public enum OperationTypeEnums {
     OPERATION_TYPE_IMPORT("4","导入"),
     OPERATION_TYPE_EXPORT("5","导出"),
     OPERATION_TYPE_APPROVE("6","审核"),
-    OPERATION_TYPE_CONFIRM("7","确认");
+    OPERATION_TYPE_CONFIRM("7","确认"),
+    OPERATION_TYPE_LOGIN("8","登录"),
+    OPERATION_TYPE_UPDATE_PWD("9","修改密码"),
+    OPERATION_TYPE_RESET_PWD("10","重置密码");
 
     private String code;
     private String desc;

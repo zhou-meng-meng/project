@@ -28,6 +28,8 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "厂区负责人英文名")
     private String manage;
+    @ApiModelProperty(value = "厂区负责人姓名")
+    private String manageName;
     /**
      * 厂区负责人电话
      */

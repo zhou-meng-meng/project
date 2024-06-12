@@ -111,7 +111,7 @@ public class CustomerSaleInfo implements Serializable {
 	private String approveUserName;
 
 	@ApiModelProperty(value = "审核时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date approveTime;
 
 	@ApiModelProperty(value = "审核意见")
@@ -128,7 +128,7 @@ public class CustomerSaleInfo implements Serializable {
 	 * 创建时间
 	 */
 	@ApiModelProperty(value = "创建时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
 	/**
 	 * 更新者
@@ -141,7 +141,7 @@ public class CustomerSaleInfo implements Serializable {
 	 * 更新时间
 	 */
 	@ApiModelProperty(value = "更新时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date updateTime;
 	/**
 	 * 备注

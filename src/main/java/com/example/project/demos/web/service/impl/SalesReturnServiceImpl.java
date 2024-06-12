@@ -296,7 +296,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         entity.setConfirmState(result);
         entity.setConfirmOpinion(opinion);
         entity.setConfirmTime(date);
-        //判断审核结果
+        //判断确认结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("确认同意，开始更新库存");
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);

@@ -1,16 +1,23 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dto.list.SysFactoryAndStorePopInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.sysFactory.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SysFactoryService;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -25,6 +32,9 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
 
     @Resource
     private SysFactoryDao sysFactoryDao;
+
+    @Autowired
+    private SysLogService sysLogService;
     
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -39,7 +49,7 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -74,7 +84,7 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -108,7 +118,7 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -121,6 +131,8 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             //判断厂区编号是否存在
             int k = sysFactoryDao.checkCode(dto.getCode());
@@ -128,16 +140,19 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
                 errorCode= ErrorCodeEnums.FACTORY_CODE_IS_EXIST.getCode();
                 errortMsg= ErrorCodeEnums.FACTORY_CODE_IS_EXIST.getDesc();
             }else{
-                SysFactoryEntity sysFactoryEntity = BeanCopyUtils.copy(dto,SysFactoryEntity.class);
-                sysFactoryEntity.setCreateBy("zhangyunning");
-                sysFactoryEntity.setCreateTime(new Date());
-                int i = sysFactoryDao.insert(sysFactoryEntity);
+                SysFactoryEntity entity = BeanCopyUtils.copy(dto,SysFactoryEntity.class);
+                entity.setCreateBy(user.getUserLogin());
+                entity.setCreateTime(date);
+                int i = sysFactoryDao.insert(entity);
             }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "厂区编号:"+ dto.getCode() +",厂区名称:"+dto.getName()+",地址:"+dto.getAddress()+",负责人:"+dto.getManageName()+",电话:"+dto.getManageTel();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_FACTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -148,16 +163,21 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SysFactoryEntity sysFactoryEntity = BeanCopyUtils.copy(dto,SysFactoryEntity.class);
-            sysFactoryEntity.setCreateBy("zhangyunning");
-            sysFactoryEntity.setUpdateTime(new Date());
-            int i = sysFactoryDao.updateById(sysFactoryEntity);
+            SysFactoryEntity entity = BeanCopyUtils.copy(dto,SysFactoryEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = sysFactoryDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "厂区编号:"+ dto.getCode() +",厂区名称:"+dto.getName()+",地址:"+dto.getAddress()+",负责人:"+dto.getManageName()+",电话:"+dto.getManageTel();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_FACTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -168,13 +188,18 @@ public class SysFactoryServiceImpl  implements SysFactoryService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = sysFactoryDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "厂区编号:"+ dto.getCode() +",厂区名称:"+dto.getName()+",地址:"+dto.getAddress()+",负责人:"+dto.getManageName()+",电话:"+dto.getManageTel();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_FACTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;

@@ -2,16 +2,23 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysMenuDao;
 import com.example.project.demos.web.dto.list.SysMenuInfo;
 import com.example.project.demos.web.dto.list.SysMenuTreeInfo;
 import com.example.project.demos.web.dto.sysMenu.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SysMenuEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
+import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.service.SysMenuService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -29,6 +36,8 @@ public class SysMenuServiceImpl  implements SysMenuService {
 
     @Resource
     private SysMenuDao sysMenuDao;
+    @Autowired
+    private SysLogService sysLogService;
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("菜单管理queryById开始");
@@ -36,13 +45,13 @@ public class SysMenuServiceImpl  implements SysMenuService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            SysMenuEntity sysMenuEntity = this.sysMenuDao.selectById(id);
-            outDTO = BeanUtil.copyProperties(sysMenuEntity, QueryByIdOutDTO.class);
+            SysMenuEntity entity = this.sysMenuDao.selectById(id);
+            outDTO = BeanUtil.copyProperties(entity, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -77,7 +86,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -90,16 +99,21 @@ public class SysMenuServiceImpl  implements SysMenuService {
         AddOutDTO outDTO = new AddOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SysMenuEntity sysMenuEntity = BeanCopyUtils.copy(dto,SysMenuEntity.class);
-            sysMenuEntity.setCreateBy("zhangyunning");
-            sysMenuEntity.setCreateTime(new Date());
-            int i = sysMenuDao.insert(sysMenuEntity);
+            SysMenuEntity entity = BeanCopyUtils.copy(dto,SysMenuEntity.class);
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            int i = sysMenuDao.insert(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "菜单编码:"+ dto.getMenuId() +",菜单名称:"+dto.getMenuName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_MENU.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -110,16 +124,21 @@ public class SysMenuServiceImpl  implements SysMenuService {
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SysMenuEntity sysMenuEntity = BeanCopyUtils.copy(dto,SysMenuEntity.class);
-            sysMenuEntity.setCreateBy("zhangyunning");
-            sysMenuEntity.setUpdateTime(new Date());
-            int i = sysMenuDao.updateById(sysMenuEntity);
+            SysMenuEntity entity = BeanCopyUtils.copy(dto,SysMenuEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = sysMenuDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        //记录操作日志
+        String info = "菜单编码:"+ dto.getMenuId() +",菜单名称:"+dto.getMenuName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_MENU.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -130,6 +149,8 @@ public class SysMenuServiceImpl  implements SysMenuService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = sysMenuDao.deleteById(dto.getId());
         }catch (Exception e){
@@ -137,6 +158,9 @@ public class SysMenuServiceImpl  implements SysMenuService {
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
+        //记录操作日志
+        String info = "菜单编码:"+ dto.getMenuId() +",菜单名称:"+dto.getMenuName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_MENU.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;

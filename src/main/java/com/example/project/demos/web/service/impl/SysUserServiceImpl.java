@@ -15,9 +15,8 @@ import com.example.project.demos.web.entity.SysDeptEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.entity.SysUserEntity;
-import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.enums.SysEnums;
-import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.enums.*;
+import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.DateUtils;
@@ -60,6 +59,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
     @Resource
     private SysDeptDao sysDeptDao;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -168,20 +169,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SysUserEntity sysUserEntity = BeanCopyUtils.copy(dto,SysUserEntity.class);
+            SysUserEntity entity = BeanCopyUtils.copy(dto,SysUserEntity.class);
             //密码加密处理
             String pwd = DigestUtils.md5DigestAsHex(Constants.INITE_PWD.getBytes());
-            sysUserEntity.setPassword(pwd);
-            sysUserEntity.setLastPasswordDate(date);
-            sysUserEntity.setCreateBy("zhangyunning");
-            sysUserEntity.setCreateTime(date);
-            int i = sysUserDao.insert(sysUserEntity);
+            entity.setPassword(pwd);
+            entity.setLastPasswordDate(date);
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            int i = sysUserDao.insert(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "工号:"+ dto.getUserId() +",登录名:"+dto.getUserLogin()+",姓名:"+dto.getUserName()+",所属类型:"+dto.getUserTypeName()+",角色:"+dto.getRoleName()+",部门:"+dto.getDeptName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -192,16 +197,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         EditOutDTO outDTO = new EditOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SysUserEntity sysUserEntity = BeanCopyUtils.copy(dto,SysUserEntity.class);
-            sysUserEntity.setUpdateBy("zhangyunning");
-            sysUserEntity.setUpdateTime(new Date());
-            int i = sysUserDao.updateById(sysUserEntity);
+            SysUserEntity entity = BeanCopyUtils.copy(dto,SysUserEntity.class);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            int i = sysUserDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "工号:"+ dto.getUserId() +",登录名:"+dto.getUserLogin()+",姓名:"+dto.getUserName()+",所属类型:"+dto.getUserTypeName()+",角色:"+dto.getRoleName()+",部门:"+dto.getDeptName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -212,13 +222,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = sysUserDao.deleteById(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
+        //记录操作日志
+        String info = "工号:"+ dto.getUserId() +",登录名:"+dto.getUserLogin()+",姓名:"+dto.getUserName()+",所属类型:"+dto.getUserTypeName()+",角色:"+dto.getRoleName()+",部门:"+dto.getDeptName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -235,6 +250,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
         //token
         String token = IdUtil.simpleUUID();
+        String ipAddress ="";
         try{
             log.info("用户登录-userLogin开始");
             String userLogin = dto.getUserLogin();
@@ -261,6 +277,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 log.info("用户密码:"+pwd);
                 if(pwd.equals(Constants.INITE_PWD_ENCODE)){
                     log.info("是初始化密码，需要重置");
+                    errorCode= ErrorCodeEnums.PWD_INITE.getCode();
+                    errortMsg= ErrorCodeEnums.PWD_INITE.getDesc();
                     isInitePwd = SysEnums.SYS_YES_FLAG.getCode();
                 }else{
                     log.info("不是初始化密码，判断有效期");
@@ -271,6 +289,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                     if(days > Constants.OVERDUE_PWD_DAYS){
                         log.info("密码已过期");
                         isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
+                        errorCode= ErrorCodeEnums.PWD_OVERDUE.getCode();
+                        errortMsg= ErrorCodeEnums.PWD_OVERDUE.getDesc();
                     }else{
                         log.info("密码未过期，查询用户其他信息");
                         isOverDuePwd = SysEnums.SYS_NO_FLAG.getCode();
@@ -279,7 +299,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         outDTO.setAuthorityType(authorityType);
                         //修改当前登录IP和登录时间
                         InetAddress inetAddress = InetAddress.getLocalHost();
-                        String ipAddress = inetAddress.getHostAddress();
+                        ipAddress = inetAddress.getHostAddress();
                         SysUserEntity entity = new SysUserEntity();
                         entity.setId(info.getId());
                         entity.setLoginIp(ipAddress);
@@ -294,13 +314,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         outDTO.setIsInitePwd(isInitePwd);
         outDTO.setIsOverDuePwd(isOverDuePwd);
         outDTO.setToken(token);
+        //记录操作日志
+        String info = "登录名:"+dto.getUserLogin();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_LOGIN.getCode(),dto.getUserLogin(),date,info,errorCode,errortMsg,ipAddress,token,Constants.SYSTEM_CODE);
         return outDTO;
     }
 
@@ -311,21 +334,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             //将用户密码重置为123456的MD5
-            SysUserEntity sysUserEntity = sysUserDao.selectById(dto.getId());
+            SysUserEntity entity = sysUserDao.selectById(dto.getId());
             //密码加密处理
             String pwd = DigestUtils.md5DigestAsHex(Constants.INITE_PWD.getBytes());
-            sysUserEntity.setPassword(pwd);
-            sysUserEntity.setLastPasswordDate(date);
-            sysUserDao.updateById(sysUserEntity);
+            entity.setPassword(pwd);
+            entity.setLastPasswordDate(date);
+            sysUserDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        //记录操作日志
+        String info = "工号:"+dto.getUserId()+",登录名:"+dto.getUserLogin()+"姓名:"+dto.getUserName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_RESET_PWD.getCode(),dto.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("重置密码结束");
         return outDTO;
     }
@@ -337,6 +364,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
+        SysUserEntity sysUser = sysUserDao.selectById(dto.getId());
+        String ipAddress = "";
         try{
             String oldPwd = dto.getOldPwd();
             log.info("输入的原密码:"+oldPwd);
@@ -360,6 +389,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 entity.setLastPasswordDate(date);
                 sysUserDao.updateById(entity);
             }
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            ipAddress = inetAddress.getHostAddress();
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -367,6 +398,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        //记录操作日志
+        String info = "工号:"+sysUser.getUpdateBy()+",登录名:"+sysUser.getUserLogin()+"姓名:"+sysUser.getUserName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE_PWD.getCode(),sysUser.getUserLogin(),date,info,errorCode,errortMsg,ipAddress,null,Constants.SYSTEM_CODE);
         log.info("修改密码结束");
         return outDTO;
     }

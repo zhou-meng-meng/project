@@ -24,6 +24,14 @@ public class DeleteByIdDTO {
      */
     @ApiModelProperty(value = "入库数量")
     private BigDecimal incomeNum;
+    @ApiModelProperty(value = "班组编号")
+    private String dutyCode;
+    @ApiModelProperty(value = "班组名称")
+    private String dutyName;
+    @ApiModelProperty(value = "机器编号")
+    private String machineCode;
+    @ApiModelProperty(value = "机器名称")
+    private String machineName;
     /**
      * 生产员工
      */

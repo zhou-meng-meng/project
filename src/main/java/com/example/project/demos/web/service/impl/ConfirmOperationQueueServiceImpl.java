@@ -14,10 +14,7 @@ import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.ConfirmOperationQueueService;
-import com.example.project.demos.web.service.SalesReturnService;
-import com.example.project.demos.web.service.SysLogService;
-import com.example.project.demos.web.service.TransferOutboundService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +38,9 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
     private TransferOutboundService transferOutboundService;
     @Autowired
     private SalesReturnService salesReturnService;
+
+    @Autowired
+    private SalersOrderService salersOrderService;
     @Autowired
     private SysLogService sysLogService;
 
@@ -139,6 +139,9 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
             }else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())){
                 log.info("销售退回操作");
                 salesReturnService.updateConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date);
+            } else if(functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())){
+                log.info("销售员下单操作");
+                salersOrderService.updateConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
             }
             log.info("更新确认流水表");
             ConfirmOperationFlowEntity flowEntity = confirmOperationFlowDao.selectById(entity.getConfirmFlowId());

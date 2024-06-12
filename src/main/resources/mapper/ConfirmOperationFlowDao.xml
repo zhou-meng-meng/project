@@ -71,12 +71,15 @@
         <if test="flow.confirmState != null and flow.confirmState != ''">
             and t.confirm_state    = #{flow.confirmState}
         </if>
+        <if test="flow.confirmUser != null and flow.confirmUser != ''">
+            and t.confirm_user    = #{flow.confirmUser}
+        </if>
         order  by  t.confirm_time
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
-        SELECT count(1)  FROM	approve_operation_flow t
+        SELECT count(1)  FROM	confirm_operation_flow t
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
         where  1=1
         <if test="beginDate != null and beginDate != ''">
@@ -90,6 +93,9 @@
         </if>
         <if test="confirmState != null and confirmState != ''">
             and t.confirm_state    = #{confirmState}
+        </if>
+        <if test="confirmUser != null and confirmUser != ''">
+            and t.confirm_user    = #{confirmUser}
         </if>
     </select>
 

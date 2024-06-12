@@ -51,6 +51,14 @@ public class EditDTO {
     private String factoryCode;
     @ApiModelProperty(value = "厂区名称")
     private String factoryName;
+    @ApiModelProperty(value = "班组编号")
+    private String dutyCode;
+    @ApiModelProperty(value = "班组名称")
+    private String dutyName;
+    @ApiModelProperty(value = "机器编号")
+    private String machineCode;
+    @ApiModelProperty(value = "机器名称")
+    private String machineName;
 
     /**
      * 备注

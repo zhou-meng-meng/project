@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -52,6 +53,12 @@ public class ProductionMaterialIncomeEntity implements Serializable {
 	 * 入库方编号
 	 */
 	private String inCode;
+
+
+	private String dutyCode;
+
+	private String machineCode;
+
 	/**
 	 * 审批状态
 	 */
