@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.sysUser;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -94,11 +95,13 @@ public class AddDTO {
      * 入职日期
      */
     @ApiModelProperty(value = "入职日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date entryDate;
     /**
      * 离职日期
      */
     @ApiModelProperty(value = "离职日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date leaveDate;
 
     /**

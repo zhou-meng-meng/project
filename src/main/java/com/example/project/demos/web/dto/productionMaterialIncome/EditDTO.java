@@ -48,9 +48,9 @@ public class EditDTO {
      * 厂区编号
      */
     @ApiModelProperty(value = "厂区编号")
-    private String factoryCode;
+    private String inCode;
     @ApiModelProperty(value = "厂区名称")
-    private String factoryName;
+    private String inName;
     @ApiModelProperty(value = "班组编号")
     private String dutyCode;
     @ApiModelProperty(value = "班组名称")

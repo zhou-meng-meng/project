@@ -13,12 +13,13 @@
         <result property="billNo" column="bill_no"/>
         <result property="materialBuyer" column="material_buyer"/>
         <result property="materialBuytime" column="material_buytime"/>
+        <result property="approveUser" column="approve_user"/>
         <result property="approveState" column="approve_state"/>
         <result property="approveOpinion" column="approve_opinion"/>
         <result property="approveTime" column="approve_time"/>
         <result property="billState" column="bill_state"/>
         <result property="count" column="count"/>
-        <result property="tollAmout" column="toll_amout"/>
+        <result property="tollAmount" column="toll_amount"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -43,13 +44,15 @@
             t.material_buyer,
             u2.user_name AS materialBuyerName,
             t.material_buytime,
+            t.approve_user,
+            u3.user_name AS approveUserName,
             t.approve_state,
             d1.dict_value as approveStateName,
             t.approve_opinion,
             t.approve_time,
             t.bill_state,
             t.count,
-            t.toll_amout ,
+            t.toll_amount ,
             t.create_by,
             u.user_name AS createByName,
             t.create_time,
@@ -61,6 +64,7 @@
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                     LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
+                    LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
                     left join material_info  m  on  m.code = t.material_code
                     left join customer_supply s on s.code = t.supplyer_code
                     LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
@@ -131,13 +135,15 @@
             t.material_buyer,
             u2.user_name AS materialBuyerName,
             t.material_buytime,
+            t.approve_user,
+            u3.user_name AS approveUserName,
             t.approve_state,
             d1.dict_value as approveStateName,
             t.approve_opinion,
             t.approve_time,
             t.bill_state,
             t.count,
-            t.toll_amout ,
+            t.toll_amount ,
             t.create_by,
             u.user_name AS createByName,
             t.create_time,
@@ -149,6 +155,7 @@
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                     LEFT JOIN sys_user u2 ON u2.user_login = t.material_buyer
+                    LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
                     left join material_info  m  on  m.code = t.material_code
                     left join customer_supply s on s.code = t.supplyer_code
                     LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'

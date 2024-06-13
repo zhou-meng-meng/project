@@ -64,6 +64,9 @@
         <foreach item="code" collection="codeList" open="(" separator="," close=")">
             #{code}
         </foreach>
+        <if test="stockCode != null and stockCode != ''">
+            and t.stock_code    = #{stockCode}
+        </if>
         order  by t.material_code
     </select>
 

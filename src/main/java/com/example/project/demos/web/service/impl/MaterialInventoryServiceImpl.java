@@ -76,7 +76,7 @@ public class MaterialInventoryServiceImpl  implements MaterialInventoryService {
                 //获取物料编号数据
                 List<String> codeList  = page.toList();
                 //获取物料库存信息
-                List<MaterialInventoryInfo> list = materialInventoryDao.selectMaterialInventoryList(codeList);
+                List<MaterialInventoryInfo> list = materialInventoryDao.selectMaterialInventoryList(codeList,queryByPageDTO.getStockCode());
                 list = setMaterialInventoryObject(list);
                 for(MaterialInventoryInfo info : list){
                     info.setGroupBy(info.getMaterialCode()+info.getMaterialName()+info.getModelName()+info.getUnitName());

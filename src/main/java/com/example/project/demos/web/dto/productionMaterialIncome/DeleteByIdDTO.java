@@ -39,5 +39,5 @@ public class DeleteByIdDTO {
     private String producerName;
 
     @ApiModelProperty(value = "厂区名称")
-    private String factoryName;
+    private String inName;
 }

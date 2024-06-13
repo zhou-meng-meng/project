@@ -61,6 +61,9 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             list.add(info);
             list = setRebuildInboundObject(list);
             outDTO = BeanUtil.copyProperties(list.get(0),QueryByIdOutDTO.class);
+            //通过主表ID获取装袋表明细列表
+            List<MaterialPackageDetailInfo> detailInfoList = materialPackageDetailService.queryByPackageId(info.getId());
+            outDTO.setDetailInfoList(detailInfoList);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());

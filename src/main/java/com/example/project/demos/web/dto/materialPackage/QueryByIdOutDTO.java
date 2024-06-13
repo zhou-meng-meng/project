@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.materialPackage;
 
+import com.example.project.demos.web.dto.list.MaterialPackageDetailInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -8,6 +9,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class QueryByIdOutDTO {
@@ -73,6 +75,10 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "差额")
     private BigDecimal balanceNum;
+
+    @ApiModelProperty(value = "原料集合")
+    private List<MaterialPackageDetailInfo> detailInfoList;
+
     /**
      * 创建者
      */

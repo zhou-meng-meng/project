@@ -235,7 +235,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         log.info("来料入库审核更新开始");
         RawMaterialIncomeEntity  entity = rawMaterialIncomeDao.selectById(id);
         entity.setUnitPrice(unitPrice);
-        entity.setTollAmout(tollAmount);
+        entity.setTollAmount(tollAmount);
+        entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -305,7 +306,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             log.info("没有单价权限，将单价和总金额置为0");
             for(RawMaterialIncomeInfo info : list){
                 info.setUnitPrice("0");
-                info.setTollAmout(new BigDecimal(0));
+                info.setTollAmount(new BigDecimal(0));
             }
         }
         return list;

@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.sysUser;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -101,11 +102,13 @@ public class EditDTO {
      * 入职日期
      */
     @ApiModelProperty(value = "入职日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date entryDate;
     /**
      * 离职日期
      */
     @ApiModelProperty(value = "离职日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date leaveDate;
     /**
      * 备注

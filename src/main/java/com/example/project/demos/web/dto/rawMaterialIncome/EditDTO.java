@@ -82,7 +82,7 @@ public class EditDTO {
      * 总金额
      */
     @ApiModelProperty(value = "总金额")
-    private BigDecimal tollAmout;
+    private BigDecimal tollAmount;
 
     /**
      * 备注

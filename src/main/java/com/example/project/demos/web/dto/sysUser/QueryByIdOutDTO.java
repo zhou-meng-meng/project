@@ -126,11 +126,13 @@ public class QueryByIdOutDTO {
      * 入职日期
      */
     @ApiModelProperty(value = "入职日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date entryDate;
     /**
      * 离职日期
      */
     @ApiModelProperty(value = "离职日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date leaveDate;
     /**
      * 创建者

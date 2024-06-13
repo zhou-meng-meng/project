@@ -58,6 +58,8 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 * 进货时间
 	 */
 	private Date materialBuytime;
+
+	private String approveUser;
 	/**
 	 * 审批状态
 	 */
@@ -75,7 +77,7 @@ public class RawMaterialIncomeEntity implements Serializable {
 	/**
 	 * 总金额
 	 */
-	private BigDecimal tollAmout;
+	private BigDecimal tollAmount;
 	/**
 	 * 创建人
 	 */

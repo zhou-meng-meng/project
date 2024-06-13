@@ -88,6 +88,10 @@ public class RawMaterialIncomeInfo implements Serializable {
 	@ApiModelProperty(value = "进货时间")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date materialBuytime;
+	@ApiModelProperty(value = "审核状态人英文名")
+	private String approveUser;
+	@ApiModelProperty(value = "审核人")
+	private String approveUserName;
 	/**
 	 * 审批状态
 	 */
@@ -95,6 +99,8 @@ public class RawMaterialIncomeInfo implements Serializable {
 	private String approveState;
 	@ApiModelProperty(value = "审批状态")
 	private String approveStateName;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date approveTime;
 
 	@ApiModelProperty(value = "审批意见")
 	private String approveOpinion;
@@ -113,7 +119,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	 * 总金额
 	 */
 	@ApiModelProperty(value = "总金额")
-	private BigDecimal tollAmout;
+	private BigDecimal tollAmount;
 	/**
 	 * 创建者
 	 */

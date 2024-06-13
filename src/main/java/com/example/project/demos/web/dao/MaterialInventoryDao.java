@@ -25,7 +25,7 @@ public interface MaterialInventoryDao extends BaseMapper<MaterialInventoryEntity
 
     int countMaterialCode(QueryByPageDTO dto);
 
-    List<MaterialInventoryInfo> selectMaterialInventoryList(@Param(value = "codeList") List<String> codeList);
+    List<MaterialInventoryInfo> selectMaterialInventoryList(@Param(value = "codeList") List<String> codeList,@Param(value = "stockCode") String stockCode);
 
     int checkIfMaterialCodeExist(@Param("materialCode")String materialCode, @Param("code")String code);
 

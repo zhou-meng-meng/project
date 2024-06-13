@@ -46,7 +46,7 @@ public class SysDictDataEntity implements Serializable {
 	/**
 	 * 字典排序
 	 */
-	private Integer dictSort;
+	private String dictSort;
 
 	/**
 	 * 是否默认（Y是 N否）

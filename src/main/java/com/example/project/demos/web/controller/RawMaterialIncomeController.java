@@ -62,7 +62,7 @@ public class RawMaterialIncomeController {
      */
     @PostMapping("/add")
     @ApiOperation("新增数据")
-    public AddOutDTO add(@RequestBody AddDTO dto) throws UnknownHostException {
+    public AddOutDTO add(@RequestBody AddDTO dto)  {
         AddOutDTO outDTO = rawMaterialIncomeService.insert(dto);
         return outDTO;
     }

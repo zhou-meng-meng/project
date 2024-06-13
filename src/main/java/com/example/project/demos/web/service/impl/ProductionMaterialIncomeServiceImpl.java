@@ -138,14 +138,14 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             entity.setCreateTime(date);
             int i = productionMaterialIncomeDao.insert(entity);
             //修改库存
-            i = materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getFactoryCode(), dto.getIncomeNum(),"add",date);
+            i = materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getInCode(), dto.getIncomeNum(),"add",date);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getFactoryName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -188,7 +188,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getFactoryName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -213,7 +213,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getFactoryName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
