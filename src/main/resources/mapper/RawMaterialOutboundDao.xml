@@ -70,7 +70,10 @@
         <if test="raw.billNo != null and raw.billNo != ''">
             and t.bill_no    like concat('%', #{raw.billNo}, '%')
         </if>
-        order  by  t.id
+        <if test="raw.outCode != null and raw.outCode != ''">
+            and t.out_code   = #{raw.outCode}
+        </if>
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
@@ -90,6 +93,9 @@
         </if>
         <if test="billNo != null and billNo != ''">
             and t.bill_no    like concat('%', #{billNo}, '%')
+        </if>
+        <if test="outCode != null and outCode != ''">
+            and t.out_code   = #{outCode}
         </if>
     </select>
 
