@@ -84,8 +84,11 @@
         <if test="customer.linkUser != null and customer.linkUser != ''">
             and t.link_user    like concat('%', #{customer.linkUser}, '%')
         </if>
-        <if test="customer.approveState != null and customer.approveState != ''">
-            and t.approve_state  =  #{customer.approveState}
+        <if test="customer.saler != null and customer.saler != ''">
+            and t.saler  = #{customer.saler}
+        </if>
+        <if test="customer.salerName != null and customer.salerName != ''">
+            and u2.user_name  like concat('%', #{customer.salerName}, '%')
         </if>
         order  by  t.CODE
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -105,6 +108,12 @@
         </if>
         <if test="approveState != null and approveState != ''">
             and t.approve_state  =  #{approveState}
+        </if>
+        <if test="saler != null and saler != ''">
+            and t.saler  = #{saler}
+        </if>
+        <if test="salerName != null and salerName != ''">
+            and u2.user_name  like concat('%', #{salerName}, '%')
         </if>
     </select>
 

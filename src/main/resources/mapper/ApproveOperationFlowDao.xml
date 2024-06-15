@@ -61,6 +61,9 @@
         <if test="flow.approveState != null and flow.approveState != ''">
             and t.approve_state    = #{flow.approveState}
         </if>
+        <if test="flow.approveUser != null and flow.approveUser != ''">
+            and t.approve_user    = #{flow.approveUser}
+        </if>
         order  by  t.approve_time
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -80,6 +83,9 @@
         </if>
         <if test="approveState != null and approveState != ''">
             and t.approve_state    = #{approveState}
+        </if>
+        <if test="approveUser != null and approveUser != ''">
+            and t.approve_user    = #{approveUser}
         </if>
     </select>
 

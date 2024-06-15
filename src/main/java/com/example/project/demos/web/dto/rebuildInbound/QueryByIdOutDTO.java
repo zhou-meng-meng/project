@@ -55,9 +55,9 @@ public class QueryByIdOutDTO {
     private String dutyCode;
     @ApiModelProperty(value = "班组名称")
     private String dutyName;
-    @ApiModelProperty(value = "机器号")
+    @ApiModelProperty(value = "机器号编码")
     private String machineCode;
-    @ApiModelProperty(value = "机器号")
+    @ApiModelProperty(value = "机器号名称")
     private String machineName;
     /**
      * 单据号

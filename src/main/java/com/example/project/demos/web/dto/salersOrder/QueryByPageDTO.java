@@ -13,7 +13,7 @@ public class QueryByPageDTO {
     private String customerName;
 
     @ApiModelProperty(value = "单据号")
-    private String billNo;
+    private String billCode;
     @ApiModelProperty(value = "销售员英文名")
     private String saler;
 

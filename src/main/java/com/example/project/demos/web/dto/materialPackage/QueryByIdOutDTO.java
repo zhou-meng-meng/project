@@ -47,7 +47,7 @@ public class QueryByIdOutDTO {
     @ApiModelProperty(value = "班次枚举值")
     private String dutyCode;
     @ApiModelProperty(value = "班次")
-    private String dutyCodeName;
+    private String dutyName;
     /**
      * 锅数
      */

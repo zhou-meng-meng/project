@@ -25,6 +25,8 @@ public class QueryByPageDTO {
 
     @ApiModelProperty(value = "所属销售")
     private String saler;
+    @ApiModelProperty(value = "所属销售员名称")
+    private String salerName;
 
     @ApiModelProperty(value = "审核状态编码")
     private String approveState;

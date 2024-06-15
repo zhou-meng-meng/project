@@ -26,6 +26,8 @@ public class QueryByPageDTO {
      */
     @ApiModelProperty(value = "审核状态")
     private String approveState;
+    @ApiModelProperty(value = "审核人")
+    private String approveUser;
 
     /**
      * 翻页数据起始位置:1

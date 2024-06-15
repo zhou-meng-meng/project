@@ -58,6 +58,8 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            //只能查询自己审核过的记录
+            queryByPageDTO.setApproveUser(RequestHolder.getUserInfo().getUserLogin());
             //先用查询条件查询总条数
             long total = this.approveOperationFlowDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -75,7 +77,6 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
                 }
                 //出参赋值
                 outDTO.setApproveOperationFlowInfoList(list);
-
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值

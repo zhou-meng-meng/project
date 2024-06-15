@@ -45,7 +45,7 @@
         <if test="queue.submitUserName != null and queue.submitUserName != ''">
             and u2.user_name    like concat('%', #{queue.submitUserName}, '%')
         </if>
-        order  by  t.submit_time
+        order  by  t.submit_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

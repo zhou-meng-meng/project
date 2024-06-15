@@ -119,6 +119,8 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "创建者英文名")
     private String createBy;
+    @ApiModelProperty(value = "创建者姓名名")
+    private String createByName;
 
     /**
      * 创建时间
