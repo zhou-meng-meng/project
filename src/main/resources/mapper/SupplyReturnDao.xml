@@ -88,7 +88,7 @@
         <if test="return.inCode != null and return.inCode != ''">
             and t.in_code   = #{return.inCode}
         </if>
-        order  by  t.id
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

@@ -63,7 +63,7 @@
         <if test="pay.endDate != null and pay.endDate != ''">
             and t.income_date    <![CDATA[ <= ]]> #{pay.endDate}
         </if>
-        order  by  t.id
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

@@ -64,7 +64,7 @@
         <if test="flow.approveUser != null and flow.approveUser != ''">
             and t.approve_user    = #{flow.approveUser}
         </if>
-        order  by  t.approve_time
+        order  by  t.approve_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

@@ -76,7 +76,7 @@
         <if test="rebuild.machineCode != null and rebuild.machineCode != ''">
             and t.machine_code   = #{rebuild.machineCode}
         </if>
-        order  by  t.id
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

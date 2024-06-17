@@ -68,7 +68,7 @@
         <if test="package.machineCode != null and package.machineCode != ''">
             and t.machine_code    =#{package.machineCode}
         </if>
-        order  by t.factory_code, t.package_date
+        order  by  t.package_date  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

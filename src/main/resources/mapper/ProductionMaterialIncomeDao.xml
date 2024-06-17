@@ -83,7 +83,7 @@
         <if test="prod.machineCode != null and prod.machineCode != ''">
             and t.machine_code   = #{prod.machineCode}
         </if>
-        order  by  t.id
+        order  by   t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

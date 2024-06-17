@@ -59,7 +59,7 @@
         <if test="supplyerName != null and supplyerName != ''">
             and s.name    like concat('%', #{supplyerName}, '%')
         </if>
-        order  by  t.CODE
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

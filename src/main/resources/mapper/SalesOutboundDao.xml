@@ -89,7 +89,7 @@
         <if test="sale.outCode != null and sale.outCode != ''">
             and t.out_code = #{sale.outCode}
         </if>
-        order  by  t.id
+        order  by  t.id desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

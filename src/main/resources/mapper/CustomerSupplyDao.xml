@@ -68,7 +68,7 @@
         <if test="customer.linkUser != null and customer.linkUser != ''">
             and t.link_user    like concat('%', #{customer.linkUser}, '%')
         </if>
-        order  by  t.CODE
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

@@ -72,7 +72,7 @@
         <if test="info.stockBillNo != null and info.stockBillNo != ''">
             and t.stock_bill_no    like concat('%', #{info.stockBillNo}, '%')
         </if>
-        order  by t.factory_code, t.duty_date desc
+        order  by  t.duty_date desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

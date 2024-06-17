@@ -25,6 +25,7 @@
         <result property="urgentName" column="urgent_name"/>
         <result property="urgentPhone" column="urgent_phone"/>
         <result property="entryDate" column="entry_date"/>
+        <result property="insuranceDate" column="insurance_date"/>
         <result property="leaveDate" column="leave_date"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -58,6 +59,7 @@
             t.urgent_name,
             t.urgent_phone,
             t.entry_date,
+            t.insurance_date,
             t.leave_date,
             t.create_by,
             u.user_name AS createByName,
@@ -163,6 +165,7 @@
         t.urgent_name,
         t.urgent_phone,
         t.entry_date,
+        t.insurance_date,
         t.leave_date,
         t.create_by,
         u.user_name AS createByName,
@@ -206,6 +209,7 @@
             t.urgent_name,
             t.urgent_phone,
             t.entry_date,
+            t.insurance_date,
             t.leave_date,
             t.create_by,
             u.user_name AS createByName,
@@ -250,6 +254,7 @@
             t.urgent_name,
             t.urgent_phone,
             t.entry_date,
+            t.insurance_date,
             t.leave_date,
             t.create_by,
             t.create_time,

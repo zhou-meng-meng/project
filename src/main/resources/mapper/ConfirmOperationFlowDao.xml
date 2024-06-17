@@ -74,7 +74,7 @@
         <if test="flow.confirmUser != null and flow.confirmUser != ''">
             and t.confirm_user    = #{flow.confirmUser}
         </if>
-        order  by  t.confirm_time
+        order  by  t.confirm_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

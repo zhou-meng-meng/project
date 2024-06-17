@@ -2,6 +2,7 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -108,6 +109,8 @@ public class SysUserEntity implements Serializable {
 	 * 入职日期
 	 */
 	private Date entryDate;
+
+	private Date insuranceDate;
 	/**
 	 * 离职日期
 	 */

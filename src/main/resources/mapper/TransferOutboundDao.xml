@@ -90,7 +90,7 @@
         <if test="transfer.billNo != null and transfer.billNo != ''">
             and t.bill_no =  #{transfer.billNo}
         </if>
-        order  by  t.transfer_date
+        order  by  t.transfer_date  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

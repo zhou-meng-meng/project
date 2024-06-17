@@ -73,7 +73,7 @@
         <if test="raw.outCode != null and raw.outCode != ''">
             and t.out_code   = #{raw.outCode}
         </if>
-        order  by  t.id  desc
+        order  by   t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

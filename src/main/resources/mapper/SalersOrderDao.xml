@@ -106,7 +106,7 @@
         <if test="order.salerName != null and order.salerName != ''">
             and t.saler  like concat('%', #{order.salerName}, '%')
         </if>
-        order  by  t.id
+        order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

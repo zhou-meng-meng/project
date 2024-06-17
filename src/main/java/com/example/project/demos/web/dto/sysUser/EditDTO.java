@@ -104,6 +104,9 @@ public class EditDTO {
     @ApiModelProperty(value = "入职日期")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date entryDate;
+    @ApiModelProperty(value = "社保日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date insuranceDate;
     /**
      * 离职日期
      */

@@ -93,6 +93,9 @@
         <if test="return.returnUserName != null and return.returnUserName != ''">
             and u2.user_name   like concat('%', #{return.returnUserName}, '%')
         </if>
+        <if test="return.returnUser != null and return.returnUser != ''">
+            and t.return_user    #{return.returnUser}
+        </if>
         <if test="return.billNo != null and return.billNo != ''">
             and t.bill_no   like concat('%', #{return.billNo}, '%')
         </if>
@@ -128,6 +131,9 @@
         </if>
         <if test="returnUserName != null and returnUserName != ''">
             and u2.user_name   like concat('%', #{returnUserName}, '%')
+        </if>
+        <if test="returnUser != null and returnUser != ''">
+            and t.return_user  =  #{returnUser}
         </if>
         <if test="billNo != null and billNo != ''">
             and t.bill_no   like concat('%', #{billNo}, '%')
