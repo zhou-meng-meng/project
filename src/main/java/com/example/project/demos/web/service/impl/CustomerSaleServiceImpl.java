@@ -86,7 +86,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             String userType = user.getUserType();
             log.info("userType:"+userType);
             List<String> authList = user.getAuthorityType();
-            if(authList.contains("0")){
+            if(authList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
                 log.info("具有审核权限，可以查看所有数据");
             }else{
                 log.info("不具有审核权限，只能查看自己的客户信息");
@@ -99,10 +99,8 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
-                //转换实体入参
-                CustomerSaleEntity customerSale = BeanCopyUtils.copy(queryByPageDTO,CustomerSaleEntity.class);
                 //开始分页查询
-                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectCustomerSaleInfoListByPage(customerSale, pageRequest), pageRequest, total);
+                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectCustomerSaleInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerSaleInfo> list = page.toList();
                 //出参赋值
@@ -223,6 +221,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
     public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
         log.info("销售客户审核更新开始");
         CustomerSaleEntity entity = customerSaleDao.selectById(id);
+        entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -232,7 +231,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("审核同意，生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝，删除账户信息");

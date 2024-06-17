@@ -73,6 +73,7 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            queryByPageDTO.setConfirmUser(RequestHolder.getUserInfo().getUserLogin());
             //先用查询条件查询总条数
             long total = this.confirmOperationQueueDao.count(queryByPageDTO);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));

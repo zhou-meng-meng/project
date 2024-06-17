@@ -13,6 +13,8 @@ public class QueryByPageDTO {
 
     @ApiModelProperty(value = "提交人姓名")
     private String submitUserName;
+    @ApiModelProperty(value = "当前确认人")
+    private String confirmUser;
 
     /**
      * 翻页数据起始位置:1

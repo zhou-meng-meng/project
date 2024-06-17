@@ -43,7 +43,7 @@ public class TransferOutboundEntity implements Serializable {
 	/**
 	 * 调拨日期
 	 */
-	private String transferDate;
+	private Date transferDate;
 
 	/**
 	 * 单据号

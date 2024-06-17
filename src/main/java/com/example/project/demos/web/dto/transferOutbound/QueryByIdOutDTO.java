@@ -40,6 +40,11 @@ public class QueryByIdOutDTO {
      * 调拨数量
      */
     private BigDecimal transferCount;
+
+    @ApiModelProperty(value = "调拨日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date transferDate;
+
     /**
      * 调拨类型 0-原材料；1-产量
      */
@@ -77,7 +82,7 @@ public class QueryByIdOutDTO {
     @ApiModelProperty(value = "调入厂（仓库）编号")
     private String inCode;
     @ApiModelProperty(value = "调入厂（仓库）")
-    private String inCodeName;
+    private String inName;
     /**
      * 创建者
      */

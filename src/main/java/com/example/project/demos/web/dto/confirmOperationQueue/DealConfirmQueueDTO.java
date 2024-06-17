@@ -26,7 +26,7 @@ public class DealConfirmQueueDTO {
     @ApiModelProperty(value = "确认结果 1-同意；2-拒绝")
     private String result;
 
-    @ApiModelProperty(value = "审核意见")
+    @ApiModelProperty(value = "确认意见")
     private String opinion;
 
 

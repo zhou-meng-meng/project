@@ -20,7 +20,7 @@ import java.util.List;
 @Mapper
 public interface CustomerSaleDao extends BaseMapper<CustomerSaleEntity> {
 
-    List<CustomerSaleInfo> selectCustomerSaleInfoListByPage(@Param("customer") CustomerSaleEntity customerSaleEntity, @Param("pageable") Pageable pageable);
+    List<CustomerSaleInfo> selectCustomerSaleInfoListByPage(@Param("customer") QueryByPageDTO queryByPageDTO, @Param("pageable") Pageable pageable);
 
     /**
      * 统计总行数

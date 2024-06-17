@@ -35,7 +35,7 @@
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
         LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
         LEFT JOIN sys_user u4 ON u4.user_login = t.confirm_user
-        where  1=1
+        where  1=1 and  t.confirm_user = #{queue.confirmUser}
         <if test="queue.beginDate != null and queue.beginDate != ''">
             and t.submit_time    <![CDATA[ >= ]]> #{queue.beginDate}
         </if>
@@ -50,9 +50,9 @@
     </select>
 
     <select id="count" resultType="java.lang.Integer">
-        SELECT count(1)  FROM	approve_operation_queue t
+        SELECT count(1)  FROM	confirm_operation_queue t
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
-        where  1=1
+        where  1=1  and  t.confirm_user = #{confirmUser}
         <if test="beginDate != null and beginDate != ''">
             and t.submit_time    <![CDATA[ >= ]]> #{beginDate}
         </if>

@@ -96,6 +96,7 @@
 
     <select id="count" resultType="java.lang.Integer">
         SELECT  count(1)   FROM	customer_sale t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.saler
         where  1=1
         <if test="code != null and code != ''">
             and t.code    like concat('%', #{code}, '%')
