@@ -60,11 +60,23 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
+            //添加权限  总公司人员查看所有数据   厂区或者仓库人员查看所属厂区或者仓库提交数据
+            boolean isPrice = false;
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+                isPrice = true;
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
+                isPrice = false;
+            }
             SupplyReturnInfo info = supplyReturnDao.selectSupplyReturnInfoById(id);
             //处理入库方
             List<SupplyReturnInfo> list = new ArrayList<>();
             list.add(info);
-            list = setSupplyReturnObject(list);
+            list = setSupplyReturnObject(list,isPrice);
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -86,14 +98,17 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //添加权限  总公司人员查看所有数据   厂区或者仓库人员查看所属厂区或者仓库提交数据
+            boolean isPrice = false;
             UserLoginOutDTO user = RequestHolder.getUserInfo();
             String userType = user.getUserType();
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
                 log.info("当前登录人属于总公司，可以查看所有数据");
+                isPrice = true;
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
                 queryByPageDTO.setOutCode(user.getDeptId());
+                isPrice = false;
             }
             //先用查询条件查询总条数
             long total = this.supplyReturnDao.count(queryByPageDTO);
@@ -106,7 +121,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 Page<SupplyReturnInfo> page = new PageImpl<>(this.supplyReturnDao.selectSupplyReturnInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SupplyReturnInfo> list = page.toList();
-                list = setSupplyReturnObject(list);
+                list = setSupplyReturnObject(list,isPrice);
                 //出参赋值
                 outDTO.setSupplyReturnInfoList(list);
             }
@@ -223,6 +238,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         SupplyReturnEntity  entity = supplyReturnDao.selectById(id);
         entity.setUnitPrice(unitPrice);
         entity.setTollAmount(tollAmount);
+        entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -244,11 +260,11 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
     }
 
     /**
-     * 赋值供应商退回  入库方名称
+     * 赋值供应商退回  入库方名称  单价信息
      * @param list
      * @return
      */
-    private List<SupplyReturnInfo> setSupplyReturnObject(List<SupplyReturnInfo> list){
+    private List<SupplyReturnInfo> setSupplyReturnObject(List<SupplyReturnInfo> list,boolean isPrice){
         //获取厂区和仓库集合
         List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
         List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
@@ -269,6 +285,12 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                         info.setOutName(sInfo.getName());
                     }
                 }
+            }
+            //处理单价字段
+            if(!isPrice){
+                //不具有单价权限   将单价和总金额置为0
+                info.setUnitPrice(new BigDecimal(0));
+                info.setTollAmount(new BigDecimal(0));
             }
         }
         return list;

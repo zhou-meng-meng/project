@@ -68,6 +68,10 @@ public class SupplyReturnInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
+	@ApiModelProperty(value = "审核人")
+	private String approveUser;
+	@ApiModelProperty(value = "审核人")
+	private String approveUserName;
 	/**
 	 * 审核状态
 	 */
@@ -78,8 +82,11 @@ public class SupplyReturnInfo implements Serializable {
 	/**
 	 * 审批意见
 	 */
-	@ApiModelProperty(value = "审批意见")
+	@ApiModelProperty(value = "审核意见")
 	private String approveOpinion;
+	@ApiModelProperty(value = "审核时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date approveTime;
 	/**
 	 * 单据号
 	 */
