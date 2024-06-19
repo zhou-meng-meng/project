@@ -69,7 +69,7 @@ public class SupplyReturnEntity implements Serializable {
 	/**
 	 * 退回入库方编号
 	 */
-	private String inCode;
+	private String outCode;
 	/**
 	 * 退回人
 	 */

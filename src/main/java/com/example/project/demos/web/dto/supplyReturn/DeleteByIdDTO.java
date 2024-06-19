@@ -30,7 +30,7 @@ public class DeleteByIdDTO {
 
 
     @ApiModelProperty(value = "退回方名称")
-    private String inName;
+    private String outName;
 
     @ApiModelProperty(value = "退回人姓名")
     private String returnUserName;

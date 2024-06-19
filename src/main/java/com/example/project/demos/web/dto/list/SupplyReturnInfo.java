@@ -96,9 +96,9 @@ public class SupplyReturnInfo implements Serializable {
 	 * 退回方编号
 	 */
 	@ApiModelProperty(value = "退回方编号")
-	private String inCode;
+	private String outCode;
 	@ApiModelProperty(value = "退回方名称")
-	private String inName;
+	private String outName;
 	/**
 	 * 退回人
 	 */

@@ -277,7 +277,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 log.info("用户密码:"+pwd);
                 if(pwd.equals(Constants.INITE_PWD_ENCODE)){
                     log.info("是初始化密码，需要重置");
-                    errorCode= ErrorCodeEnums.PWD_INITE.getCode();
+                    //errorCode= ErrorCodeEnums.PWD_INITE.getCode();
                     errortMsg= ErrorCodeEnums.PWD_INITE.getDesc();
                     isInitePwd = SysEnums.SYS_YES_FLAG.getCode();
                 }else{
@@ -289,7 +289,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                     if(days > Constants.OVERDUE_PWD_DAYS){
                         log.info("密码已过期");
                         isOverDuePwd = SysEnums.SYS_YES_FLAG.getCode();
-                        errorCode= ErrorCodeEnums.PWD_OVERDUE.getCode();
+                        //errorCode= ErrorCodeEnums.PWD_OVERDUE.getCode();
                         errortMsg= ErrorCodeEnums.PWD_OVERDUE.getDesc();
                     }else{
                         log.info("密码未过期，查询用户其他信息");

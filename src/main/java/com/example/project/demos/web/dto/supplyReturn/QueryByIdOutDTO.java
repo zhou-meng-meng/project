@@ -100,9 +100,9 @@ public class QueryByIdOutDTO {
      * 退回方编号
      */
     @ApiModelProperty(value = "退回位置编号")
-    private String inCode;
+    private String outCode;
     @ApiModelProperty(value = "退回位置")
-    private String inName;
+    private String outName;
     /**
      * 退回人
      */

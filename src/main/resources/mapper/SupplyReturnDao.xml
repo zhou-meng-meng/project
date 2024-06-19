@@ -15,7 +15,7 @@
         <result property="approveOpinion" column="approve_opinion"/>
         <result property="billNo" column="bill_no"/>
         <result property="billState" column="bill_state"/>
-        <result property="inCode" column="in_code"/>
+        <result property="outCode" column="out_code"/>
         <result property="returnUser" column="return_user"/>
         <result property="returnTime" column="return_time"/>
         <result property="createBy" column="create_by"/>
@@ -43,7 +43,7 @@
         t.approve_opinion,
         t.bill_no,
         t.bill_state ,
-        t.in_code,
+        t.out_code,
         t.return_user,
         u2.user_name AS returnUserName,
         t.return_time,
@@ -85,8 +85,8 @@
         <if test="return.approveState != null and return.approveState != ''">
             and t.approve_state   = #{return.approveState}
         </if>
-        <if test="return.inCode != null and return.inCode != ''">
-            and t.in_code   = #{return.inCode}
+        <if test="return.outCode != null and return.outCode != ''">
+            and t.out_code   = #{return.outCode}
         </if>
         order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -118,8 +118,8 @@
         <if test="approveState != null and approveState != ''">
             and t.approve_state   = #{approveState}
         </if>
-        <if test="inCode != null and inCode != ''">
-            and t.in_code   = #{inCode}
+        <if test="outCode != null and outCode != ''">
+            and t.out_code   = #{outCode}
         </if>
     </select>
 
@@ -141,7 +141,7 @@
             t.approve_opinion,
             t.bill_no,
             t.bill_state ,
-            t.in_code,
+            t.out_code,
             t.return_user,
             u2.user_name AS returnUserName,
             t.return_time,
