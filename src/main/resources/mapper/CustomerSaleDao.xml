@@ -90,6 +90,9 @@
         <if test="customer.salerName != null and customer.salerName != ''">
             and u2.user_name  like concat('%', #{customer.salerName}, '%')
         </if>
+        <if test="customer.approveState != null and customer.approveState != ''">
+            and t.approve_state  =  #{customer.approveState}
+        </if>
         order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -117,6 +120,50 @@
             and u2.user_name  like concat('%', #{salerName}, '%')
         </if>
     </select>
+
+    <select id="selectPopListByPage" resultType="com.example.project.demos.web.dto.list.CustomerSaleInfo">
+        SELECT
+        t.id,
+        t.CODE,
+        t.NAME,
+        t.link_user,
+        t.link_phone_no
+        FROM	customer_sale t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.saler
+        where  1=1
+        <if test="customer.code != null and customer.code != ''">
+            and t.code    like concat('%', #{customer.code}, '%')
+        </if>
+        <if test="customer.name != null and customer.name != ''">
+            and t.name    like concat('%', #{customer.name}, '%')
+        </if>
+        <if test="customer.linkUser != null and customer.linkUser != ''">
+            and t.link_user    like concat('%', #{customer.linkUser}, '%')
+        </if>
+        <if test="customer.approveState != null and customer.approveState != ''">
+            and t.approve_state  =  #{customer.approveState}
+        </if>
+        order  by  t.id  desc
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <select id="countPop" resultType="java.lang.Integer">
+        SELECT  count(1)   FROM	customer_sale t
+        where  1=1
+        <if test="code != null and code != ''">
+            and t.code    like concat('%', #{code}, '%')
+        </if>
+        <if test="name != null and name != ''">
+            and t.name    like concat('%', #{name}, '%')
+        </if>
+        <if test="linkUser != null and linkUser != ''">
+            and t.link_user    like concat('%', #{linkUser}, '%')
+        </if>
+        <if test="approveState != null and approveState != ''">
+            and t.approve_state  =  #{approveState}
+        </if>
+    </select>
+
 
 
     <select id="selectCustomerSaleInfoById" resultType="com.example.project.demos.web.dto.list.CustomerSaleInfo">

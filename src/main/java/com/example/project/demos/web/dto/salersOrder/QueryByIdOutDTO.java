@@ -96,9 +96,9 @@ public class QueryByIdOutDTO {
     /**
      * 审批状态
      */
-    @ApiModelProperty(value = "审批状态")
+    @ApiModelProperty(value = "审核状态")
     private String approveState;
-    @ApiModelProperty(value = "审批状态")
+    @ApiModelProperty(value = "审核状态")
     private String approveStateName;
     /**
      * 审核人
@@ -148,6 +148,18 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "单据状态")
     private String billState;
+    @ApiModelProperty(value = "单据状态")
+    private String billStateName;
+
+    @ApiModelProperty(value = "冲销人")
+    private String chargeoffUser;
+    @ApiModelProperty(value = "冲销人姓名")
+    private String chargeoffUserName;
+    @ApiModelProperty(value = "冲销时间")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date chargeoffTime;
+    @ApiModelProperty(value = "冲销意见")
+    private String chargeoffOpinion;
     /**
      * 汇款
      */

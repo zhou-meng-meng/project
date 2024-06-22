@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.project.demos.web.dao.SalesReturnDao">
+<mapper namespace="com.example.project.demos.web.dao.SalersOrderReturnDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.example.project.demos.web.entity.SalesReturnEntity" id="salesReturnMap">
+    <resultMap type="com.example.project.demos.web.entity.SalersOrderReturnEntity" id="salesReturnMap">
         <result property="id" column="id"/>
         <result property="customerCode" column="customer_code"/>
         <result property="materialCode" column="material_code"/>
@@ -14,6 +14,9 @@
         <result property="approveState" column="approve_state"/>
         <result property="approveOpinion" column="approve_opinion"/>
         <result property="approveTime" column="approve_time"/>
+        <result property="confirmState" column="confirm_state"/>
+        <result property="confirmOpinion" column="confirm_opinion"/>
+        <result property="confirmTime" column="confirm_time"/>
         <result property="billNo" column="bill_no"/>
         <result property="billState" column="bill_state"/>
         <result property="inCode" column="in_code"/>
@@ -27,7 +30,7 @@
     </resultMap>
 
 
-    <select id="selectSalesReturnInfoListByPage" resultType="com.example.project.demos.web.dto.list.SalesReturnInfo">
+    <select id="selectSalersOrderReturnInfoListByPage" resultType="com.example.project.demos.web.dto.list.SalersOrderReturnInfo">
         SELECT
         t.id,
         t.customer_code,
@@ -47,6 +50,12 @@
         d4.dict_value as approveStateName,
         t.approve_opinion,
         t.approve_time,
+        t.confirm_user,
+        u4.user_name AS confirmUserName,
+        t.confirm_state,
+        d5.dict_value as confirmStateName,
+        t.confirm_opinion,
+        t.confirm_time,
         t.bill_no,
         t.bill_state ,
         t.in_code,
@@ -60,15 +69,17 @@
         u1.user_name AS updateByName,
         t.update_time,
         t.remark
-        FROM	sales_return t
+        FROM	salers_order_return t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         LEFT JOIN sys_user u2 ON u2.user_login = t.return_user
         LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+        LEFT JOIN sys_user u4 ON u4.user_login = t.confirm_user
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.approve_state and  d4.dict_type = 'approve_state'
+        LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.confirm_state and  d5.dict_type = 'confirm_state'
         left join customer_sale  c on  c.code = t.customer_code
         where  1=1
         <if test="return.materialCode != null and return.materialCode != ''">
@@ -77,12 +88,12 @@
         <if test="return.materialName != null and return.materialName != ''">
             and m.name    like concat('%', #{return.materialName}, '%')
         </if>
-        <if test="return.beginDate != null and return.beginDate != ''">
+        <!--<if test="return.beginDate != null and return.beginDate != ''">
             and t.return_time    <![CDATA[ >= ]]> #{return.beginDate}
         </if>
         <if test="return.endDate != null and return.endDate != ''">
             and t.return_time    <![CDATA[ <= ]]> #{return.endDate}
-        </if>
+        </if>-->
         <if test="return.returnUserName != null and return.returnUserName != ''">
             and u2.user_name   like concat('%', #{return.returnUserName}, '%')
         </if>
@@ -92,18 +103,18 @@
         <if test="return.billNo != null and return.billNo != ''">
             and t.bill_no   like concat('%', #{return.billNo}, '%')
         </if>
-        <if test="return.approveState != null and return.approveState != ''">
+        <!--<if test="return.approveState != null and return.approveState != ''">
             and t.approve_state   = #{return.approveState}
         </if>
         <if test="return.inCode != null and return.inCode != ''">
             and t.in_code   = #{return.inCode}
-        </if>
+        </if>-->
         order  by  t.return_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">
-        SELECT  count(1)    FROM	sales_return t
+        SELECT  count(1)    FROM	salers_order_return t
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_user u2 ON u2.user_login = t.return_user
         where  1=1
@@ -113,12 +124,12 @@
         <if test="materialName != null and materialName != ''">
             and m.name    like concat('%', #{materialName}, '%')
         </if>
-        <if test="beginDate != null and beginDate != ''">
+        <!--<if test="beginDate != null and beginDate != ''">
             and t.return_time    <![CDATA[ >= ]]> #{beginDate}
         </if>
         <if test="endDate != null and endDate != ''">
             and t.return_time    <![CDATA[ <= ]]> #{endDate}
-        </if>
+        </if>-->
         <if test="returnUserName != null and returnUserName != ''">
             and u2.user_name   like concat('%', #{returnUserName}, '%')
         </if>
@@ -128,15 +139,15 @@
         <if test="billNo != null and billNo != ''">
             and t.bill_no   like concat('%', #{billNo}, '%')
         </if>
-        <if test="approveState != null and approveState != ''">
+        <!--<if test="approveState != null and approveState != ''">
             and t.approve_state   = #{approveState}
         </if>
         <if test="inCode != null and inCode != ''">
             and t.in_code   = #{inCode}
-        </if>
+        </if>-->
     </select>
 
-    <select id="selectSalesReturnInfoById" resultType="com.example.project.demos.web.dto.list.SalesReturnInfo">
+    <select id="selectSalersOrderReturnInfoById" resultType="com.example.project.demos.web.dto.list.SalersOrderReturnInfo">
         SELECT
             t.id,
             t.customer_code,
@@ -156,6 +167,12 @@
             d4.dict_value as approveStateName,
             t.approve_opinion,
             t.approve_time,
+            t.confirm_user,
+            u4.user_name AS confirmUserName,
+            t.confirm_state,
+            d5.dict_value as confirmStateName,
+            t.confirm_opinion,
+            t.confirm_time,
             t.bill_no,
             t.bill_state ,
             t.in_code,
@@ -169,15 +186,17 @@
             u1.user_name AS updateByName,
             t.update_time,
             t.remark
-        FROM	sales_return t
+        FROM	salers_order_return t
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                     LEFT JOIN sys_user u2 ON u2.user_login = t.return_user
                     LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+                    LEFT JOIN sys_user u4 ON u4.user_login = t.confirm_user
                     LEFT JOIN material_info m ON m.CODE = t.material_code
                     LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
                     LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
                     LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.approve_state and  d4.dict_type = 'approve_state'
+                    LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.confirm_state and  d5.dict_type = 'confirm_state'
                     left join customer_sale  c on  c.code = t.customer_code
         where  t.id = #{id}
     </select>

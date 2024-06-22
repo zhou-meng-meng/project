@@ -41,6 +41,19 @@ public class CustomerSaleController {
     }
 
     /**
+     * 分页查询
+     *
+     * @param queryByPageDTO 筛选条件
+     * @return 查询结果
+     */
+    @PostMapping("/queryPopList")
+    @ApiOperation("查询列表弹窗(分页)")
+    public QueryByPageOutDTO queryPopList(@RequestBody QueryByPageDTO queryByPageDTO) {
+        QueryByPageOutDTO outDTO = this.customerSaleService.queryPopByPage(queryByPageDTO);
+        return outDTO;
+    }
+
+    /**
      * 通过主键查询单条数据
      *
      * @param dto 主键

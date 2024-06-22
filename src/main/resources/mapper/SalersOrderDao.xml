@@ -17,15 +17,19 @@
         <result property="loadType" column="load_type"/>
         <result property="outCode" column="out_code"/>
         <result property="saler" column="saler"/>
+        <result property="approveUser" column="approve_user"/>
         <result property="approveState" column="approve_state"/>
         <result property="approveUser" column="approve_user"/>
         <result property="approveOpinion" column="approve_opinion"/>
         <result property="approveTime" column="approve_time"/>
-        <result property="confirmState" column="confirm_state"/>
         <result property="confirmUser" column="confirm_user"/>
+        <result property="confirmState" column="confirm_state"/>
         <result property="confirmOpinion" column="confirm_opinion"/>
         <result property="confirmTime" column="confirm_time"/>
         <result property="billState" column="bill_state"/>
+        <result property="chargeoffUser" column="chargeoff_user"/>
+        <result property="chargeoffTime" column="chargeoff_time"/>
+        <result property="chargeoffOpinion" column="chargeoff_opinion"/>
         <result property="remit" column="remit"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -69,6 +73,12 @@
         u3.user_name AS confirmUserName,
         t.confirm_opinion,
         t.confirm_time,
+        t.bill_state,
+        d7.dict_value as billStateName,
+        t.chargeoff_user,
+        u5.user_name AS chargeoffUserName,
+        t.chargeoff_time,
+        t.chargeoff_opinion,
         t.remit,
         t.create_by,
         u.user_name AS createByName,
@@ -83,6 +93,7 @@
         LEFT JOIN sys_user u2 ON u2.user_login = t.approve_user
         LEFT JOIN sys_user u3 ON u3.user_login = t.confirm_user
         LEFT JOIN sys_user u4 ON u4.user_login = t.saler
+        LEFT JOIN sys_user u5 ON u5.user_login = t.chargeoff_user
         LEFT JOIN material_info m ON m.CODE = t.material_code
         left join customer_sale s on s.code = t.customer_code
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
@@ -90,6 +101,7 @@
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.load_type and  d4.dict_type = 'load_type'
         LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.approve_state and  d5.dict_type = 'approve_state'
         LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.confirm_state and  d6.dict_type = 'confirm_state'
+        LEFT JOIN sys_dict_data d7 ON d7.dict_code = t.bill_state and  d7.dict_type = 'bill_state'
         where  1=1
         <if test="order.materialName != null and order.materialName != ''">
             and m.name    like concat('%', #{order.materialName}, '%')
@@ -124,8 +136,8 @@
         <if test="billCode != null and billCode != ''">
             and t.bill_code   like concat('%', #{billCode}, '%')
         </if>
-        <if test="order.saler != null and order.saler != ''">
-            and t.saler  = #{order.saler}
+        <if test="saler != null and saler != ''">
+            and t.saler  = #{saler}
         </if>
         <if test="salerName != null and salerName != ''">
             and t.saler  like concat('%', #{salerName}, '%')
@@ -167,6 +179,12 @@
             u3.user_name AS confirmUserName,
             t.confirm_opinion,
             t.confirm_time,
+            t.bill_state,
+            d7.dict_value as billStateName,
+            t.chargeoff_user,
+            u5.user_name AS chargeoffUserName,
+            t.chargeoff_time,
+            t.chargeoff_opinion,
             t.remit,
             t.create_by,
             u.user_name AS createByName,
@@ -181,6 +199,7 @@
                     LEFT JOIN sys_user u2 ON u2.user_login = t.approve_user
                     LEFT JOIN sys_user u3 ON u3.user_login = t.confirm_user
                     LEFT JOIN sys_user u4 ON u4.user_login = t.saler
+                    LEFT JOIN sys_user u5 ON u5.user_login = t.chargeoff_user
                     LEFT JOIN material_info m ON m.CODE = t.material_code
                     left join customer_sale s on s.code = t.customer_code
                     LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
@@ -188,6 +207,7 @@
                     LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.load_type and  d4.dict_type = 'load_type'
                     LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.approve_state and  d5.dict_type = 'approve_state'
                     LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.confirm_state and  d6.dict_type = 'confirm_state'
+                    LEFT JOIN sys_dict_data d7 ON d7.dict_code = t.bill_state and  d7.dict_type = 'bill_state'
         where  t.id = #{id}
     </select>
 

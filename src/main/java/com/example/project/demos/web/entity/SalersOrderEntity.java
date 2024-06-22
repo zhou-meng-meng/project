@@ -2,6 +2,8 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -103,6 +105,11 @@ public class SalersOrderEntity implements Serializable {
 	 * 单据状态
 	 */
 	private String billState;
+
+	private String chargeoffUser;
+	private Date chargeoffTime;
+	private String chargeoffOpinion;
+
 	/**
 	 * 汇款
 	 */

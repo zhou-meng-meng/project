@@ -17,7 +17,8 @@ public enum OperationTypeEnums {
     OPERATION_TYPE_CONFIRM("7","确认"),
     OPERATION_TYPE_LOGIN("8","登录"),
     OPERATION_TYPE_UPDATE_PWD("9","修改密码"),
-    OPERATION_TYPE_RESET_PWD("10","重置密码");
+    OPERATION_TYPE_RESET_PWD("10","重置密码"),
+    OPERATION_TYPE_CHARGE_OFF("11","冲销");
 
     private String code;
     private String desc;

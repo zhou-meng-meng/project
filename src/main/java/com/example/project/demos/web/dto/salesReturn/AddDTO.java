@@ -27,20 +27,10 @@ public class AddDTO {
     private String materialName;
 
     /**
-     * 单价
-     */
-    @ApiModelProperty(value = "单价")
-    private BigDecimal unitPrice;
-    /**
      * 退回数量
      */
     @ApiModelProperty(value = "退回数量")
     private BigDecimal returnCount;
-    /**
-     * 总金额
-     */
-    @ApiModelProperty(value = "总金额")
-    private BigDecimal tollAmount;
 
     /**
      * 单据号

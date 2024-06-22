@@ -54,5 +54,8 @@ public interface CustomerSaleService {
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
     int updateApprove(Long id, String result, String opinion, String userLogin,  Date date) ;
+
+    QueryByPageOutDTO queryPopByPage(QueryByPageDTO queryByPageDTO);
+
 }
 

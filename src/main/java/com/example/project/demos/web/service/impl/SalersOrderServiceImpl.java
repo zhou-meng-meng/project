@@ -53,6 +53,12 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
     private SysUserService sysUserService;
     @Autowired
     private CustomerPayDetailService customerPayDetailService;
+    @Resource
+    private ConfirmOperationQueueDao confirmOperationQueueDao;
+    @Resource
+    private ConfirmOperationFlowDao confirmOperationFlowDao;
+    @Resource
+    private SalesCustomerPayDao salesCustomerPayDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -135,6 +141,8 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 SalersOrderEntity entity = BeanCopyUtils.copy(dto,SalersOrderEntity.class);
+                entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
+                entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
                 log.info("插入销售员下单表");
@@ -200,6 +208,9 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             int i = salersOrderDao.deleteById(dto.getId());
+            log.info("删除提交的待审核记录");
+            approveOperationFlowDao.deleteByBusinessId(dto.getId());
+            approveOperationQueueDao.deleteByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -217,6 +228,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
     public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
         log.info("销售员下单审核更新开始");
         SalersOrderEntity  entity = salersOrderDao.selectById(id);
+        entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -233,6 +245,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         SalersOrderEntity  entity = salersOrderDao.selectById(id);
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
+        entity.setConfirmUser(userLogin);
         entity.setConfirmState(result);
         entity.setConfirmOpinion(opinion);
         entity.setConfirmTime(date);
@@ -241,13 +254,115 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("确认同意，开始更新库存");
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getLoadNum(),"reduce",date);
+            log.info("生成该客户销售记录");
+            SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getLoadNum(),entity.getTollAmount(),date);
+            i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),entity.getTollAmount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER.getDesc());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");
         }
         log.info("销售员下单确认更新结束");
+        return i;
+    }
+
+    /**
+     * 冲销操作    需要确认
+     * @param dto
+     * @return
+     */
+    @Override
+    public ChargeOffOutDTO chargeOffSubmit(ChargeOffDTO dto) {
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        ChargeOffOutDTO outDTO = new ChargeOffOutDTO();
+        try{
+            SalersOrderEntity entity = salersOrderDao.selectById(dto.getId());
+            //退回到原出库方
+            String userType = "";
+            String outCode = entity.getOutCode();
+            if("F".equals(outCode.substring(0,1))){
+                log.info("退回方为厂区");
+                userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+            }else{
+                log.info("退回方为仓库");
+                userType = UserTypeEnums.USER_TYPE_STORE.getCode();
+            }
+            log.info("生成待确认数据");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                //生成待确认流水
+                ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getCode(),null,user.getUserLogin(),date,null,null,null,null, ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                confirmOperationFlowDao.insert(flowEntity);
+                //生成待确认队列
+                List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),entity.getId(),userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getCode(),user.getUserLogin(),date,null,null);
+                    queueEntityList.add(queueEntity);
+                }
+                confirmOperationQueueDao.insertBatch(queueEntityList);
+                log.info("修改业务员下单表单据冲销信息");
+                entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+                entity.setChargeoffUser(user.getUserLogin());
+                entity.setChargeoffTime(date);
+                entity.setChargeoffOpinion(dto.getChargeoffOpinion());
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                salersOrderDao.updateById(entity);
+            }else{
+                errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+            }
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车数量:"+dto.getLoadNum()+",销售员:"+dto.getSalerName();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_CHARGE_OFF.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    /**
+     * 冲销操作  从哪里出库的  就退回到哪里
+     * 增加往来账   增加库存
+     * @param id
+     * @param result
+     * @param opinion
+     * @param userLogin
+     * @param date
+     * @return
+     */
+    @Override
+    public int chargeOffConfirm(Long id, String result, String opinion, String userLogin, Date date) {
+        log.info("业务员下单冲销确认更新开始");
+        SalersOrderEntity  entity = salersOrderDao.selectById(id);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        entity.setConfirmUser(userLogin);
+        entity.setConfirmState(result);
+        entity.setConfirmOpinion(opinion);
+        entity.setConfirmTime(date);
+        //判断确认结果
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            entity.setBillState(BillStateEnums.BILL_STATE_CHARGE_OFF.getCode());
+            log.info("确认同意，开始更新库存");
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getLoadNum(),"add",date);
+            log.info("生成往来账信息");
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getDesc());
+            customerPayDetailService.addPayBySystem(dto);
+        }else{
+            log.info("确认拒绝");
+            entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
+        }
+        int i = salersOrderDao.updateById(entity);
+        log.info("业务员下单确认更新结束");
         return i;
     }
 
@@ -263,18 +378,20 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         for(SalersOrderInfo info : list){
             //出库方
             String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
+            if(null != outCode && !"".equals(outCode) && ""!= outCode){
+                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(outCode.equals(fInfo.getCode())){
+                            info.setOutName(fInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(outCode.equals(sInfo.getCode())){
+                            info.setOutName(sInfo.getName());
+                        }
                     }
                 }
             }

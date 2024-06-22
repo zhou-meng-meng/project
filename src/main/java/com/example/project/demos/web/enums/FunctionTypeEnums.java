@@ -15,6 +15,7 @@ public enum FunctionTypeEnums {
     REBUILD_INBOUND("020003","准备重造入库"),
     RAW_MATERIAL_OUTBOUND("020004","原材料出库"),
     SALES_OUTBOUND("020005","销售出库"),
+    SALES_OUTBOUND_CHARGE_OFF("02000501","销售出库-冲销"),
     TRANSFER_OUTBOUND("020006","调拨出库"),
     REBUILD_OUTBOUND("020007","重造出库"),
     SUPPLY_RETURN("020008","供货方退回"),
@@ -32,7 +33,8 @@ public enum FunctionTypeEnums {
     CUSTOMER_SUPPLY("040002","供货方客户维护"),
 
     SALERS_ORDER("050001","业务员下单"),
-
+    SALERS_ORDER_CHARGE_OFF("05000101","业务员下单-冲销"),
+    SALERS_ORDER_RETURN("050002","业务员下单退回"),
     SYS_USER("900001","用户管理"),
     SYS_ROLE("900002","角色管理"),
     SYS_MENU("900003","菜单管理"),

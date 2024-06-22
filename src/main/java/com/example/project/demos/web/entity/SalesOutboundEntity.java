@@ -60,12 +60,31 @@ public class SalesOutboundEntity implements Serializable {
 	/**
 	 * 审批状态
 	 */
+	private String approveUser;
 	private String approveState;
 	private Date approveTime;
 	/**
 	 * 审批意见
 	 */
 	private String approveOpinion;
+
+	/**
+	 * 确认状态
+	 */
+	private String confirmState;
+	/**
+	 * 确认人
+	 */
+	private String confirmUser;
+	/**
+	 * 确认意见
+	 */
+	private String confirmOpinion;
+	/**
+	 * 确认时间
+	 */
+	private Date confirmTime;
+
 	/**
 	 * 单据号
 	 */
@@ -74,6 +93,9 @@ public class SalesOutboundEntity implements Serializable {
 	 * 单据状态
 	 */
 	private String billState;
+	private String chargeoffUser;
+	private Date chargeoffTime;
+	private String chargeoffOpinion;
 	/**
 	 * 运输方式
 	 */

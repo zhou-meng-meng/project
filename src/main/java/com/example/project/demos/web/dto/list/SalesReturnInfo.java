@@ -67,31 +67,24 @@ public class SalesReturnInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
-	/**
-	 * 审核状态
-	 */
+	@ApiModelProperty(value = "审核人")
+	private String approveUser;
+	@ApiModelProperty(value = "审核人姓名")
+	private String approveUserName;
 	@ApiModelProperty(value = "审核状态")
 	private String approveState;
 	@ApiModelProperty(value = "审核状态")
 	private String approveStateName;
-	@ApiModelProperty(value = "审核时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date approveTime;
 	/**
 	 * 审批意见
 	 */
-	@ApiModelProperty(value = "审批意见")
+	@ApiModelProperty(value = "审核意见")
 	private String approveOpinion;
 
-	@ApiModelProperty(value = "确认状态")
-	private String confirmState;
-	@ApiModelProperty(value = "确认状态")
-	private String confirmStateName;
-	@ApiModelProperty(value = "确认时间")
+	@ApiModelProperty(value = "审核时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date confirmTime;
-	@ApiModelProperty(value = "确认意见")
-	private String confirmOpinion;
+	private Date approveTime;
+
 	/**
 	 * 单据号
 	 */

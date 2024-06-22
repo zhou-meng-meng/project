@@ -92,5 +92,18 @@ public class SalesOutboundController {
         return outDTO;
     }
 
+    /**
+     * 冲销提交
+     *
+     * @param dto 主键
+     * @return 冲销操作
+     */
+    @PostMapping("/chargeOffSubmit")
+    @ApiOperation("冲销提交")
+    public ChargeOffOutDTO chargeOffSubmit(@RequestBody ChargeOffDTO dto) {
+        ChargeOffOutDTO outDTO = salesOutboundService.chargeOffSubmit(dto);
+        return outDTO;
+    }
+
 }
 

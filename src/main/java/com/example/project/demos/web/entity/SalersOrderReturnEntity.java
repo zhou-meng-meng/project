@@ -2,14 +2,12 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -20,8 +18,8 @@ import java.util.Date;
  * @date 2024-05-23 13:55:47
  */
 @Data
-@TableName("sales_return")
-public class SalesReturnEntity implements Serializable {
+@TableName("salers_order_return")
+public class SalersOrderReturnEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -54,6 +52,11 @@ public class SalesReturnEntity implements Serializable {
 	private String approveState;
 	private Date approveTime;
 	private String approveOpinion;
+
+	private String confirmUser;
+	private String confirmState;
+	private Date confirmTime;
+	private String confirmOpinion;
 
 	/**
 	 * 单据号

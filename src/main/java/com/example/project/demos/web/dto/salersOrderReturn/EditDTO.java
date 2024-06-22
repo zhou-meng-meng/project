@@ -1,4 +1,4 @@
-package com.example.project.demos.web.dto.salesReturn;
+package com.example.project.demos.web.dto.salersOrderReturn;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -14,15 +14,9 @@ public class EditDTO {
     /**
      * 自增主键
      */
-
     @ApiModelProperty(value = "自增主键")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
-
-    @ApiModelProperty(value = "客户编号")
-    private String customerCode;
-    @ApiModelProperty(value = "客户名称")
-    private String customerName;
     /**
      * 物料编号
      */
@@ -32,22 +26,37 @@ public class EditDTO {
     private String materialName;
 
     /**
-     * 退回数量
+     * 出库数量
      */
-    @ApiModelProperty(value = "退回数量")
+    @ApiModelProperty(value = "退货数量")
     private BigDecimal returnCount;
+    /**
+     * 单价
+     */
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
+    /**
+     * 总金额
+     */
+    @ApiModelProperty(value = "总金额")
+    private BigDecimal tollAmount;
+    @ApiModelProperty(value = "退货客户编号")
+    private String customerCode;
+    @ApiModelProperty(value = "退货客户名称")
+    private String customerName;
+
+    @ApiModelProperty(value = "退回人英文名")
+    private String returnUser;
+    @ApiModelProperty(value = "退回人姓名")
+    private String returnUserName;
 
     /**
-     * 审核状态
+     * 销售时间
      */
-    @ApiModelProperty(value = "审核状态")
-    private String approveState;
+    @ApiModelProperty(value = "退货日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date returnTime;
 
-    /**
-     * 审批意见
-     */
-    @ApiModelProperty(value = "审批意见")
-    private String approveOpinion;
     /**
      * 单据号
      */
@@ -58,27 +67,6 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "单据状态")
     private String billState;
-
-    /**
-     * 退回方编号
-     */
-    @ApiModelProperty(value = "退回方编号")
-    private String inCode;
-    @ApiModelProperty(value = "退回方名称")
-    private String inName;
-    /**
-     * 退回人
-     */
-    @ApiModelProperty(value = "退回人")
-    private String returnUser;
-    @ApiModelProperty(value = "退回人姓名")
-    private String returnUserName;
-    /**
-     * 退货时间
-     */
-    @ApiModelProperty(value = "退货时间")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date returnTime;
 
     /**
      * 备注

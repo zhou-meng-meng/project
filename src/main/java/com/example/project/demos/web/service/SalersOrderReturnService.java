@@ -1,18 +1,20 @@
 package com.example.project.demos.web.service;
 
-import com.example.project.demos.web.dto.salersOrder.*;
+
+import com.example.project.demos.web.dto.salersOrderReturn.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 业务员下单表
+ * 
  *
  * @author Mark
  * @email sunlightcs@gmail.com
- * @date 2024-06-11 10:33:39
+ * @date 2024-05-23 13:55:47
  */
-public interface SalersOrderService {
+public interface SalersOrderReturnService {
+
     /**
      * 通过ID查询单条数据
      *
@@ -52,19 +54,7 @@ public interface SalersOrderService {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
-
-    int updateApprove(Long id, String result, String opinion, String userLogin, Date date) ;
-
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,String inCode) ;
     int updateConfirm(Long id, String result, String opinion, String userLogin,  Date date) ;
-
-    ChargeOffOutDTO chargeOffSubmit(ChargeOffDTO dto);
-
-    /**
-     * 冲销确认操作
-     * @return
-     */
-    int chargeOffConfirm(Long id, String result, String opinion, String userLogin,  Date date);
-
-
 }
 

@@ -1,7 +1,7 @@
 package com.example.project.demos.web.controller;
 
-import com.example.project.demos.web.dto.salersOrder.*;
-import com.example.project.demos.web.service.SalersOrderService;
+import com.example.project.demos.web.dto.salersOrderReturn.*;
+import com.example.project.demos.web.service.SalersOrderReturnService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * 销售员下单维护表(salers_order)表控制层
+ * 业务员下单退回维护表(salers_order_return)表控制层
  *
  * @author makejava
  * @since 2024-02-26 20:37:53
  */
 @RestController
-@RequestMapping("salersOrder")
-@Api(tags="销售员下单维护表")
-public class SalersOrderController {
+@RequestMapping("SalersOrderReturn")
+@Api(tags="业务员下单退回维护表")
+public class SalersOrderReturnController {
     /**
      * 服务对象
      */
     @Resource
-    private SalersOrderService salersOrderService;
+    private SalersOrderReturnService salersOrderReturnService;
 
     /**
      * 分页查询
@@ -36,7 +36,7 @@ public class SalersOrderController {
     @PostMapping("/queryPageList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
-        QueryByPageOutDTO outDTO = this.salersOrderService.queryByPage(queryByPageDTO);
+        QueryByPageOutDTO outDTO = this.salersOrderReturnService.queryByPage(queryByPageDTO);
         return outDTO;
     }
 
@@ -49,7 +49,7 @@ public class SalersOrderController {
     @PostMapping("/queryById")
     @ApiOperation("通过主键查询单条数据")
     public QueryByIdOutDTO queryById(@RequestBody QueryByIdDTO dto) {
-        QueryByIdOutDTO outDTO = this.salersOrderService.queryById(dto.getId());
+        QueryByIdOutDTO outDTO = this.salersOrderReturnService.queryById(dto.getId());
         return outDTO;
     }
 
@@ -62,7 +62,7 @@ public class SalersOrderController {
     @PostMapping("/add")
     @ApiOperation("新增数据")
     public AddOutDTO add(@RequestBody AddDTO dto) {
-        AddOutDTO outDTO = salersOrderService.insert(dto);
+        AddOutDTO outDTO = salersOrderReturnService.insert(dto);
         return outDTO;
     }
 
@@ -75,7 +75,7 @@ public class SalersOrderController {
     @PostMapping("/edit")
     @ApiOperation("编辑数据")
     public EditOutDTO edit(@RequestBody EditDTO dto) {
-        EditOutDTO outDTO = salersOrderService.update(dto);
+        EditOutDTO outDTO = salersOrderReturnService.update(dto);
         return outDTO;
     }
 
@@ -88,20 +88,7 @@ public class SalersOrderController {
     @PostMapping("/deleteById")
     @ApiOperation("根据ID删除数据")
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
-        DeleteByIdOutDTO outDTO = salersOrderService.deleteById(dto);
-        return outDTO;
-    }
-
-    /**
-     * 冲销提交
-     *
-     * @param dto 主键
-     * @return 冲销操作
-     */
-    @PostMapping("/chargeOffSubmit")
-    @ApiOperation("冲销提交")
-    public ChargeOffOutDTO chargeOffSubmit(@RequestBody ChargeOffDTO dto) {
-        ChargeOffOutDTO outDTO = salersOrderService.chargeOffSubmit(dto);
+        DeleteByIdOutDTO outDTO = salersOrderReturnService.deleteById(dto);
         return outDTO;
     }
 

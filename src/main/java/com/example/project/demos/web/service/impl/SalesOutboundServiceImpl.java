@@ -61,6 +61,10 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
 
     @Resource
     private SalesCustomerPayDao salesCustomerPayDao;
+    @Resource
+    private ConfirmOperationQueueDao confirmOperationQueueDao;
+    @Resource
+    private ConfirmOperationFlowDao confirmOperationFlowDao;
 
 
     @Override
@@ -156,6 +160,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 SalesOutboundEntity entity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
                 //设置 审核状态 创建人和创建时间
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
+                entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
                 log.info("插入销售出库表");
@@ -240,6 +245,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         SalesOutboundEntity  entity = salesOutboundDao.selectById(id);
         entity.setUnitPrice(unitPrice);
         entity.setTollAmount(tollAmount);
+
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -260,6 +266,99 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             log.info("审核拒绝");
         }
         log.info("销售出库审核更新结束");
+        return i;
+    }
+
+    @Override
+    public ChargeOffOutDTO chargeOffSubmit(ChargeOffDTO dto) {
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        ChargeOffOutDTO outDTO = new ChargeOffOutDTO();
+        try{
+            SalesOutboundEntity entity = salesOutboundDao.selectById(dto.getId());
+            //退回到原出库方
+            String userType = "";
+            String outCode = entity.getOutCode();
+            if("F".equals(outCode.substring(0,1))){
+                log.info("退回方为厂区");
+                userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+            }else{
+                log.info("退回方为仓库");
+                userType = UserTypeEnums.USER_TYPE_STORE.getCode();
+            }
+            log.info("生成待确认数据");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                //生成待确认流水
+                ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode(),null,user.getUserLogin(),date,null,null,null,null, ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                confirmOperationFlowDao.insert(flowEntity);
+                //生成待确认队列
+                List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),entity.getId(),userEntity.getUserLogin(),FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode(),user.getUserLogin(),date,null,null);
+                    queueEntityList.add(queueEntity);
+                }
+                confirmOperationQueueDao.insertBatch(queueEntityList);
+                log.info("修改销售出库表冲销字段");
+                entity.setChargeoffUser(user.getUserLogin());
+                entity.setChargeoffTime(date);
+                entity.setChargeoffOpinion(dto.getChargeOpinion());
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                salesOutboundDao.updateById(entity);
+            }else{
+                errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+            }
+        }catch (Exception e){
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车数量:"+dto.getLoadNum()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight();
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_CHARGE_OFF.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    /**
+     * 冲销操作  从哪里出库的  就退回到哪里
+     * 增加往来账   增加库存
+     * @param id
+     * @param result
+     * @param opinion
+     * @param userLogin
+     * @param date
+     * @return
+     */
+    @Override
+    public int chargeOffConfirm(Long id, String result, String opinion, String userLogin, Date date) {
+        log.info("厂区下单冲销确认更新开始");
+        SalesOutboundEntity  entity = salesOutboundDao.selectById(id);
+        entity.setUpdateBy(userLogin);
+        entity.setUpdateTime(date);
+        entity.setConfirmUser(userLogin);
+        entity.setConfirmState(result);
+        entity.setConfirmOpinion(opinion);
+        entity.setConfirmTime(date);
+        //判断确认结果
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            entity.setBillState(BillStateEnums.BILL_STATE_CHARGE_OFF.getCode());
+            log.info("确认同意，开始更新库存");
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"add",date);
+            log.info("生成往来账信息");
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getDesc());
+            customerPayDetailService.addPayBySystem(dto);
+        }else{
+            log.info("确认拒绝");
+            entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
+        }
+        int i = salesOutboundDao.updateById(entity);
+        log.info("厂区下单确认更新结束");
         return i;
     }
 

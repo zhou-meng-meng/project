@@ -86,21 +86,51 @@ public class SalesOutboundInfo implements Serializable {
 	@ApiModelProperty(value = "销售时间")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date saleTime;
+	@ApiModelProperty(value = "审核人")
+	private String approveUser;
+	@ApiModelProperty(value = "审核人姓名")
+	private String approveUserName;
 	/**
 	 * 审批状态
 	 */
-	@ApiModelProperty(value = "审批状态")
+	@ApiModelProperty(value = "审核状态")
 	private String approveState;
-	@ApiModelProperty(value = "审批状态")
+	@ApiModelProperty(value = "审核状态")
 	private String approveStateName;
 	/**
 	 * 审批意见
 	 */
-	@ApiModelProperty(value = "审批意见")
+	@ApiModelProperty(value = "审核意见")
 	private String approveOpinion;
 	@ApiModelProperty(value = "审核时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date approveTime;
+
+	/**
+	 * 确认状态
+	 */
+	@ApiModelProperty(value = "确认状态编码")
+	private String confirmState;
+	@ApiModelProperty(value = "确认状态")
+	private String confirmStateName;
+	/**
+	 * 确认人
+	 */
+	@ApiModelProperty(value = "确认人")
+	private String confirmUser;
+	@ApiModelProperty(value = "确认人")
+	private String confirmUserName;
+	/**
+	 * 确认意见
+	 */
+	@ApiModelProperty(value = "确认意见")
+	private String confirmOpinion;
+	/**
+	 * 确认时间
+	 */
+	@ApiModelProperty(value = "确认时间")
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	private Date confirmTime;
 	/**
 	 * 单据号
 	 */

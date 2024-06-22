@@ -42,6 +42,10 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
     @Autowired
     private SalersOrderService salersOrderService;
     @Autowired
+    private SalersOrderReturnService salersOrderReturnService;
+    @Autowired
+    private SalesOutboundService salesOutboundService;
+    @Autowired
     private SysLogService sysLogService;
 
     @Override
@@ -137,12 +141,18 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
             if(functionId.equals(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode())){
                 log.info("调拨出库操作");
                 transferOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
-            }else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())){
-                log.info("销售退回操作");
-                salesReturnService.updateConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date);
             } else if(functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())){
-                log.info("销售员下单操作");
+                log.info("厂区销售员下单操作");
                 salersOrderService.updateConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
+            } else if (functionId.equals(FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode())) {
+                log.info("销售出库冲销操作");
+                salesOutboundService.chargeOffConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
+            }else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getCode())) {
+                log.info("业务员下单冲销操作");
+                salersOrderService.chargeOffConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
+            }else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())) {
+                log.info("业务员下单退回操作");
+                salersOrderReturnService.updateConfirm(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
             }
             log.info("更新确认流水表");
             ConfirmOperationFlowEntity flowEntity = confirmOperationFlowDao.selectById(entity.getConfirmFlowId());
