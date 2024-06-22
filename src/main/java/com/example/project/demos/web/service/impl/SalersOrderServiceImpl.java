@@ -226,7 +226,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
 
     @Override
     public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
-        log.info("销售员下单审核更新开始");
+        log.info("业务员下单审核更新开始");
         SalersOrderEntity  entity = salersOrderDao.selectById(id);
         entity.setApproveUser(userLogin);
         entity.setApproveState(result);
@@ -235,13 +235,13 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
         int i =salersOrderDao.updateById(entity);
-        log.info("销售员下单审核更新结束");
+        log.info("业务员下单审核更新结束");
         return i;
     }
 
     @Override
     public int updateConfirm(Long id, String result, String opinion, String userLogin, Date date)  {
-        log.info("销售员下单确认更新开始");
+        log.info("业务员下单确认更新开始");
         SalersOrderEntity  entity = salersOrderDao.selectById(id);
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
@@ -263,7 +263,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         }else{
             log.info("确认拒绝");
         }
-        log.info("销售员下单确认更新结束");
+        log.info("业务员下单确认更新结束");
         return i;
     }
 

@@ -144,7 +144,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             } else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())) {
                 log.info("仓库/厂区退回的，审核通过后结束");
                 salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getInCode());
-            } else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER)) {
+            } else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())) {
                 log.info("业务员下单，审核通过后需要退回出库方的录入员确认，生成确认队列");
                 log.info("获取出库方具有确认权限的人");
                 String userType = "";
@@ -168,7 +168,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                         queueEntityList.add(queueEntity);
                     }
                     confirmOperationQueueDao.insertBatch(queueEntityList);
-                    //更新销售员下单表
+                    log.info("更新业务员下单表");
                     salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
                 }else{
                     errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();

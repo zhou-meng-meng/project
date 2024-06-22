@@ -7,6 +7,7 @@ import com.example.project.demos.web.dto.list.ConfirmOperationFlowInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.ConfirmOperationFlowEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.UserTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.ConfirmOperationFlowService;
@@ -76,6 +77,10 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
                 Page<ConfirmOperationFlowInfo> page = new PageImpl<>(this.confirmOperationFlowDao.selectConfirmOperationFlowInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ConfirmOperationFlowInfo> list = page.toList();
+                //赋值业务类型
+                for(ConfirmOperationFlowInfo  info : list){
+                    info.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
+                }
                 //出参赋值
                 outDTO.setConfirmOperationFlowInfoList(list);
             }

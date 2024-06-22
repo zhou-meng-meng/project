@@ -19,7 +19,7 @@ public enum FunctionTypeEnums {
     TRANSFER_OUTBOUND("020006","调拨出库"),
     REBUILD_OUTBOUND("020007","重造出库"),
     SUPPLY_RETURN("020008","供货方退回"),
-    SALES_RETURN("020009","销售方退回"),
+    SALES_RETURN("020009","销售客户退回"),
     MATERIAL_INVENTORY("020010","实时库存"),
     MATERIAL_INFO("020011","物料维护"),
     MATERIAL_DOSAGE("020012","物料用量表"),

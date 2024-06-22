@@ -253,8 +253,6 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
      * @param result
      * @param opinion
      * @param userLogin
-     * @param unitPrice
-     * @param tollAmount
      * @param date
      * @return
      */
