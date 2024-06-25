@@ -138,7 +138,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                 entity.setCreateTime(date);
                 int i = salersOrderReturnDao.insert(entity);
                 log.info("生成审核流水记录");
-                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
                 approveOperationFlowDao.insert(flowEntity);
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();

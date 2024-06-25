@@ -139,7 +139,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 entity.setCreateTime(date);
                 int i = salesReturnDao.insert(entity);
                 log.info("生成审核流水记录");
-                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
                 approveOperationFlowDao.insert(flowEntity);
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
@@ -246,6 +246,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         }else{
             log.info("审核拒绝，停止操作");
         }
+        salesReturnDao.updateById(entity);
         log.info("销售退回审核更新结束");
         return i;
     }

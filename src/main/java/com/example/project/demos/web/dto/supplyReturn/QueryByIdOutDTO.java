@@ -59,9 +59,11 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
-    /**
-     * 审核状态
-     */
+
+    @ApiModelProperty(value = "审核人")
+    private String approveUser;
+    @ApiModelProperty(value = "审核人")
+    private String approveUserName;
     @ApiModelProperty(value = "审核状态")
     private String approveState;
     @ApiModelProperty(value = "审核状态")

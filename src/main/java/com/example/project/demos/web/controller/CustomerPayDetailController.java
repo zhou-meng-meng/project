@@ -41,19 +41,6 @@ public class CustomerPayDetailController {
     }
 
     /**
-     * 通过主键查询单条数据
-     *
-     * @param dto 主键
-     * @return 单条数据
-     */
-    /*@PostMapping("/queryById")
-    @ApiOperation("通过主键查询单条数据")
-    public QueryByIdOutDTO queryById(@RequestBody QueryByIdDTO dto) {
-        QueryByIdOutDTO outDTO = this.customerPayDetailService.queryById(dto.getId());
-        return outDTO;
-    }*/
-
-    /**
      * 新增数据
      *
      * @param dto 实体

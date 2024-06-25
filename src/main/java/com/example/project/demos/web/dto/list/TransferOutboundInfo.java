@@ -78,14 +78,12 @@ public class TransferOutboundInfo implements Serializable {
 	private String confirmState;
 	@ApiModelProperty(value = "单据(确认)状态")
 	private String confirmStateName;
-
 	/**
 	 * 单据(确认)状态时间
 	 */
 	@ApiModelProperty(value = "单据(确认)状态时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date confirmTime;
-
 	/**
 	 * 单据(确认)理由
 	 */

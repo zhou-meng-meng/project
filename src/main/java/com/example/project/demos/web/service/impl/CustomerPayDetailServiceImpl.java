@@ -1,6 +1,5 @@
 package com.example.project.demos.web.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerPayDetailDao;
@@ -13,7 +12,6 @@ import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.CustomerAccountRelService;
 import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
@@ -37,30 +35,6 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     @Autowired
     private SysLogService sysLogService;
-
-    /*@Override
-    public QueryByIdOutDTO queryById(QueryByIdDTO dto) {
-        log.info("销售客户往来账queryById开始");
-        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
-        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
-        QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
-        try{
-            CustomerPayDetailInfo customerPayDetailInfo = customerPayDetailDao.selectCustomerPayDetailInfoById(dto.getId());
-            outDTO = BeanUtil.copyProperties(customerPayDetailInfo, QueryByIdOutDTO.class);
-            //查询对应账户
-            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getCode());
-            outDTO.setAccountRelList(list);
-        }catch(Exception e){
-            //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
-            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
-        }
-        outDTO.setErrorCode(errorCode);
-        outDTO.setErrorMsg(errortMsg);
-        log.info("销售客户往来账queryById结束");
-        return outDTO;
-    }*/
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
@@ -107,13 +81,25 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        BigDecimal materialBalance = dto.getMaterialBalance();
+        BigDecimal returnBalance = dto.getReturnBalance();
+        BigDecimal payBalance = dto.getPayBalance();
         try{
             CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
             //需要获取该客户最新一笔来往账信息
             CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
             //账面金额=上次账面余额-总金额+退回金额+打款金额
-            BigDecimal bookBalance = entity.getBookBalance().subtract(dto.getMaterialBalance()).add(dto.getReturnBalance()).add(dto.getPayBalance());
-            log.info("新的账面余额:"+entity.getBookBalance() + "-" + dto.getMaterialBalance() + "+" + dto.getReturnBalance() +"+" +  dto.getPayBalance() +"=" +bookBalance);
+            if(ObjectUtil.isNull(materialBalance)){
+                materialBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(returnBalance)){
+                returnBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(payBalance)){
+                payBalance = new BigDecimal(0);
+            }
+            BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance);
+            log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"=" +bookBalance);
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(user.getUserLogin());
             newEntity.setCreateTime(date);
@@ -128,7 +114,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+dto.getPayBalance()+",退回金额:"+dto.getReturnBalance();
+        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance;
         sysLogService.insertSysLog(FunctionTypeEnums.COUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -148,18 +134,31 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             entity.setOperatorBy(Constants.SYSTEM_CODE);
             entity.setUpdateBy(Constants.SYSTEM_CODE);
             entity.setUpdateTime(date);
+            entity.setRemark("默认往来账");
             i = customerPayDetailDao.insert(entity);
         }else{
+            BigDecimal materialBalance = dto.getMaterialBalance();
+            BigDecimal returnBalance = dto.getReturnBalance();
+            BigDecimal payBalance = dto.getPayBalance();
             CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
             //需要获取该客户最新一笔来往账信息
             CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
             //账面金额=上次账面余额-总金额+退回金额+打款金额
-            BigDecimal bookBalance = entity.getBookBalance().subtract(dto.getMaterialBalance()).add(dto.getReturnBalance()).add(dto.getPayBalance());
-            log.info("新的账面余额:"+entity.getBookBalance() + "-" + dto.getMaterialBalance() + "+" + dto.getReturnBalance() +"+" +  dto.getPayBalance() +"=" +bookBalance);
+            if(ObjectUtil.isNull(materialBalance)){
+                materialBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(returnBalance)){
+                returnBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(payBalance)){
+                payBalance = new BigDecimal(0);
+            }
+            BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance);
+            log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"=" +bookBalance);
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(Constants.SYSTEM_CODE);
             newEntity.setOperatorBy(Constants.SYSTEM_CODE);
-            newEntity.setCreateTime(new Date());
+            newEntity.setCreateTime(date);
             newEntity.setUpdateBy(Constants.SYSTEM_CODE);
             newEntity.setUpdateTime(date);
             newEntity.setRemark(dto.getRemark());
@@ -181,6 +180,12 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         BigDecimal returnBalance = dto.getReturnBalance();
         BigDecimal bookBalance = new BigDecimal("0");
         try{
+            if(ObjectUtil.isNull(returnBalance)){
+                returnBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(payBalance)){
+                payBalance = new BigDecimal(0);
+            }
             log.info("获取原数据");
             CustomerPayDetailEntity entity = customerPayDetailDao.selectById(dto.getId());
             bookBalance = entity.getBookBalance();
@@ -216,7 +221,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+dto.getPayBalance()+",退回金额:"+dto.getReturnBalance();
+        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance;
         sysLogService.insertSysLog(FunctionTypeEnums.COUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -234,6 +239,12 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         BigDecimal payBalance = dto.getPayBalance();
         BigDecimal returnBalance = dto.getReturnBalance();
         try{
+            if(ObjectUtil.isNull(returnBalance)){
+                returnBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(payBalance)){
+                payBalance = new BigDecimal(0);
+            }
             //判断panBalance不为0还是returnBalance 不为0
             if(payBalance.compareTo(new BigDecimal("0")) == 0){
                 log.info("有退回金额不为0的删除");
@@ -251,7 +262,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+dto.getPayBalance()+",退回金额:"+dto.getReturnBalance();
+        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance;
         sysLogService.insertSysLog(FunctionTypeEnums.COUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

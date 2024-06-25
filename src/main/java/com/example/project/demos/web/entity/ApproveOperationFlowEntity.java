@@ -84,12 +84,13 @@ public class ApproveOperationFlowEntity implements Serializable {
 	 * @param submitUser
 	 * @param submitTime
 	 */
-	public ApproveOperationFlowEntity(Long id,Long businessId,String functionId,String submitUser,Date submitTime,String remark){
+	public ApproveOperationFlowEntity(Long id,Long businessId,String functionId,String submitUser,Date submitTime,String approveState,String remark){
 		this.id = id;
 		this.businessId = businessId;
 		this.functionId = functionId;
 		this.submitUser = submitUser;
 		this.submitTime = submitTime;
+		this.approveState = approveState;
 		this.remark = remark;
 	}
 

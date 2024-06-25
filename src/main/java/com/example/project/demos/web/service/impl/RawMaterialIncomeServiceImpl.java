@@ -153,7 +153,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 log.info("插入来料入库表");
                 int i = rawMaterialIncomeDao.insert(entity);
                 log.info("生成审核流水记录");
-                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
                 approveOperationFlowDao.insert(flowEntity);
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();

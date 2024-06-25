@@ -182,9 +182,9 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             BigDecimal updateCount = dto.getCount();
             log.info("修改后数量:"+updateCount.toString());
             BigDecimal num = updateCount.subtract(count);
-            log.info("修改后数量-原数量:"+num.toString());
+            log.info("修改后数量-原数量:"+num);
             if(num.compareTo(new BigDecimal(0)) > 0){
-                log.info("修改数量大于原数量，需要减少:"+num.toString()+"的库存");
+                log.info("修改数量大于原数量，需要减少:"+num+"的库存");
                 materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"reduce",date);
             }else if(num.compareTo(new BigDecimal(0)) < 0){
                 num  = num.multiply(new BigDecimal(-1));

@@ -124,8 +124,8 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             MaterialInfoEntity materialInfo = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
-            materialInfo.setCreateBy("zhangyunning");
-            materialInfo.setUpdateTime(new Date());
+            materialInfo.setUpdateBy(user.getUserLogin());
+            materialInfo.setUpdateTime(date);
             int i = materialInfoDao.updateById(materialInfo);
         }catch (Exception e){
             log.info(e.getMessage());

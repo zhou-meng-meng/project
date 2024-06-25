@@ -34,10 +34,6 @@ public class ProductionMaterialIncomeEntity implements Serializable {
 	 */
 	private String materialCode;
 	/**
-	 * 型号
-	 */
-	private String model;
-	/**
 	 * 入库数量
 	 */
 	private BigDecimal incomeNum;

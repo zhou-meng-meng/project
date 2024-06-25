@@ -69,6 +69,11 @@ public class QueryByIdOutDTO {
     private String confirmState;
     @ApiModelProperty(value = "单据(确认)状态")
     private String confirmStateName;
+    @ApiModelProperty(value = "单据(确认)理由")
+    private String confirmOpinion;
+    @ApiModelProperty(value = "单据(确认)状态时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date confirmTime;
     /**
      * 调出厂(仓库)编号
      */

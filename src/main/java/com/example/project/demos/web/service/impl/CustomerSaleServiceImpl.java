@@ -172,7 +172,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                 //添加账号对应关系
                 customerAccountRelService.savaBatch(dto.getCode(), dto.getList());
                 log.info("生成审核流水记录");
-                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null, entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), user.getUserLogin(), date, Constants.SYSTEM_CODE);
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null, entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), user.getUserLogin(), date, ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
                 approveOperationFlowDao.insert(flowEntity);
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
