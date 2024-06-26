@@ -53,6 +53,9 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
     @Autowired
     private SysUserService sysUserService;
 
+    @Resource
+    private SalesCustomerPayDao salesCustomerPayDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("销售退回queryById开始");
@@ -240,8 +243,11 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("审核同意，开始更新库存");
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);
+            log.info("生成该客户销售退回记录");
+            SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getTollAmount(),date,FunctionTypeEnums.SALES_RETURN.getCode());
+            salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_RETURN.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),entity.getUnitPrice(),entity.getReturnCount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_RETURN.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝，停止操作");

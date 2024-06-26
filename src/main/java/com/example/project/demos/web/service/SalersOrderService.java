@@ -53,7 +53,7 @@ public interface SalersOrderService {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
-    int updateApprove(Long id, String result, String opinion, String userLogin, Date date) ;
+    int updateApprove(Long id, String result, String opinion, String userLogin, Date date,String outCode) ;
 
     int updateConfirm(Long id, String result, String opinion, String userLogin,  Date date) ;
 

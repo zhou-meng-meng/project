@@ -83,6 +83,10 @@ public class SupplyCustomerPayInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
+	@ApiModelProperty(value = "业务类型编码")
+	private String functionType;
+	@ApiModelProperty(value = "业务类型名称")
+	private String functionTypeName;
 	@ApiModelProperty(value = "经办人英文名")
 	private String operator;
 	@ApiModelProperty(value = "经办人姓名")

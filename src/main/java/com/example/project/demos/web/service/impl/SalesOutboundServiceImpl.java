@@ -248,7 +248,6 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         SalesOutboundEntity  entity = salesOutboundDao.selectById(id);
         entity.setUnitPrice(unitPrice);
         entity.setTollAmount(tollAmount);
-
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -260,10 +259,10 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             log.info("审核同意，开始更新库存");
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);
             log.info("生成该客户销售记录");
-            SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getOutCount(),tollAmount,date);
+            SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getOutCount(),tollAmount,date,FunctionTypeEnums.SALES_OUTBOUND.getCode());
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),entity.getUnitPrice(),entity.getOutCount(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");
@@ -353,8 +352,11 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             entity.setBillState(BillStateEnums.BILL_STATE_CHARGE_OFF.getCode());
             log.info("确认同意，开始更新库存");
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"add",date);
+            log.info("生成该客户销售出库-冲销记录");
+            SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getTollAmount(),date,FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode());
+            salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),entity.getUnitPrice(),entity.getOutCount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getDesc());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");

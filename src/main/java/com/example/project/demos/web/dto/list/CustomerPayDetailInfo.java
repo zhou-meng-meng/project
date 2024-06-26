@@ -30,6 +30,12 @@ public class CustomerPayDetailInfo {
      */
     @ApiModelProperty(value = "账面余额")
     private BigDecimal bookBalance;
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
+    @ApiModelProperty(value = "数量")
+    private BigDecimal materialCount;
+    @ApiModelProperty(value = "物料金额")
+    private BigDecimal materialBalance;
     /**
      * 打款金额
      */

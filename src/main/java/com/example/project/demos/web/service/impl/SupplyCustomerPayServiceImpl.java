@@ -7,6 +7,7 @@ import com.example.project.demos.web.dto.supplyCustomerPay.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SupplyCustomerPayEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SupplyCustomerPayService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
@@ -40,6 +41,8 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         try{
             SupplyCustomerPayInfo info = supplyCustomerPayDao.selectSupplyCustomerPayInfoById(id);
             outDTO = BeanUtil.copyProperties(info, QueryByIdOutDTO.class);
+            //赋值业务类型
+            outDTO.setFunctionTypeName(FunctionTypeEnums.getDescByCode(outDTO.getFunctionType()));
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -70,6 +73,9 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
                 Page<SupplyCustomerPayInfo> page = new PageImpl<>(this.supplyCustomerPayDao.selectSupplyCustomerPayInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SupplyCustomerPayInfo> list = page.toList();
+                for(SupplyCustomerPayInfo info: list){
+                    info.setFunctionTypeName(FunctionTypeEnums.getDescByCode(info.getFunctionType()));
+                }
                 //出参赋值
                 outDTO.setSupplyCustomerPayInfoList(list);
             }

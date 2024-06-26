@@ -2,6 +2,7 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -54,6 +55,11 @@ public class SalesCustomerPayEntity implements Serializable {
 	 */
 	private BigDecimal tollAmount;
 	/**
+	 * 业务类型
+	 */
+	private String functionType;
+
+	/**
 	 * 创建人登录名
 	 */
 	private String createBy;
@@ -74,7 +80,7 @@ public class SalesCustomerPayEntity implements Serializable {
 	 */
 	private String remark;
 
-	public SalesCustomerPayEntity(Long id,Long saleId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal saleCount,BigDecimal tollAmount,Date saleDate){
+	public SalesCustomerPayEntity(Long id,Long saleId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal saleCount,BigDecimal tollAmount,Date saleDate,String functionType){
 		this.id = id;
 		this.saleId = saleId;
 		this.customerCode = customerCode;
@@ -83,6 +89,7 @@ public class SalesCustomerPayEntity implements Serializable {
 		this.saleCount = saleCount;
 		this.tollAmount = tollAmount;
 		this.saleDate = saleDate;
+		this.functionType = functionType;
 	}
 
 }

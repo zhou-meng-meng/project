@@ -76,6 +76,11 @@ public class QueryByIdOutDTO {
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
 
+    @ApiModelProperty(value = "业务类型编码")
+    private String functionType;
+    @ApiModelProperty(value = "业务类型名称")
+    private String functionTypeName;
+
     /**
      * 创建者
      */

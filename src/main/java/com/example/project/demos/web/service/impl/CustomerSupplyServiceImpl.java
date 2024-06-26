@@ -119,7 +119,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             //添加账号对应关系
             customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
             log.info("添加一条默认往来账信息，金额都为0");
-            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,"默认往来账");
+            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,"默认往来账");
             customerPayDetailService.addPayBySystem(addDTO);
         }catch (Exception e){
             log.info(e.getMessage());

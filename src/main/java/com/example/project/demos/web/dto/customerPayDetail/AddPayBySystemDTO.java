@@ -16,6 +16,10 @@ public class AddPayBySystemDTO {
      */
     @ApiModelProperty(value = "客户编号")
     private String customerCode;
+    @ApiModelProperty(value = "单价")
+    private BigDecimal unitPrice;
+    @ApiModelProperty(value = "数量")
+    private BigDecimal materialCount;
 
     /**
      * 物料总金额
@@ -64,9 +68,11 @@ public class AddPayBySystemDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    public AddPayBySystemDTO(Long id,String customerCode,BigDecimal materialBalance,BigDecimal bookBalance,BigDecimal payBalance,BigDecimal returnBalance,String payType,String isDefault,String operatorBy,Date date,String remark){
+    public AddPayBySystemDTO(Long id,String customerCode,BigDecimal unitPrice,BigDecimal materialCount, BigDecimal materialBalance,BigDecimal bookBalance,BigDecimal payBalance,BigDecimal returnBalance,String payType,String isDefault,String operatorBy,Date date,String remark){
         this.id = id;
         this.customerCode = customerCode;
+        this.unitPrice = unitPrice;
+        this.materialCount = materialCount;
         this.materialBalance= materialBalance;
         this.bookBalance= bookBalance;
         this.payBalance= payBalance;

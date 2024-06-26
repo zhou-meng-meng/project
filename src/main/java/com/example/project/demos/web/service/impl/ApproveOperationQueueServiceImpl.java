@@ -156,7 +156,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     log.info("出库方为仓库");
                     userType = UserTypeEnums.USER_TYPE_STORE.getCode();
                 }
-                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),dto.getInCode());
+                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
                 if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                     //生成待确认流水
                     ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
@@ -169,7 +169,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     }
                     confirmOperationQueueDao.insertBatch(queueEntityList);
                     log.info("更新业务员下单表");
-                    salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
+                    salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date,outCode);
                 }else{
                     errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
                     errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
@@ -186,7 +186,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     log.info("调入方为仓库");
                     userType = UserTypeEnums.USER_TYPE_STORE.getCode();
                 }
-                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),dto.getInCode());
+                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),inCode);
                 if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                     //生成待确认流水
                     ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
@@ -199,7 +199,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     }
                     confirmOperationQueueDao.insertBatch(queueEntityList);
                     //更新业务员下单退回表
-                    salersOrderReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date,dto.getInCode());
+                    salersOrderReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date,inCode);
                 }else{
                     errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
                     errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();

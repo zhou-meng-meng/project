@@ -155,6 +155,9 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             }
             BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance);
             log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"=" +bookBalance);
+            newEntity.setUnitPrice(dto.getUnitPrice());
+            newEntity.setMaterialCount(dto.getMaterialCount());
+            newEntity.setMaterialBalance(materialBalance);
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(Constants.SYSTEM_CODE);
             newEntity.setOperatorBy(Constants.SYSTEM_CODE);

@@ -53,6 +53,8 @@ public class SupplyCustomerPayEntity implements Serializable {
 	 * 总金额
 	 */
 	private BigDecimal tollAmount;
+	private String functionType;
+
 	/**
 	 * 创建人登录名
 	 */
@@ -74,7 +76,7 @@ public class SupplyCustomerPayEntity implements Serializable {
 	 */
 	private String remark;
 
-	public SupplyCustomerPayEntity(Long incomeId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal incomeCount,BigDecimal tollAmount,Date incomeDate){
+	public SupplyCustomerPayEntity(Long incomeId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal incomeCount,BigDecimal tollAmount,Date incomeDate,String functionType){
 		this.incomeId = incomeId;
 		this.customerCode = customerCode;
 		this.materialCode = materialCode;
@@ -82,6 +84,7 @@ public class SupplyCustomerPayEntity implements Serializable {
 		this.incomeCount = incomeCount;
 		this.tollAmount = tollAmount;
 		this.incomeDate = incomeDate;
+		this.functionType = functionType;
 	}
 
 }

@@ -13,6 +13,8 @@
         <result property="incomeDate" column="income_date"/>
         <result property="incomeCount" column="income_count"/>
         <result property="tollAmount" column="toll_amount"/>
+        <result property="tollAmount" column="toll_amount"/>
+        <result property="functionType" column="function_type"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -36,6 +38,7 @@
         t.income_date,
         t.income_count,
         t.toll_amount,
+        t.function_type,
         t.create_by,
         u.user_name AS createByName,
         t.create_time,
@@ -102,6 +105,7 @@
             t.income_date,
             t.income_count,
             t.toll_amount,
+            t.function_type,
             t.create_by,
             u.user_name AS createByName,
             t.create_time,

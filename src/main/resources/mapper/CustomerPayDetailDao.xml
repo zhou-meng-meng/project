@@ -8,6 +8,9 @@
         <result property="id" column="id"/>
         <result property="customerCode" column="customer_code"/>
         <result property="bookBalance" column="book_balance"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="materialCount" column="material_count"/>
+        <result property="materialBalance" column="material_balance"/>
         <result property="payBalance" column="pay_balance"/>
         <result property="returnBalance" column="return_balance"/>
         <result property="operatorBy" column="operator_by"/>
@@ -26,6 +29,9 @@
         t.customer_code,
         #{customerName} as customerName,
         t.book_balance,
+        t.unit_price,
+        t.material_count,
+        t.material_balance,
         t.pay_balance,
         t.pay_type,
         t.return_balance,
