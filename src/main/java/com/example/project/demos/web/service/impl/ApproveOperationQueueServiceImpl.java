@@ -57,6 +57,9 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     @Autowired
     private SalersOrderReturnService salersOrderReturnService;
 
+    @Resource
+    private SalersOrderDao salersOrderDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("审核队列queryById开始");
@@ -129,6 +132,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
         try{
             String functionId = entity.getFunctionId();
             Long businessId = entity.getBusinessId();
+            String result = dto.getResult();
             if(functionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode())){
                 log.info("来料入库操作");
                 rawMaterialIncomeService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
@@ -145,64 +149,74 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                 log.info("仓库/厂区退回的，审核通过后结束");
                 salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getInCode());
             } else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())) {
-                log.info("业务员下单，审核通过后需要退回出库方的录入员确认，生成确认队列");
-                log.info("获取出库方具有确认权限的人");
-                String userType = "";
+                log.info("业务员下单，更新业务员下单表");
                 String outCode = dto.getOutCode();
-                if("F".equals(outCode.substring(0,1))){
-                    log.info("出库方为厂区");
-                    userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
-                }else{
-                    log.info("出库方为仓库");
-                    userType = UserTypeEnums.USER_TYPE_STORE.getCode();
-                }
-                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
-                if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
-                    //生成待确认流水
-                    ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
-                    confirmOperationFlowDao.insert(flowEntity);
-                    //生成待确认队列
-                    List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
-                    for(SysUserEntity userEntity : userList){
-                        ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
-                        queueEntityList.add(queueEntity);
+                salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date,outCode);
+                log.info("判断审核结果");
+                if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+                    log.info("审核通过后需要退回出库方的录入员确认，生成确认队列");
+                    log.info("获取出库方具有确认权限的人");
+                    String userType = "";
+                    if("F".equals(outCode.substring(0,1))){
+                        log.info("出库方为厂区");
+                        userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+                    }else{
+                        log.info("出库方为仓库");
+                        userType = UserTypeEnums.USER_TYPE_STORE.getCode();
                     }
-                    confirmOperationQueueDao.insertBatch(queueEntityList);
-                    log.info("更新业务员下单表");
-                    salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date,outCode);
+                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
+                    if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                        //生成待确认流水
+                        ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                        confirmOperationFlowDao.insert(flowEntity);
+                        //生成待确认队列
+                        List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                        for(SysUserEntity userEntity : userList){
+                            ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
+                            queueEntityList.add(queueEntity);
+                        }
+                        confirmOperationQueueDao.insertBatch(queueEntityList);
+                }else{
+                    log.info("审核拒绝的，不再操作");
+                }
                 }else{
                     errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
                     errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
                 }
             }else if(functionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())){
-                log.info("业务员下单退回，审核通过后需要退回入库方的录入员确认，生成确认队列");
-                log.info("获取退回入库方具有确认权限的人");
-                String userType = "";
                 String inCode = dto.getInCode();
-                if("F".equals(inCode.substring(0,1))){
-                    log.info("调入方为厂区");
-                    userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
-                }else{
-                    log.info("调入方为仓库");
-                    userType = UserTypeEnums.USER_TYPE_STORE.getCode();
-                }
-                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),inCode);
-                if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
-                    //生成待确认流水
-                    ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
-                    confirmOperationFlowDao.insert(flowEntity);
-                    //生成待确认队列
-                    List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
-                    for(SysUserEntity userEntity : userList){
-                        ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
-                        queueEntityList.add(queueEntity);
+                //更新业务员下单退回表
+                salersOrderReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date,inCode);
+                log.info("业务员下单退回，判断审核结果");
+                if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+                    log.info("业务员下单退回，审核通过后需要退回入库方的录入员确认，生成确认队列");
+                    log.info("获取退回入库方具有确认权限的人");
+                    String userType = "";
+                    if("F".equals(inCode.substring(0,1))){
+                        log.info("调入方为厂区");
+                        userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+                    }else{
+                        log.info("调入方为仓库");
+                        userType = UserTypeEnums.USER_TYPE_STORE.getCode();
                     }
-                    confirmOperationQueueDao.insertBatch(queueEntityList);
-                    //更新业务员下单退回表
-                    salersOrderReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date,inCode);
+                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),inCode);
+                    if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                        //生成待确认流水
+                        ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                        confirmOperationFlowDao.insert(flowEntity);
+                        //生成待确认队列
+                        List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                        for(SysUserEntity userEntity : userList){
+                            ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
+                            queueEntityList.add(queueEntity);
+                        }
+                        confirmOperationQueueDao.insertBatch(queueEntityList);
+                    }else{
+                        errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                        errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+                    }
                 }else{
-                    errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
-                    errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+                    log.info("业务员下单退回拒绝");
                 }
             }
             log.info("更新审核流水表");

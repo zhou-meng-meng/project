@@ -233,6 +233,10 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
+        //对于审核同意的  确认状态改为待确认
+        if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
+            entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+        }
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
         int i =salersOrderDao.updateById(entity);
