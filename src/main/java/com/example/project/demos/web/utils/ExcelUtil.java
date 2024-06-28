@@ -46,9 +46,9 @@ public class ExcelUtil {
      * @param list      导出数据集合
      * @param sheetName 工作表的名称
      * @param clazz     实体类
-     * @param response  响应体
+     //* @param response  响应体
      */
-    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, HttpServletResponse response) {
+    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz,HttpServletResponse response) {
         try {
             resetResponse(sheetName, response);
             ServletOutputStream os = response.getOutputStream();
@@ -96,7 +96,7 @@ public class ExcelUtil {
      * @param sheetName 工作表的名称
      * @param clazz     实体类
      * @param merge     是否合并单元格
-     * @param os        输出流
+     //* @param os        输出流
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge, OutputStream os) throws IOException {
         ExcelWriterSheetBuilder builder = EasyExcel.write(os, clazz)

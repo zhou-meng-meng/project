@@ -31,4 +31,6 @@ public interface SupplyReturnDao extends BaseMapper<SupplyReturnEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SupplyReturnInfo selectSupplyReturnInfoById(Long id);
+
+    List<SupplyReturnInfo> queryListForExport(@Param("return") QueryByPageDTO dto);
 }

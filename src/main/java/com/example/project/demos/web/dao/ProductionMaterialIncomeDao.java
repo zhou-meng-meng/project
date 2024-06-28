@@ -29,4 +29,6 @@ public interface ProductionMaterialIncomeDao extends BaseMapper<ProductionMateri
     int count(QueryByPageDTO queryByPageDTO);
 
     ProductionMaterialIncomeInfo selectProductionMaterialIncomeInfoById(Long id);
+
+    List<ProductionMaterialIncomeInfo> queryListForExport(@Param("prod") QueryByPageDTO dto);
 }

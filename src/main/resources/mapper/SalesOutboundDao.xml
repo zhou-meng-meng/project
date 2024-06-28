@@ -207,5 +207,81 @@
         where t.id =#{id}
     </select>
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.SalesOutboundInfo">
+        SELECT
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.unit_price,
+        t.out_count,
+        t.toll_amount,
+        t.customer_code,
+        s.name as customerName,
+        t.out_code,
+        t.saler,
+        u2.user_name AS salerName,
+        t.sale_time,
+        t.approve_state,
+        d4.dict_value approveStateName,
+        t.approve_opinion,
+        t.approve_time,
+        t.confirm_state,
+        d6.dict_value as confirmStateName,
+        t.confirm_user,
+        u4.user_name AS confirmUserName,
+        t.confirm_opinion,
+        t.confirm_time,
+        t.bill_no,
+        t.bill_state,
+        d6.dict_value as billStateName,
+        t.chargeoff_user,
+        u3.user_name AS chargeoffUserName,
+        t.chargeoff_time,
+        t.chargeoff_opinion,
+        t.transport_type,
+        d5.dict_value transportTypeName,
+        t.freight,
+        t.receive_payment,
+        t.receive_payment_time
+        FROM	sales_outbound t
+        LEFT JOIN sys_user u2 ON u2.user_login = t.saler
+        LEFT JOIN sys_user u3 ON u3.user_login = t.chargeoff_user
+        LEFT JOIN sys_user u4 ON u4.user_login = t.confirm_user
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN customer_sale s ON s.CODE = t.customer_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.approve_state and  d4.dict_type = 'approve_state'
+        LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.transport_type and  d5.dict_type = 'transport_type'
+        LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.bill_state and  d6.dict_type = 'bill_state'
+        where 1 = 1
+        <if test="sale.materialCode != null and sale.materialCode != ''">
+            and t.material_code    like concat('%', #{sale.materialCode}, '%')
+        </if>
+        <if test="sale.materialName != null and sale.materialName != ''">
+            and m.name    like concat('%', #{sale.materialName}, '%')
+        </if>
+        <if test="sale.customerName != null and sale.customerName != ''">
+            and s.name    like concat('%', #{sale.customerName}, '%')
+        </if>
+        <if test="sale.billNo != null and sale.billNo != ''">
+            and t.bill_no    like concat('%', #{sale.billNo}, '%')
+        </if>
+        <if test="sale.saler != null and sale.saler != ''">
+            and t.saler   = #{sale.saler}
+        </if>
+        <if test="sale.salerName != null and sale.salerName != ''">
+            and u2.user_name    like concat('%', #{sale.salerName}, '%')
+        </if>
+        <if test="sale.outCode != null and sale.outCode != ''">
+            and t.out_code = #{sale.outCode}
+        </if>
+        order  by  t.id desc
+    </select>
+
 
 </mapper>

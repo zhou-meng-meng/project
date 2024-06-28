@@ -93,7 +93,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("销售出库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -110,21 +110,21 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                     log.info("具有审核权限，查询所有数据");
                 }else{
                     log.info("不具有审核权限，查询自己提交的数据");
-                    queryByPageDTO.setSaler(user.getUserLogin());
+                    dto.setSaler(user.getUserLogin());
                 }
             }else{
                 log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库提交的数据");
-                queryByPageDTO.setOutCode(user.getDeptId());
+                dto.setOutCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.salesOutboundDao.count(queryByPageDTO);
+            long total = this.salesOutboundDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<SalesOutboundInfo> page = new PageImpl<>(this.salesOutboundDao.selectSalesOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<SalesOutboundInfo> page = new PageImpl<>(this.salesOutboundDao.selectSalesOutboundInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalesOutboundInfo> list = page.toList();
                 //赋值出库方名称
@@ -367,6 +367,48 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         return i;
     }
 
+    @Override
+    public List<SalesOutboundInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("销售出库queryListForExport开始");
+        List<SalesOutboundInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //添加权限  总公司审核权限的  查看所有  厂区和仓库的 查看所属厂区或者仓库数据
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，判断是否有审核权限");
+                List<String> listAuth = user.getAuthorityType();
+                if(listAuth.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+                    log.info("具有审核权限，查询所有数据");
+                }else{
+                    log.info("不具有审核权限，查询自己提交的数据");
+                    dto.setSaler(user.getUserLogin());
+                }
+            }else{
+                log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库提交的数据");
+                dto.setOutCode(user.getDeptId());
+            }
+            list = salesOutboundDao.queryListForExport(dto);
+            //赋值出库方名称
+            list = setSalesOutboundObject(list);
+            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        //记录操作日志
+        String info =  "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("销售出库queryListForExport结束");
+        return list;
+    }
+
 
     /**
      * 赋值销售出库方名称
@@ -374,27 +416,32 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
      * @return
      */
     private List<SalesOutboundInfo> setSalesOutboundObject(List<SalesOutboundInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(SalesOutboundInfo info : list){
-            //出库方
-            String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
+        log.info("赋值销售出库方名称");
+        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(SalesOutboundInfo info : list){
+                //出库方
+                String outCode = info.getOutCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(outCode.equals(fInfo.getCode())){
+                            info.setOutName(fInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(outCode.equals(sInfo.getCode())){
+                            info.setOutName(sInfo.getName());
+                        }
                     }
                 }
             }
+        }else{
+            log.info("list is not null");
         }
         return list;
     }
@@ -406,15 +453,20 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
      * @return
      */
     private List<SalesOutboundInfo> formatPriceByRoleType(List<SalesOutboundInfo> list, UserLoginOutDTO userInfo){
-        List<String> typeList = userInfo.getAuthorityType();
-        if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
-            log.info("具有单价权限,不处理");
-        }else{
-            log.info("没有单价权限，将单价和总金额置为0");
-            for(SalesOutboundInfo info : list){
-                info.setUnitPrice(new BigDecimal(0));
-                info.setTollAmount(new BigDecimal(0));
+        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
+        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
+            List<String> typeList = userInfo.getAuthorityType();
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+                log.info("具有单价权限,不处理");
+            }else{
+                log.info("没有单价权限，将单价和总金额置为0");
+                for(SalesOutboundInfo info : list){
+                    info.setUnitPrice(new BigDecimal(0));
+                    info.setTollAmount(new BigDecimal(0));
+                }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

@@ -31,4 +31,5 @@ public interface TransferOutboundDao extends BaseMapper<TransferOutboundEntity> 
 
     TransferOutboundInfo selectTransferOutboundInfoById(Long id);
 
+    List<TransferOutboundInfo> queryListForExport(@Param("transfer") QueryByPageDTO dto);
 }

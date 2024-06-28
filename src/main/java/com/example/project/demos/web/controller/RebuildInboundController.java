@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.RebuildInboundInfo;
 import com.example.project.demos.web.dto.rebuildInbound.*;
 import com.example.project.demos.web.service.RebuildInboundService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 重造入库维护表(rebuild_inbound)表控制层
@@ -90,6 +95,16 @@ public class RebuildInboundController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = rebuildInboundService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出准备重造入库列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出准备重造入库列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<RebuildInboundInfo> list = rebuildInboundService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "重造入库", RebuildInboundInfo.class,response);
     }
 
 }

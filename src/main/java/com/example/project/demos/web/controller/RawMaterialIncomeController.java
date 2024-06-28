@@ -98,9 +98,10 @@ public class RawMaterialIncomeController {
      * 导出来料入库列表
      */
     @PostMapping("/export")
-    public void export(QueryByPageDTO dto, HttpServletResponse response) {
+    @ApiOperation("导出来料入库列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
         List<RawMaterialIncomeInfo> list = rawMaterialIncomeService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "来料入库", RawMaterialIncomeInfo.class, response);
+        ExcelUtil.exportExcel(list, "来料入库", RawMaterialIncomeInfo.class,response);
     }
 
 }

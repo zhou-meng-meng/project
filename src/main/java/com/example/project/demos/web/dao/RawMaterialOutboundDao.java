@@ -30,4 +30,6 @@ public interface RawMaterialOutboundDao extends BaseMapper<RawMaterialOutboundEn
     int count(QueryByPageDTO queryByPageDTO);
 
     RawMaterialOutboundInfo selectRawMaterialOutboundInfoById(Long id);
+
+    List<RawMaterialOutboundInfo> queryListForExport(@Param("raw") QueryByPageDTO dto);
 }

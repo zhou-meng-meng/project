@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.SalesReturnInfo;
+import com.example.project.demos.web.dto.list.SupplyReturnInfo;
 import com.example.project.demos.web.dto.salesReturn.*;
 import com.example.project.demos.web.service.SalesReturnService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 销售退回维护表(sales_return)表控制层
@@ -90,6 +95,16 @@ public class SalesReturnController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = salesReturnService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出销售方退回列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出销售方退回列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<SalesReturnInfo> list = salesReturnService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "销售方退回", SalesReturnInfo.class,response);
     }
 
 }

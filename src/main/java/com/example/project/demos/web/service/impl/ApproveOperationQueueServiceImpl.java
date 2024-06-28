@@ -151,7 +151,6 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             } else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())) {
                 log.info("业务员下单，更新业务员下单表");
                 String outCode = dto.getOutCode();
-                salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date,outCode);
                 log.info("判断审核结果");
                 if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
                     log.info("审核通过后需要退回出库方的录入员确认，生成确认队列");
@@ -176,17 +175,16 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                             queueEntityList.add(queueEntity);
                         }
                         confirmOperationQueueDao.insertBatch(queueEntityList);
+                        salersOrderService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date,outCode);
+                    }else{
+                        errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                        errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+                    }
                 }else{
-                    log.info("审核拒绝的，不再操作");
-                }
-                }else{
-                    errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
-                    errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+                    log.info("业务员下单审核拒绝");
                 }
             }else if(functionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())){
                 String inCode = dto.getInCode();
-                //更新业务员下单退回表
-                salersOrderReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date,inCode);
                 log.info("业务员下单退回，判断审核结果");
                 if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
                     log.info("业务员下单退回，审核通过后需要退回入库方的录入员确认，生成确认队列");
@@ -211,6 +209,8 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                             queueEntityList.add(queueEntity);
                         }
                         confirmOperationQueueDao.insertBatch(queueEntityList);
+                        //更新业务员下单退回表
+                        salersOrderReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),null,null,date,inCode);
                     }else{
                         errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
                         errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();

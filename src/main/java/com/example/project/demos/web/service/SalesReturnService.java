@@ -1,10 +1,12 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.list.SalesReturnInfo;
 import com.example.project.demos.web.dto.salesReturn.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,7 +32,7 @@ public interface SalesReturnService  {
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -56,6 +58,8 @@ public interface SalesReturnService  {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
     int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,String inCode) ;
+
+    List<SalesReturnInfo> queryListForExport(QueryByPageDTO dto);
 
 }
 

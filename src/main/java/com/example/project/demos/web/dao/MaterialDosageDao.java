@@ -33,4 +33,6 @@ public interface MaterialDosageDao extends BaseMapper<MaterialDosageEntity> {
     MaterialDosageInfo selectMaterialDosageInfoById(Long id);
 
     MaterialDosageTollAmountInfo queryTollAmount(QueryByPageDTO queryByPageDTO);
+
+    List<MaterialDosageInfo> queryListForExport(@Param("info") QueryByPageDTO dto);
 }

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("销售退回queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -96,17 +97,17 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 log.info("当前登录人属于总公司，查询所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库的数据");
-                queryByPageDTO.setInCode(user.getDeptId());
+                dto.setInCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.salesReturnDao.count(queryByPageDTO);
+            long total = this.salesReturnDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<SalesReturnInfo> page = new PageImpl<>(this.salesReturnDao.selectSalesReturnInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<SalesReturnInfo> page = new PageImpl<>(this.salesReturnDao.selectSalesReturnInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalesReturnInfo> list = page.toList();
                 list = setSalesReturnObject(list);
@@ -257,6 +258,39 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         return i;
     }
 
+    @Override
+    public List<SalesReturnInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("销售退回queryListForExport开始");
+        List<SalesReturnInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，查询所有数据");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库的数据");
+                dto.setInCode(user.getDeptId());
+            }
+            list = salesReturnDao.queryListForExport(dto);
+            list = setSalesReturnObject(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_RETURN.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("销售退回queryListForExport结束");
+        return list;
+    }
+
 
     /**
      * 赋值销售退回  入库方名称
@@ -264,31 +298,35 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
      * @return
      */
     private List<SalesReturnInfo> setSalesReturnObject(List<SalesReturnInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(SalesReturnInfo info : list){
-            //退货方
-            String inCode = info.getInCode();
-            if(null != inCode && !"".equals(inCode) && ""!= inCode){
-                if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
-                    //工厂
-                    for(SysFactoryInfo fInfo : factoryInfoList){
-                        if(inCode.equals(fInfo.getCode())){
-                            info.setInName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(SalesReturnInfo info : list){
+                //退货方
+                String inCode = info.getInCode();
+                if(null != inCode && !"".equals(inCode) && ""!= inCode){
+                    if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                        //工厂
+                        for(SysFactoryInfo fInfo : factoryInfoList){
+                            if(inCode.equals(fInfo.getCode())){
+                                info.setInName(fInfo.getName());
+                            }
+                        }
+                    }else{
+                        //仓库
+                        for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                            if(inCode.equals(sInfo.getCode())){
+                                info.setInName(sInfo.getName());
+                            }
                         }
                     }
-                }else{
-                    //仓库
-                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                        if(inCode.equals(sInfo.getCode())){
-                            info.setInName(sInfo.getName());
-                        }
-                    }
+                }else {
+                    log.info("inCode is null");
                 }
-            }else {
-                log.info("inCode is null");
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

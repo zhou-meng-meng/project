@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.RawMaterialIncomeDao;
 import com.example.project.demos.web.dao.RawMaterialOutboundDao;
@@ -80,7 +81,7 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("原材料出库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -94,17 +95,17 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
-                queryByPageDTO.setOutCode(user.getDeptId());
+                dto.setOutCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.rawMaterialOutboundDao.count(queryByPageDTO);
+            long total = this.rawMaterialOutboundDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<RawMaterialOutboundInfo> page = new PageImpl<>(this.rawMaterialOutboundDao.selectRawMaterialOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<RawMaterialOutboundInfo> page = new PageImpl<>(this.rawMaterialOutboundDao.selectRawMaterialOutboundInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<RawMaterialOutboundInfo> list = page.toList();
                 //赋值出库方名称
@@ -231,33 +232,72 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         return outDTO;
     }
 
+    @Override
+    public List<RawMaterialOutboundInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("原材料出库queryListForExport开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        List<RawMaterialOutboundInfo> list = new ArrayList<>();
+        try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setOutCode(user.getDeptId());
+            }
+            list = rawMaterialOutboundDao.queryListForExport(dto);
+            //赋值出库方名称
+            list = setRawMaterialOutboundObject(list);
+            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.RAW_MATERIAL_OUTBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("原材料出库queryListForExport结束");
+        return list;
+    }
+
     /**
      * 赋值原材料出库方名称
      * @param list
      * @return
      */
     private List<RawMaterialOutboundInfo> setRawMaterialOutboundObject(List<RawMaterialOutboundInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(RawMaterialOutboundInfo info : list){
-            //出库方
-            String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(RawMaterialOutboundInfo info : list){
+                //出库方
+                String outCode = info.getOutCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(outCode.equals(fInfo.getCode())){
+                            info.setOutName(fInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(outCode.equals(sInfo.getCode())){
+                            info.setOutName(sInfo.getName());
+                        }
                     }
                 }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }
@@ -269,15 +309,19 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
      * @return
      */
     private List<RawMaterialOutboundInfo> formatPriceByRoleType(List<RawMaterialOutboundInfo> list,UserLoginOutDTO userInfo){
-        List<String> typeList = userInfo.getAuthorityType();
-        if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
-            log.info("具有单价权限,不处理");
-        }else{
-            log.info("没有单价权限，将单价和总金额置为0");
-            for(RawMaterialOutboundInfo info : list){
-                info.setUnitPrice(new BigDecimal(0));
-                info.setTollAmount(new BigDecimal(0));
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            List<String> typeList = userInfo.getAuthorityType();
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+                log.info("具有单价权限,不处理");
+            }else{
+                log.info("没有单价权限，将单价和总金额置为0");
+                for(RawMaterialOutboundInfo info : list){
+                    info.setUnitPrice(new BigDecimal(0));
+                    info.setTollAmount(new BigDecimal(0));
+                }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

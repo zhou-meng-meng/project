@@ -1,13 +1,18 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.MaterialDosageInfo;
+import com.example.project.demos.web.dto.list.MaterialInfo;
 import com.example.project.demos.web.dto.materialDosage.*;
 import com.example.project.demos.web.service.MaterialDosageService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 物料用量表
@@ -24,7 +29,7 @@ public class MaterialDosageController {
      * 服务对象
      */
     @Resource
-    private MaterialDosageService MaterialDosageService;
+    private MaterialDosageService materialDosageService;
 
     /**
      * 分页查询
@@ -35,7 +40,7 @@ public class MaterialDosageController {
     @PostMapping("/queryMaterialDosageList")
     @ApiOperation("查询列表(分页)")
     public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
-        QueryByPageOutDTO outDTO = this.MaterialDosageService.queryByPage(queryByPageDTO);
+        QueryByPageOutDTO outDTO = this.materialDosageService.queryByPage(queryByPageDTO);
         return outDTO;
     }
 
@@ -48,7 +53,7 @@ public class MaterialDosageController {
     @PostMapping("/queryById")
     @ApiOperation("通过主键查询单条数据")
     public QueryByIdOutDTO queryById(@RequestBody QueryByIdDTO dto) {
-        QueryByIdOutDTO outDTO = this.MaterialDosageService.queryById(dto.getId());
+        QueryByIdOutDTO outDTO = this.materialDosageService.queryById(dto.getId());
         return outDTO;
     }
 
@@ -61,7 +66,7 @@ public class MaterialDosageController {
     @PostMapping("/add")
     @ApiOperation("新增数据")
     public AddOutDTO add(@RequestBody AddDTO dto) {
-        AddOutDTO outDTO = MaterialDosageService.insert(dto);
+        AddOutDTO outDTO = materialDosageService.insert(dto);
         return outDTO;
     }
 
@@ -74,7 +79,7 @@ public class MaterialDosageController {
     @PostMapping("/edit")
     @ApiOperation("编辑数据")
     public EditOutDTO edit(@RequestBody EditDTO dto) {
-        EditOutDTO outDTO = MaterialDosageService.update(dto);
+        EditOutDTO outDTO = materialDosageService.update(dto);
         return outDTO;
     }
 
@@ -87,8 +92,18 @@ public class MaterialDosageController {
     @PostMapping("/deleteById")
     @ApiOperation("根据ID删除数据")
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
-        DeleteByIdOutDTO outDTO = MaterialDosageService.deleteById(dto);
+        DeleteByIdOutDTO outDTO = materialDosageService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出用量表列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出用量表列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<MaterialDosageInfo> list = materialDosageService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "用量表", MaterialDosageInfo.class,response);
     }
 
 }

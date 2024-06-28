@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,11 +32,13 @@ public class MaterialInfo implements Serializable {
 	/**
 	 * 物料编号
 	 */
+	@ExcelProperty(value = "物料编号")
 	@ApiModelProperty(value = "物料编号")
 	private String code;
 	/**
 	 * 物料名称
 	 */
+	@ExcelProperty(value = "物料名称")
 	@ApiModelProperty(value = "物料名称")
 	private String name;
 	/**
@@ -47,6 +50,7 @@ public class MaterialInfo implements Serializable {
 	/**
 	 * 型号名称
 	 */
+	@ExcelProperty(value = "型号名称")
 	@ApiModelProperty(value = "型号名称")
 	private String modelName;
 
@@ -59,6 +63,7 @@ public class MaterialInfo implements Serializable {
 	/**
 	 * 单位名称
 	 */
+	@ExcelProperty(value = "单位名称")
 	@ApiModelProperty(value = "单位名称")
 	private String unitName;
 
@@ -67,13 +72,16 @@ public class MaterialInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "物料类型  0-原材料；1-销售产品")
 	private String type;
+	@ExcelProperty(value = "物料类型")
 	@ApiModelProperty(value = "物料类型  0-原材料；1-销售产品")
 	private String typeName;
 	/**
 	 * 供应商编号（来料使用）
 	 */
+	@ExcelProperty(value = "")
 	@ApiModelProperty(value = "供应商编号（来料使用）")
 	private String supplyerCode;
+	@ExcelProperty(value = "供应商（来料使用）")
 	@ApiModelProperty(value = "供应商名称（来料使用）")
 	private String supplyerName;
 	/**
@@ -81,11 +89,13 @@ public class MaterialInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
+	@ExcelProperty(value = "创建者名字")
 	@ApiModelProperty(value = "创建者名字")
 	private String createByName;
 	/**
 	 * 创建时间
 	 */
+	@ExcelProperty(value = "创建时间")
 	@ApiModelProperty(value = "创建时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
@@ -94,17 +104,20 @@ public class MaterialInfo implements Serializable {
 	 */
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
+	@ExcelProperty(value = "更新者名字")
 	@ApiModelProperty(value = "更新者名字")
 	private String updateByName;
 	/**
 	 * 更新时间
 	 */
+	@ExcelProperty(value = "更新时间")
 	@ApiModelProperty(value = "更新时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date updateTime;
 	/**
 	 * 备注
 	 */
+	@ExcelProperty(value = "备注")
 	@ApiModelProperty(value = "备注")
 	private String remark;
 

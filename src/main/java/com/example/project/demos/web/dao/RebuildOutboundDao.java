@@ -30,4 +30,6 @@ public interface RebuildOutboundDao extends BaseMapper<RebuildOutboundEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     RebuildOutboundInfo selectRebuildOutboundInfoById(Long id);
+
+    List<RebuildOutboundInfo> queryListForExport(@Param("rebuild") QueryByPageDTO dto);
 }

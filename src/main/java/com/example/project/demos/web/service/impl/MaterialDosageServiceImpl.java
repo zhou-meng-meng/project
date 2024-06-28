@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.MaterialDosageDao;
 import com.example.project.demos.web.dto.list.MaterialDosageInfo;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +62,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("物料用量queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -74,23 +76,23 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区");
-                queryByPageDTO.setFactoryCode(user.getDeptId());
+                dto.setFactoryCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.materialDosageDao.count(queryByPageDTO);
+            long total = this.materialDosageDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<MaterialDosageInfo> page = new PageImpl<>(this.materialDosageDao.selectMaterialDosageInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<MaterialDosageInfo> page = new PageImpl<>(this.materialDosageDao.selectMaterialDosageInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<MaterialDosageInfo> list = page.toList();
                 //出参赋值
                 outDTO.setMaterialDosageInfoList(list);
                 //获取三个合计数量
-                MaterialDosageTollAmountInfo tollInfo = materialDosageDao.queryTollAmount(queryByPageDTO);
+                MaterialDosageTollAmountInfo tollInfo = materialDosageDao.queryTollAmount(dto);
                 outDTO.setGrindingWeightToll(tollInfo.getGrindingWeightToll());
                 outDTO.setMachineWeightToll(tollInfo.getMachineWeightToll());
                 outDTO.setDifferentWeightToll(tollInfo.getDifferentWeightToll());
@@ -181,6 +183,46 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         outDTO.setErrorMsg(errortMsg);
         log.info("物料用量表删除结束");
         return outDTO;
+    }
+
+    @Override
+    public List<MaterialDosageInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("物料用量表queryListForExport开始");
+        List<MaterialDosageInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区");
+                dto.setFactoryCode(user.getDeptId());
+            }
+            list = materialDosageDao.queryListForExport(dto);
+            if(CollectionUtil.isNotEmpty(list) && list.size()> 0){
+                MaterialDosageTollAmountInfo tollInfo = materialDosageDao.queryTollAmount(dto);
+                //赋值最后一排的合计
+                MaterialDosageInfo info = new MaterialDosageInfo();
+                info.setBillNo("合计");
+                info.setGrindingWeight(tollInfo.getGrindingWeightToll());
+                info.setMachineWeight(tollInfo.getMachineWeightToll());
+                info.setDifferentWeight(tollInfo.getDifferentWeightToll());
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_DOSAGE.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
+        log.info("物料用量表queryListForExport结束");
+        return list;
     }
 
 }

@@ -165,6 +165,59 @@
         where  t.id = #{id}
     </select>
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.MaterialDosageInfo">
+        SELECT
+        t.id,
+        t.factory_code,
+        f.`name` as factoryName,
+        t.duty_date,
+        t.duty_code,
+        d.dict_value as dutyName,
+        t.machine_code,
+        d1.dict_value machineName,
+        t.stock_bill_no,
+        t.bill_no,
+        t.grinding_weight,
+        t.machine_weight,
+        t.different_weight,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	material_dosage t
+        left join  sys_factory  f on  f.code = t.factory_code
+        left join  sys_dict_data   d on  d.dict_code = t.duty_code  and   d.dict_type = 'duty'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.machine_code and  d1.dict_type = 'machine_code'
+        where 1=1
+        <if test="info.factoryCode != null and info.factoryCode != ''">
+            and t.factory_code    = #{info.factoryCode}
+        </if>
+        <if test="info.beginDate != null and info.beginDate != ''">
+            and t.duty_date   <![CDATA[ >= ]]> #{info.beginDate}
+        </if>
+        <if test="info.endDate != null and info.endDate != ''">
+            and t.duty_date   <![CDATA[ <= ]]> #{info.endDate}
+        </if>
+        <if test="info.dutyCode != null and info.dutyCode != ''">
+            and t.duty_code   =#{info.dutyCode}
+        </if>
+        <if test="info.machineCode != null and info.machineCode != ''">
+            and t.machine_code    like concat('%', #{info.machineCode}, '%')
+        </if>
+        <if test="info.billNo != null and info.billNo != ''">
+            and t.bill_no    like concat('%', #{info.billNo}, '%')
+        </if>
+        <if test="info.stockBillNo != null and info.stockBillNo != ''">
+            and t.stock_bill_no    like concat('%', #{info.stockBillNo}, '%')
+        </if>
+        order  by  t.duty_date desc
+    </select>
+
 
 
 </mapper>

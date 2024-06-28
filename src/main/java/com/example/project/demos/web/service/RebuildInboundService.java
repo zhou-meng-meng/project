@@ -1,7 +1,10 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.list.RebuildInboundInfo;
 import com.example.project.demos.web.dto.rebuildInbound.*;
+
+import java.util.List;
 
 /**
  * 
@@ -26,7 +29,7 @@ public interface RebuildInboundService {
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -51,5 +54,7 @@ public interface RebuildInboundService {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    List<RebuildInboundInfo> queryListForExport(QueryByPageDTO dto);
 }
 

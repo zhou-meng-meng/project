@@ -1,6 +1,9 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.list.MaterialDosageInfo;
 import com.example.project.demos.web.dto.materialDosage.*;
+
+import java.util.List;
 
 /**
  * 物料用量表
@@ -21,10 +24,10 @@ public interface MaterialDosageService  {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -49,6 +52,8 @@ public interface MaterialDosageService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    List<MaterialDosageInfo> queryListForExport(QueryByPageDTO dto);
 
 }
 

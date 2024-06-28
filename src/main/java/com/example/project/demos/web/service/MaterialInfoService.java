@@ -1,7 +1,10 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.list.MaterialInfo;
 import com.example.project.demos.web.dto.materialInfo.*;
+
+import java.util.List;
 
 /**
  * 物料信息维护表
@@ -26,7 +29,7 @@ public interface MaterialInfoService  {
      * @param queryByPageDTO 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -51,5 +54,7 @@ public interface MaterialInfoService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    List<MaterialInfo> queryListForExport(QueryByPageDTO dto);
 }
 

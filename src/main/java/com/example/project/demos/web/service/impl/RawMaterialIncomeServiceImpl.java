@@ -88,7 +88,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("来料入库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -102,17 +102,17 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
-                queryByPageDTO.setInCode(user.getDeptId());
+                dto.setInCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.rawMaterialIncomeDao.count(queryByPageDTO);
+            long total = this.rawMaterialIncomeDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<RawMaterialIncomeInfo> page = new PageImpl<>(this.rawMaterialIncomeDao.selectRawMaterialIncomeInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<RawMaterialIncomeInfo> page = new PageImpl<>(this.rawMaterialIncomeDao.selectRawMaterialIncomeInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<RawMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
@@ -261,7 +261,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     }
 
     @Override
-    public List<RawMaterialIncomeInfo> queryListForExport(QueryByPageDTO queryByPageDTO) {
+    public List<RawMaterialIncomeInfo> queryListForExport(QueryByPageDTO dto) {
         log.info("来料入库queryListForExport开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -276,10 +276,10 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
-                queryByPageDTO.setInCode(user.getDeptId());
+                dto.setInCode(user.getDeptId());
             }
             log.info("开始查询数据");
-            list = rawMaterialIncomeDao.queryListForExport(queryByPageDTO);
+            list = rawMaterialIncomeDao.queryListForExport(dto);
             //处理入库方名称
             list = setRawMaterialIncomeObject(list);
             list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
@@ -303,10 +303,10 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
      */
     private List<RawMaterialIncomeInfo> setRawMaterialIncomeObject(List<RawMaterialIncomeInfo> list){
         log.info("赋值来料入库方名称");
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
             for(RawMaterialIncomeInfo info : list){
                 //入库方
                 String inCode = info.getInCode();

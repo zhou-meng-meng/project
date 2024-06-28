@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.RebuildOutboundInfo;
+import com.example.project.demos.web.dto.list.TransferOutboundInfo;
 import com.example.project.demos.web.dto.rebuildOutbound.*;
 import com.example.project.demos.web.service.RebuildOutboundService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 重造出库维护表(rebuild_outbound)表控制层
@@ -90,6 +95,16 @@ public class RebuildOutboundController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = rebuildOutboundService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出重造出库列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出重造出库列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<RebuildOutboundInfo> list = rebuildOutboundService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "重造出库", RebuildOutboundInfo.class,response);
     }
 
 }

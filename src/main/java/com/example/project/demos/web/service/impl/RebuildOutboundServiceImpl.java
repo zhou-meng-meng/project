@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.RebuildOutboundDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
@@ -80,7 +81,7 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("重造出库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -94,17 +95,17 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
                 log.info("当前登录人属于总公司，可以查看所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                queryByPageDTO.setOutCode(user.getDeptId());
+                dto.setOutCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.rebuildOutboundDao.count(queryByPageDTO);
+            long total = this.rebuildOutboundDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<RebuildOutboundInfo> page = new PageImpl<>(this.rebuildOutboundDao.selectRebuildOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<RebuildOutboundInfo> page = new PageImpl<>(this.rebuildOutboundDao.selectRebuildOutboundInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<RebuildOutboundInfo> list = page.toList();
                 list = setRebuildOutboundObject(list);
@@ -217,33 +218,70 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
         return outDTO;
     }
 
+    @Override
+    public List<RebuildOutboundInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("重造出库queryListForExport开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        List<RebuildOutboundInfo> list = new ArrayList<>();
+        try {
+            //添加权限  总公司审核权限的  查看所有  其他的角色 查看自己所在厂区/仓库的数据
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
+                dto.setOutCode(user.getDeptId());
+            }
+            list = rebuildOutboundDao.queryListForExport(dto);
+            list = setRebuildOutboundObject(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.REBUILD_OUTBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("重造出库queryListForExport结束");
+        return list;
+    }
+
     /**
      * 赋值重造出库  入库方名称
      * @param list
      * @return
      */
     private List<RebuildOutboundInfo> setRebuildOutboundObject(List<RebuildOutboundInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(RebuildOutboundInfo info : list){
-            //出库方
-            String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(RebuildOutboundInfo info : list){
+                //出库方
+                String outCode = info.getOutCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(outCode.equals(fInfo.getCode())){
+                            info.setOutName(fInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(outCode.equals(sInfo.getCode())){
+                            info.setOutName(sInfo.getName());
+                        }
                     }
                 }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.ProductionMaterialIncomeDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
@@ -81,7 +82,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("产量入库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -95,17 +96,17 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
-                queryByPageDTO.setInCode(user.getDeptId());
+                dto.setInCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.productionMaterialIncomeDao.count(queryByPageDTO);
+            long total = this.productionMaterialIncomeDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<ProductionMaterialIncomeInfo> page = new PageImpl<>(this.productionMaterialIncomeDao.selectProductionMaterialIncomeInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<ProductionMaterialIncomeInfo> page = new PageImpl<>(this.productionMaterialIncomeDao.selectProductionMaterialIncomeInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ProductionMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
@@ -117,7 +118,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -220,6 +221,40 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         return outDTO;
     }
 
+    @Override
+    public List<ProductionMaterialIncomeInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("产量入库queryListForExport开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        List<ProductionMaterialIncomeInfo> list = new ArrayList<>();
+        try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setInCode(user.getDeptId());
+            }
+            list = productionMaterialIncomeDao.queryListForExport(dto);
+            //处理入库方名称
+            list = setProductionMaterialIncomeObject(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel";
+        sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("产量入库queryListForExport结束");
+        return list;
+    }
+
 
     /**
      * 赋值产量入库方名称
@@ -227,27 +262,31 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
      * @return
      */
     private List<ProductionMaterialIncomeInfo> setProductionMaterialIncomeObject(List<ProductionMaterialIncomeInfo> list){
-        log.info("获取厂区和仓库集合");
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(ProductionMaterialIncomeInfo info : list){
-            //入库方
-            String inCode = info.getInCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(inCode.equals(fInfo.getCode())){
-                        info.setInName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            log.info("获取厂区和仓库集合");
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(ProductionMaterialIncomeInfo info : list){
+                //入库方
+                String inCode = info.getInCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(inCode.equals(fInfo.getCode())){
+                            info.setInName(fInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(inCode.equals(sInfo.getCode())){
-                        info.setInName(sInfo.getName());
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(inCode.equals(sInfo.getCode())){
+                            info.setInName(sInfo.getName());
+                        }
                     }
                 }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

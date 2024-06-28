@@ -1,8 +1,11 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.productionMaterialIncome.*;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * 
@@ -52,5 +55,7 @@ public interface ProductionMaterialIncomeService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) ;
+
+    List<ProductionMaterialIncomeInfo> queryListForExport(QueryByPageDTO queryByPageDTO);
 }
 

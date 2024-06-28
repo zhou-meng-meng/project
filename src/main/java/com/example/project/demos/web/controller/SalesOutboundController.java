@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import com.example.project.demos.web.dto.salesOutbound.*;
 import com.example.project.demos.web.service.SalesOutboundService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 销售出库维护表(rebuild_outbound)表控制层
@@ -103,6 +108,16 @@ public class SalesOutboundController {
     public ChargeOffOutDTO chargeOffSubmit(@RequestBody ChargeOffDTO dto) {
         ChargeOffOutDTO outDTO = salesOutboundService.chargeOffSubmit(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出销售出库列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出销售出库列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<SalesOutboundInfo> list = salesOutboundService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "销售出库", SalesOutboundInfo.class,response);
     }
 
 }

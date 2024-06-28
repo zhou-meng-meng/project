@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,23 +57,23 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("物料维护queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.materialInfoDao.count(queryByPageDTO);
+            long total = this.materialInfoDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                MaterialInfoEntity materialInfo = BeanCopyUtils.copy(queryByPageDTO,MaterialInfoEntity.class);
+                MaterialInfoEntity materialInfo = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
                 //开始分页查询
-                Page<MaterialInfo> page = new PageImpl<>(this.materialInfoDao.selectMaterialInfoListByPage(materialInfo,queryByPageDTO.getSupplyerName(), pageRequest), pageRequest, total);
+                Page<MaterialInfo> page = new PageImpl<>(this.materialInfoDao.selectMaterialInfoListByPage(materialInfo,dto.getSupplyerName(), pageRequest), pageRequest, total);
                 //获取分页数据
                 List<MaterialInfo> list = page.toList();
                 //出参赋值
@@ -160,5 +161,30 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+    @Override
+    public List<MaterialInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("物料维护queryListForExport开始");
+        List<MaterialInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try {
+            //转换实体入参
+            MaterialInfoEntity entity = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
+            list = materialInfoDao.queryListForExport(entity);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INFO.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("物料维护queryListForExport结束");
+        return list;
     }
 }

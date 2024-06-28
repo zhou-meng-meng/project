@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.productionMaterialIncome.*;
 import com.example.project.demos.web.service.ProductionMaterialIncomeService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * 产量入库维护表(production_material_income)表控制层
@@ -91,6 +96,16 @@ public class ProductionMaterialIncomeController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) throws UnknownHostException {
         DeleteByIdOutDTO outDTO = productionMaterialIncomeService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出产量入库列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出产量入库列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<ProductionMaterialIncomeInfo> list = productionMaterialIncomeService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "产量入库", ProductionMaterialIncomeInfo.class,response);
     }
 
 }

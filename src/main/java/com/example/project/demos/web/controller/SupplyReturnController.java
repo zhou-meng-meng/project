@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.SupplyReturnInfo;
 import com.example.project.demos.web.dto.supplyReturn.*;
 import com.example.project.demos.web.service.SupplyReturnService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 供应商退回维护表(supply_return)表控制层
@@ -92,5 +97,14 @@ public class SupplyReturnController {
         return outDTO;
     }
 
+    /**
+     * 导出供货方退回列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出供货方退回列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<SupplyReturnInfo> list = supplyReturnService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "供货方退回", SupplyReturnInfo.class,response);
+    }
 }
 

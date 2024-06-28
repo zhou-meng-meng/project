@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.TransferOutboundInfo;
 import com.example.project.demos.web.dto.transferOutbound.*;
 import com.example.project.demos.web.service.TransferOutboundService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 调拨出库维护表(transfer_outbound)表控制层
@@ -90,6 +95,16 @@ public class TransferOutboundController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = transferOutboundService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出调拨出库列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出调拨出库列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<TransferOutboundInfo> list = transferOutboundService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "调拨出库", TransferOutboundInfo.class,response);
     }
 
 }

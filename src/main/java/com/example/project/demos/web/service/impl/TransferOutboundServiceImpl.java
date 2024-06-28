@@ -259,50 +259,89 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
         return i;
     }
 
+    @Override
+    public List<TransferOutboundInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("调拨出库queryListForExport开始");
+        List<TransferOutboundInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setOutCode(user.getDeptId());
+            }
+            list = transferOutboundDao.queryListForExport(dto);
+            //赋值调出方和调入方
+            list = setTransferObject(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("调拨出库queryListForExport结束");
+        return list;
+    }
+
     /**
      * 赋值调入方和调出方的名称
      * @param list
      * @return
      */
     private List<TransferOutboundInfo> setTransferObject(List<TransferOutboundInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(TransferOutboundInfo info : list){
-            //调入方
-            String inCode = info.getInCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(inCode.equals(fInfo.getCode())){
-                        info.setInName(fInfo.getName());
+        log.info("赋值调入方和调出方的名称");
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(TransferOutboundInfo info : list){
+                //调入方
+                String inCode = info.getInCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(inCode.equals(fInfo.getCode())){
+                            info.setInName(fInfo.getName());
+                        }
+                    }
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(inCode.equals(sInfo.getCode())){
+                            info.setInName(sInfo.getName());
+                        }
                     }
                 }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(inCode.equals(sInfo.getCode())){
-                        info.setInName(sInfo.getName());
+                //调出方
+                String outCode = info.getOutCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(outCode.equals(fInfo.getCode())){
+                            info.setOutName(fInfo.getName());
+                        }
+                    }
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(outCode.equals(sInfo.getCode())){
+                            info.setOutName(sInfo.getName());
+                        }
                     }
                 }
             }
-            //调出方
-            String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
-                    }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
-                    }
-                }
-            }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

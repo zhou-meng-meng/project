@@ -93,7 +93,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("供应商退回queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -109,18 +109,18 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 isPrice = true;
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                queryByPageDTO.setOutCode(user.getDeptId());
+                dto.setOutCode(user.getDeptId());
                 isPrice = false;
             }
             //先用查询条件查询总条数
-            long total = this.supplyReturnDao.count(queryByPageDTO);
+            long total = this.supplyReturnDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<SupplyReturnInfo> page = new PageImpl<>(this.supplyReturnDao.selectSupplyReturnInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<SupplyReturnInfo> page = new PageImpl<>(this.supplyReturnDao.selectSupplyReturnInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SupplyReturnInfo> list = page.toList();
                 list = setSupplyReturnObject(list,isPrice);
@@ -264,39 +264,79 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         return i;
     }
 
+    @Override
+    public List<SupplyReturnInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("供应商退回queryListForExport开始");
+        List<SupplyReturnInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        boolean isPrice = false;
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //添加权限  总公司人员查看所有数据   厂区或者仓库人员查看所属厂区或者仓库提交数据
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+                isPrice = true;
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
+                dto.setOutCode(user.getDeptId());
+                isPrice = false;
+            }
+            list = supplyReturnDao.queryListForExport(dto);
+            list = setSupplyReturnObject(list,isPrice);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.SUPPLY_RETURN.getCode(),OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("供应商退回queryListForExport结束");
+        return list;
+    }
+
     /**
      * 赋值供应商退回  入库方名称  单价信息
      * @param list
      * @return
      */
     private List<SupplyReturnInfo> setSupplyReturnObject(List<SupplyReturnInfo> list,boolean isPrice){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(SupplyReturnInfo info : list){
-            //退货方
-            String outCode = info.getOutCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(outCode.equals(fInfo.getCode())){
-                        info.setOutName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(SupplyReturnInfo info : list){
+                //退货方
+                String outCode = info.getOutCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(outCode.equals(fInfo.getCode())){
+                            info.setOutName(fInfo.getName());
+                        }
+                    }
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(outCode.equals(sInfo.getCode())){
+                            info.setOutName(sInfo.getName());
+                        }
                     }
                 }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(outCode.equals(sInfo.getCode())){
-                        info.setOutName(sInfo.getName());
-                    }
+                //处理单价字段
+                if(!isPrice){
+                    //不具有单价权限   将单价和总金额置为0
+                    info.setUnitPrice(new BigDecimal(0));
+                    info.setTollAmount(new BigDecimal(0));
                 }
             }
-            //处理单价字段
-            if(!isPrice){
-                //不具有单价权限   将单价和总金额置为0
-                info.setUnitPrice(new BigDecimal(0));
-                info.setTollAmount(new BigDecimal(0));
-            }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

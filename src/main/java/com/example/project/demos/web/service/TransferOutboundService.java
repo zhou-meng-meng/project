@@ -1,11 +1,13 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.list.TransferOutboundInfo;
 import com.example.project.demos.web.dto.transferOutbound.*;
 
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,10 +30,10 @@ public interface TransferOutboundService  {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -58,5 +60,7 @@ public interface TransferOutboundService  {
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
     int updateApprove(Long id, String result, String opinion, String userLogin, Date date) ;
+
+    List<TransferOutboundInfo> queryListForExport(QueryByPageDTO dto);
 }
 

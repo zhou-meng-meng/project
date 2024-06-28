@@ -143,5 +143,63 @@
         where  t.id = #{id}
     </select>
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.RebuildOutboundInfo">
+        SELECT
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.rebuild_count,
+        t.rebuild_date,
+        t.out_code,
+        t.duty_code,
+        d4.dict_value dutyName,
+        t.machine_code,
+        d5.dict_value as machineName,
+        t.bill_no,
+        t.bill_state ,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	rebuild_outbound t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
+        LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
+        where  1=1
+        <if test="rebuild.materialCode != null and rebuild.materialCode != ''">
+            and t.material_code    like concat('%', #{rebuild.materialCode}, '%')
+        </if>
+        <if test="rebuild.materialName != null and rebuild.materialName != ''">
+            and m.name    like concat('%', #{rebuild.materialName}, '%')
+        </if>
+        <if test="rebuild.beginDate != null and rebuild.beginDate != ''">
+            and t.rebuild_date    <![CDATA[ >= ]]> #{rebuild.beginDate}
+        </if>
+        <if test="rebuild.endDate != null and rebuild.endDate != ''">
+            and t.rebuild_date    <![CDATA[ <= ]]> #{rebuild.endDate}
+        </if>
+        <if test="rebuild.outCode != null and rebuild.outCode != ''">
+            and t.out_code   = #{rebuild.outCode}
+        </if>
+        <if test="rebuild.dutyCode != null and rebuild.dutyCode != ''">
+            and t.duty_code   = #{rebuild.dutyCode}
+        </if>
+        <if test="rebuild.machineCode != null and rebuild.machineCode != ''">
+            and t.machine_code   = #{rebuild.machineCode}
+        </if>
+        order  by   t.id  desc
+    </select>
+
 
 </mapper>

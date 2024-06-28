@@ -30,4 +30,6 @@ public interface SalesOutboundDao extends BaseMapper<SalesOutboundEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SalesOutboundInfo selectSalesOutboundInfoById(Long id);
+
+    List<SalesOutboundInfo> queryListForExport(@Param("sale") QueryByPageDTO dto);
 }

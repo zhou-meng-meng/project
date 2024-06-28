@@ -1,9 +1,11 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.list.RawMaterialOutboundInfo;
 import com.example.project.demos.web.dto.rawMaterialOutbound.*;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * 原材料出库表
@@ -25,10 +27,10 @@ public interface RawMaterialOutboundService  {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -53,5 +55,7 @@ public interface RawMaterialOutboundService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) ;
+
+    List<RawMaterialOutboundInfo>  queryListForExport(QueryByPageDTO dto);
 }
 

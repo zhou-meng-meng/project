@@ -1,11 +1,17 @@
 package com.example.project.demos.web.controller;
 
 
+import com.example.project.demos.web.dto.list.MaterialInfo;
+import com.example.project.demos.web.dto.list.SupplyReturnInfo;
 import com.example.project.demos.web.dto.materialInfo.*;
 import com.example.project.demos.web.service.MaterialInfoService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 物料信息维护表
@@ -82,6 +88,16 @@ public class MaterialInfoController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = materialInfoService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出物料维护列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出物料维护列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<MaterialInfo> list = materialInfoService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "物料维护", MaterialInfo.class,response);
     }
 
 }

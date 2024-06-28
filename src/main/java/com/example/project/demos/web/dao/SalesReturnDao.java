@@ -31,4 +31,6 @@ public interface SalesReturnDao extends BaseMapper<SalesReturnEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SalesReturnInfo selectSalesReturnInfoById(Long id);
+
+    List<SalesReturnInfo> queryListForExport(@Param("return") QueryByPageDTO dto);
 }
