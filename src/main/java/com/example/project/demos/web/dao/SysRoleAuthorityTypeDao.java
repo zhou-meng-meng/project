@@ -2,7 +2,7 @@ package com.example.project.demos.web.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.project.demos.web.entity.SysRoleAuthorityTypeEntity;
-import com.example.project.demos.web.utils.BaseMapperPlus;
+import com.example.project.demos.web.dao.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

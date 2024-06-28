@@ -260,6 +260,41 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         return i;
     }
 
+    @Override
+    public List<RawMaterialIncomeInfo> queryListForExport(QueryByPageDTO queryByPageDTO) {
+        log.info("来料入库queryListForExport开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        List<RawMaterialIncomeInfo> list  = new ArrayList<>();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                queryByPageDTO.setInCode(user.getDeptId());
+            }
+            log.info("开始查询数据");
+            list = rawMaterialIncomeDao.queryListForExport(queryByPageDTO);
+            //处理入库方名称
+            list = setRawMaterialIncomeObject(list);
+            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("来料入库queryListForExport结束");
+        return list;
+    }
 
     /**
      * 赋值来料入库方名称
@@ -267,27 +302,32 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
      * @return
      */
     private List<RawMaterialIncomeInfo> setRawMaterialIncomeObject(List<RawMaterialIncomeInfo> list){
+        log.info("赋值来料入库方名称");
         //获取厂区和仓库集合
         List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
         List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(RawMaterialIncomeInfo info : list){
-            //入库方
-            String inCode = info.getInCode();
-            if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
-                //工厂
-                for(SysFactoryInfo fInfo : factoryInfoList){
-                    if(inCode.equals(fInfo.getCode())){
-                        info.setInName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
+            for(RawMaterialIncomeInfo info : list){
+                //入库方
+                String inCode = info.getInCode();
+                if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                    //工厂
+                    for(SysFactoryInfo fInfo : factoryInfoList){
+                        if(inCode.equals(fInfo.getCode())){
+                            info.setInName(fInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //仓库
-                for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                    if(inCode.equals(sInfo.getCode())){
-                        info.setInName(sInfo.getName());
+                }else{
+                    //仓库
+                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                        if(inCode.equals(sInfo.getCode())){
+                            info.setInName(sInfo.getName());
+                        }
                     }
                 }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }
@@ -299,15 +339,20 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
      * @return
      */
     private List<RawMaterialIncomeInfo> formatPriceByRoleType(List<RawMaterialIncomeInfo> list,UserLoginOutDTO userInfo){
-        List<String> typeList = userInfo.getAuthorityType();
-        if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
-            log.info("具有单价权限,不处理");
-        }else{
-            log.info("没有单价权限，将单价和总金额置为0");
-            for(RawMaterialIncomeInfo info : list){
-                info.setUnitPrice("0");
-                info.setTollAmount(new BigDecimal(0));
+        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
+        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
+            List<String> typeList = userInfo.getAuthorityType();
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+                log.info("具有单价权限,不处理");
+            }else{
+                log.info("没有单价权限，将单价和总金额置为0");
+                for(RawMaterialIncomeInfo info : list){
+                    info.setUnitPrice("0");
+                    info.setTollAmount(new BigDecimal(0));
+                }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

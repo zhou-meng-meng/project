@@ -33,5 +33,7 @@ public interface RawMaterialIncomeDao extends BaseMapper<RawMaterialIncomeEntity
     RawMaterialIncomeInfo selectRawMaterialIncomeInfoById(Long id);
 
     BigDecimal getAvgUnitPriceOfMaterial(@Param("materialCode") String materialCode);
+
+    List<RawMaterialIncomeInfo> queryListForExport(@Param("raw") QueryByPageDTO dto);
 	
 }

@@ -2,7 +2,6 @@ package com.example.project.demos.web.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
-import cn.hutool.core.util.IdUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
@@ -12,7 +11,6 @@ import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -87,7 +85,7 @@ public class ExcelUtil {
      * @param clazz     实体类
      * @param os        输出流
      */
-    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, OutputStream os) {
+    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, OutputStream os) throws IOException {
         exportExcel(list, sheetName, clazz, false, os);
     }
 
@@ -100,7 +98,7 @@ public class ExcelUtil {
      * @param merge     是否合并单元格
      * @param os        输出流
      */
-    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge, OutputStream os) {
+    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge, OutputStream os) throws IOException {
         ExcelWriterSheetBuilder builder = EasyExcel.write(os, clazz)
                 .autoCloseStream(false)
                 // 自动适配
@@ -288,7 +286,8 @@ public class ExcelUtil {
      * 编码文件名
      */
     public static String encodingFilename(String filename) {
-        return IdUtil.fastSimpleUUID() + "_" + filename + ".xlsx";
+        return  filename + ".xlsx";
+        //return IdUtil.fastSimpleUUID() + "_" + filename + ".xlsx";
     }
 
 }

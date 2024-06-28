@@ -1,10 +1,9 @@
 package com.example.project.demos.web.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.project.demos.web.dto.confirmOperationQueue.QueryByPageDTO;
 import com.example.project.demos.web.dto.list.ConfirmOperationQueueInfo;
 import com.example.project.demos.web.entity.ConfirmOperationQueueEntity;
-import com.example.project.demos.web.utils.BaseMapperPlus;
+import com.example.project.demos.web.dao.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;

@@ -1,16 +1,17 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.rawMaterialIncome.*;
 import com.example.project.demos.web.service.RawMaterialIncomeService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * 来料入库维护表(raw_material_income)表控制层
@@ -91,6 +92,15 @@ public class RawMaterialIncomeController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) throws UnknownHostException {
         DeleteByIdOutDTO outDTO = rawMaterialIncomeService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出来料入库列表
+     */
+    @PostMapping("/export")
+    public void export(QueryByPageDTO dto, HttpServletResponse response) {
+        List<RawMaterialIncomeInfo> list = rawMaterialIncomeService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "来料入库", RawMaterialIncomeInfo.class, response);
     }
 
 }
