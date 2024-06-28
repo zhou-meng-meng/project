@@ -41,6 +41,10 @@ public class LogInterceptor {
      * 忽略校验token
      */
     private static List<String> ignorePaths = Lists.newArrayList();
+    /**
+     * 绕过AOP export
+     */
+    private final static String PASS_AOP_EXPORT = "export";
 
     static {
         ignorePaths.add("userLogin");
@@ -71,6 +75,10 @@ public class LogInterceptor {
         if (Constants.REQ_TYPE_GET.equals(method)) {
             Map<String, String[]> parameterMap = httpServletRequest.getParameterMap();
             log.info("█ param={}", JSON.toJSONString(parameterMap));
+        }
+        if(url.contains(PASS_AOP_EXPORT)){
+            log.info("████████████████  END  ████████████████");
+            return point.proceed();
         }
         if (Constants.REQ_TYPE_POST.equals(method)) {
             for (Object arg : point.getArgs()) {
