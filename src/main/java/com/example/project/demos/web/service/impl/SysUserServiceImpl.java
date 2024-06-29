@@ -1,6 +1,7 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -88,21 +89,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("用户queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.sysUserDao.count(queryByPageDTO);
+            long total = this.sysUserDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                SysUserEntity SysUser = BeanCopyUtils.copy(queryByPageDTO,SysUserEntity.class);
+                SysUserEntity SysUser = BeanCopyUtils.copy(dto,SysUserEntity.class);
                 //开始分页查询
                 Page<SysUserInfo> page = new PageImpl<>(this.sysUserDao.selectSysUserInfoListByPage(SysUser, pageRequest), pageRequest, total);
                 //获取分页数据
@@ -133,15 +134,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            QueryByPageDTO queryByPageDTO = BeanUtil.copyProperties(queryPopByPageDTO,QueryByPageDTO.class);
-            long total = this.sysUserDao.count(queryByPageDTO);
+            QueryByPageDTO dto = BeanUtil.copyProperties(queryPopByPageDTO,QueryByPageDTO.class);
+            long total = this.sysUserDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                SysUserEntity SysUser = BeanCopyUtils.copy(queryByPageDTO,SysUserEntity.class);
+                SysUserEntity SysUser = BeanCopyUtils.copy(dto,SysUserEntity.class);
                 //开始分页查询
                 Page<SysUserInfo> page = new PageImpl<>(this.sysUserDao.selectSysUserInfoPopListByPage(SysUser, pageRequest), pageRequest, total);
                 //获取分页数据
@@ -410,35 +411,66 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         return sysUserDao.queryUserListByRoleType(userType,roleType,deptId);
     }
 
+    @Override
+    public List<SysUserInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("用户queryListForExport开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        List<SysUserInfo> list = new ArrayList<>();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //转换实体入参
+            SysUserEntity sysUser = BeanCopyUtils.copy(dto,SysUserEntity.class);
+            list = sysUserDao.queryListForExport(sysUser);
+            //赋值所属单位名称
+            list = setDeptName(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),null,Constants.SYSTEM_CODE);
+        log.info("用户queryListForExport结束");
+        return list;
+    }
+
 
     private List<SysUserInfo> setDeptName(List<SysUserInfo> list){
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> storehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        List<SysDeptInfo> deptInfoList = sysDeptDao.selectSysDeptInfoList(new SysDeptEntity());
-        for(SysUserInfo info : list){
-            String type = info.getUserType();
-            if(type.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
-                //属于总公司
-                for(SysDeptInfo deptInfo : deptInfoList){
-                    if(info.getDeptId().equals(deptInfo.getDeptId())){
-                        info.setDeptName(deptInfo.getDeptName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> storehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            List<SysDeptInfo> deptInfoList = sysDeptDao.selectSysDeptInfoList(new SysDeptEntity());
+            for(SysUserInfo info : list){
+                String type = info.getUserType();
+                if(type.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                    //属于总公司
+                    for(SysDeptInfo deptInfo : deptInfoList){
+                        if(info.getDeptId().equals(deptInfo.getDeptId())){
+                            info.setDeptName(deptInfo.getDeptName());
+                        }
                     }
-                }
-            }else if(type.equals(UserTypeEnums.USER_TYPE_FACTORY.getCode())){
-                //属于厂区
-                for(SysFactoryInfo sysFactoryInfo : factoryInfoList){
-                    if(info.getDeptId().equals(sysFactoryInfo.getCode())){
-                        info.setDeptName(sysFactoryInfo.getName());
+                }else if(type.equals(UserTypeEnums.USER_TYPE_FACTORY.getCode())){
+                    //属于厂区
+                    for(SysFactoryInfo sysFactoryInfo : factoryInfoList){
+                        if(info.getDeptId().equals(sysFactoryInfo.getCode())){
+                            info.setDeptName(sysFactoryInfo.getName());
+                        }
                     }
-                }
-            }else{
-                //属于仓库
-                for(SysStorehouseInfo sysStorehouseInfo : storehouseInfoList ){
-                    if(info.getDeptId().equals(sysStorehouseInfo.getCode())){
-                        info.setDeptName(sysStorehouseInfo.getName());
+                }else{
+                    //属于仓库
+                    for(SysStorehouseInfo sysStorehouseInfo : storehouseInfoList ){
+                        if(info.getDeptId().equals(sysStorehouseInfo.getCode())){
+                            info.setDeptName(sysStorehouseInfo.getName());
+                        }
                     }
                 }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

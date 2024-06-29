@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
 import com.example.project.demos.web.dto.customerPayDetail.*;
+import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
+import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import com.example.project.demos.web.service.CustomerPayDetailService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 往来账明细(customer_pay_detail)表控制层
@@ -78,6 +83,18 @@ public class CustomerPayDetailController {
         DeleteByIdOutDTO outDTO = customerPayDetailService.deleteById(dto);
         return outDTO;
     }
+
+    /**
+     * 导出销售客户往来账列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出销售客户往来账列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<CustomerPayDetailInfo> list = customerPayDetailService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "销售客户往来账列表", CustomerPayDetailInfo.class,response);
+    }
+
+
 
 }
 

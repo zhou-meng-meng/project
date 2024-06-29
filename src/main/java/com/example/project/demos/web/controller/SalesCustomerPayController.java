@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
+import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
 import com.example.project.demos.web.dto.salesCustomerPay.*;
 import com.example.project.demos.web.service.SalesCustomerPayService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 销售方往来账(sales_customer_pay)表控制层
@@ -53,43 +58,14 @@ public class SalesCustomerPayController {
     }
 
     /**
-     * 新增数据
-     *
-     * @param dto 实体
-     * @return 新增结果
-     *//*
-    @PostMapping("/add")
-    @ApiOperation("新增数据")
-    public AddOutDTO add(@RequestBody AddDTO dto) {
-        AddOutDTO outDTO = SalesCustomerPayService.insert(dto);
-        return outDTO;
+     * 导出销售客户往来账列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出销售客户往来账列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<SalesCustomerPayInfo> list = salesCustomerPayService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "销售客户往来账列表", SalesCustomerPayInfo.class,response);
     }
-
-    *//**
-     * 编辑数据
-     *
-     * @param dto 实体
-     * @return 编辑结果
-     *//*
-    @PostMapping("/edit")
-    @ApiOperation("编辑数据")
-    public EditOutDTO edit(@RequestBody EditDTO dto) {
-        EditOutDTO outDTO = SalesCustomerPayService.update(dto);
-        return outDTO;
-    }
-
-    *//**
-     * 删除数据
-     *
-     * @param dto 主键
-     * @return 删除是否成功
-     *//*
-    @PostMapping("/deleteById")
-    @ApiOperation("根据ID删除数据")
-    public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
-        DeleteByIdOutDTO outDTO = SalesCustomerPayService.deleteById(dto);
-        return outDTO;
-    }*/
 
 }
 

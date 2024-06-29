@@ -182,6 +182,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     }
                 }else{
                     log.info("业务员下单审核拒绝");
+                    salersOrderService.updateApprove(businessId,result,dto.getOpinion(),user.getUserLogin(),date,outCode);
                 }
             }else if(functionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())){
                 String inCode = dto.getInCode();
@@ -217,6 +218,8 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     }
                 }else{
                     log.info("业务员下单退回拒绝");
+                    //更新业务员下单退回表
+                    salersOrderReturnService.updateApprove(businessId,result,dto.getOpinion(),user.getUserLogin(),null,null,date,inCode);
                 }
             }
             log.info("更新审核流水表");

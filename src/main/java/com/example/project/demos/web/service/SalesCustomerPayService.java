@@ -1,7 +1,10 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import com.example.project.demos.web.dto.salesCustomerPay.*;
+
+import java.util.List;
 
 /**
  * 
@@ -22,33 +25,12 @@ public interface SalesCustomerPayService {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
-    /**
-     * 新增数据
-     *
-     * @param dto 实例对象
-     * @return 实例对象
-     *//*
-    AddOutDTO insert(AddDTO dto);
+    List<SalesCustomerPayInfo> queryListForExport(QueryByPageDTO dto);
 
-    *//**
-     * 修改数据
-     *
-     * @param dto 实例对象
-     * @return 实例对象
-     *//*
-    EditOutDTO update(EditDTO dto);
-
-    *//**
-     * 通过主键删除数据
-     *
-     * @param dto 主键
-     * @return 是否成功
-     *//*
-    DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);*/
 }
 

@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
+import com.example.project.demos.web.dto.list.SysUserInfo;
 import com.example.project.demos.web.dto.sysUser.*;
 import com.example.project.demos.web.service.SysUserService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 用户维护表(sys_user)表控制层
@@ -133,6 +138,16 @@ public class SysUserController {
     public UpdatePwdOutDTO updatePwd(@RequestBody UpdatePwdDTO dto) {
         UpdatePwdOutDTO outDTO = sysUserService.updatePwd(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出用户列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出用户列表")
+    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+        List<SysUserInfo> list = sysUserService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "用户列表", SysUserInfo.class,response);
     }
 
 }

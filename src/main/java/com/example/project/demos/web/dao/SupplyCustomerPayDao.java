@@ -30,5 +30,7 @@ public interface SupplyCustomerPayDao extends BaseMapper<SupplyCustomerPayEntity
     int count(QueryByPageDTO queryByPageDTO);
 
     SupplyCustomerPayInfo selectSupplyCustomerPayInfoById(Long id);
+
+    List<SupplyCustomerPayInfo> queryListForExport(@Param("pay") QueryByPageDTO dto);
 	
 }

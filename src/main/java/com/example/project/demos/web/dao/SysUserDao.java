@@ -48,4 +48,5 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
                                                 @Param(value = "roleType") String roleType,
                                                 @Param(value = "deptId") String deptId);
 
+    List<SysUserInfo> queryListForExport(@Param("user") SysUserEntity SysUserEntity);
 }

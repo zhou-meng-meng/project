@@ -82,5 +82,35 @@
         where  id > #{id}
     </update>
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.CustomerPayDetailInfo">
+        SELECT
+            t.id,
+            t.customer_code,
+            #{customerName} as customerName,
+            t.book_balance,
+            t.unit_price,
+            t.material_count,
+            t.material_balance,
+            t.pay_balance,
+            t.pay_type,
+            t.return_balance,
+            t.is_default,
+            t.operator_by,
+            u2.user_name AS operatorByName,
+            t.create_by,
+            u.user_name AS createByName,
+            t.create_time,
+            t.update_by,
+            u1.user_name AS updateByName,
+            t.update_time,
+            t.remark
+        FROM	customer_pay_detail t
+                    LEFT JOIN sys_user u ON u.user_login = t.create_by
+                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+                    LEFT JOIN sys_user u2 ON u2.user_login = t.operator_by
+        where   t.customer_code = #{customerCode}
+        order  by t.id asc
+    </select>
+
 
 </mapper>

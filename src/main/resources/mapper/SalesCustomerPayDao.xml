@@ -122,5 +122,52 @@
         where  t.id = #{id}
     </select>
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.SalesCustomerPayInfo">
+        SELECT
+        t.id,
+        t.sale_id,
+        t.customer_code,
+        c.name as customerName,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value modelName,
+        m.unit,
+        d3.dict_value unitName,
+        t.unit_price,
+        t.sale_date,
+        t.sale_count,
+        t.toll_amount,
+        t.function_type,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	sales_customer_pay t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        left join customer_sale  c on  c.code = t.customer_code
+        where  1=1
+        <if test="pay.materialName != null and pay.materialName != ''">
+            and m.name    like concat('%', #{pay.materialName}, '%')
+        </if>
+        <if test="pay.customerName != null and pay.customerName != ''">
+            and c.name    like concat('%', #{pay.customerName}, '%')
+        </if>
+        <if test="pay.beginDate != null and pay.beginDate != ''">
+            and t.sale_date    <![CDATA[ >= ]]> #{pay.beginDate}
+        </if>
+        <if test="pay.endDate != null and pay.endDate != ''">
+            and t.sale_date    <![CDATA[ <= ]]> #{pay.endDate}
+        </if>
+        order  by  t.id desc
+    </select>
+
 
 </mapper>

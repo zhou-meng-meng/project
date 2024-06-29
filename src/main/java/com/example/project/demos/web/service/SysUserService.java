@@ -25,12 +25,12 @@ public interface SysUserService {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
-    QueryPopByPageOutDTO queryPopByPage(QueryPopByPageDTO queryByPageDTO);
+    QueryPopByPageOutDTO queryPopByPage(QueryPopByPageDTO dto);
 
     /**
      * 新增数据
@@ -70,6 +70,7 @@ public interface SysUserService {
      */
     List<SysUserEntity> queryUserListByRoleType(String userType, String roleType,String deptId);
 
+    List<SysUserInfo> queryListForExport(QueryByPageDTO dto);
 
 }
 
