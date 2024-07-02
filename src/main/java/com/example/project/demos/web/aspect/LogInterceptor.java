@@ -76,11 +76,7 @@ public class LogInterceptor {
             Map<String, String[]> parameterMap = httpServletRequest.getParameterMap();
             log.info("█ param={}", JSON.toJSONString(parameterMap));
         }
-        if(url.contains(PASS_AOP_EXPORT)){
-            log.info("████████████████  END  ████████████████");
-            return point.proceed();
-        }
-        if (Constants.REQ_TYPE_POST.equals(method)) {
+        if (Constants.REQ_TYPE_POST.equals(method) && !(url.contains(PASS_AOP_EXPORT))) {
             for (Object arg : point.getArgs()) {
                 log.info("█ paramClass={}", JSON.toJSONString(arg.getClass()));
                 log.info("█ param={}", JSON.toJSONString(arg));
