@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -27,6 +28,7 @@ public class MaterialInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
@@ -44,41 +46,45 @@ public class MaterialInfo implements Serializable {
 	/**
 	 * 型号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号编号")
 	private String model;
 
 	/**
 	 * 型号名称
 	 */
-	@ExcelProperty(value = "型号名称")
+	@ExcelProperty(value = "型号")
 	@ApiModelProperty(value = "型号名称")
 	private String modelName;
 
 	/**
 	 * 单位
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 
 	/**
 	 * 单位名称
 	 */
-	@ExcelProperty(value = "单位名称")
+	@ExcelProperty(value = "单位")
 	@ApiModelProperty(value = "单位名称")
 	private String unitName;
 
 	/**
 	 * 物料类型  0-原材料；1-销售产品
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "物料类型  0-原材料；1-销售产品")
 	private String type;
+
 	@ExcelProperty(value = "物料类型")
 	@ApiModelProperty(value = "物料类型  0-原材料；1-销售产品")
 	private String typeName;
 	/**
 	 * 供应商编号（来料使用）
 	 */
-	@ExcelProperty(value = "")
+	@ExcelProperty(value = "供应商编号（来料使用）")
 	@ApiModelProperty(value = "供应商编号（来料使用）")
 	private String supplyerCode;
 	@ExcelProperty(value = "供应商（来料使用）")
@@ -87,8 +93,10 @@ public class MaterialInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
+
 	@ExcelProperty(value = "创建者名字")
 	@ApiModelProperty(value = "创建者名字")
 	private String createByName;
@@ -102,6 +110,7 @@ public class MaterialInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
 	@ExcelProperty(value = "更新者名字")

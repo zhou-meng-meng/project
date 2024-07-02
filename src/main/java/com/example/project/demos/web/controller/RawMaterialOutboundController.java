@@ -102,9 +102,9 @@ public class RawMaterialOutboundController {
      */
     @PostMapping("/export")
     @ApiOperation("导出原材料出库列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto ) {
         List<RawMaterialOutboundInfo> list = rawMaterialOutboundService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "原材料出库", RawMaterialOutboundInfo.class,response);
+        ExcelUtil.exportExcel(list, "原材料出库", RawMaterialOutboundInfo.class);
     }
 
 }

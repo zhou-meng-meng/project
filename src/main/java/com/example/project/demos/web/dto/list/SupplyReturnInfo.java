@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,6 +29,7 @@ public class SupplyReturnInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "自增主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	@ExcelProperty(value = "客户编号")
@@ -47,12 +49,14 @@ public class SupplyReturnInfo implements Serializable {
 	@ApiModelProperty(value = "物料名称")
 	private String materialName;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号")
 	private String model;
 	@ExcelProperty(value = "型号")
 	@ApiModelProperty(value = "型号")
 	private String modelName;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 	@ExcelProperty(value = "单位")
@@ -77,6 +81,8 @@ public class SupplyReturnInfo implements Serializable {
 	@ExcelProperty(value = "总金额")
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
+
+	@ExcelIgnore
 	@ApiModelProperty(value = "审核人")
 	private String approveUser;
 	@ExcelProperty(value = "审核人")
@@ -85,6 +91,7 @@ public class SupplyReturnInfo implements Serializable {
 	/**
 	 * 审核状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "审核状态")
 	private String approveState;
 	@ExcelProperty(value = "审核状态")
@@ -109,14 +116,16 @@ public class SupplyReturnInfo implements Serializable {
 	/**
 	 * 单据状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单据状态")
 	private String billState;
-	@ExcelProperty(value = "")
+	@ExcelProperty(value = "单据状态")
 	@ApiModelProperty(value = "单据状态")
 	private String billStateName;
 	/**
 	 * 退回方编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "退回方编号")
 	private String outCode;
 	@ExcelProperty(value = "退回方")
@@ -125,6 +134,7 @@ public class SupplyReturnInfo implements Serializable {
 	/**
 	 * 退回人
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "退回人")
 	private String returnUser;
 	@ExcelProperty(value = "退回人")
@@ -140,6 +150,7 @@ public class SupplyReturnInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
 	@ExcelProperty(value = "创建者名字")
@@ -155,6 +166,7 @@ public class SupplyReturnInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
 	@ExcelProperty(value = "更新者名字")

@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -27,6 +28,7 @@ public class SysUserInfo implements Serializable {
 	 * 主键
 	 */
 	@ApiModelProperty(value = "主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
@@ -50,6 +52,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 用户类型（（0-总公司;1-厂区;2-仓库））
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "用户类型（（0-总公司;1-厂区;2-仓库））")
 	private String userType;
 	@ExcelProperty(value = "用户类型")
@@ -58,6 +61,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 部门ID
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "部门ID")
 	private String deptId;
 	@ExcelProperty(value = "部门名称")
@@ -84,6 +88,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 用户性别（0男 1女 2未知）
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "用户性别（0男 1女 2未知）")
 	private String sex;
 	@ExcelProperty(value = "用户性别")
@@ -93,6 +98,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 角色编码
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "角色编码")
 	private String roleId;
 	@ExcelProperty(value = "角色名称")
@@ -109,6 +115,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 密码
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "密码")
 	private String password;
 	@ExcelProperty(value = "上次修改密码时间")
@@ -118,8 +125,10 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 帐号状态（0正常 1离职）
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "帐号状态（0正常 1离职）")
 	private String status;
+
 	@ExcelProperty(value = "帐号状态")
 	@ApiModelProperty(value = "帐号状态（0正常 1离职）")
 	private String statusName;
@@ -139,6 +148,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 显示顺序
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "显示顺序")
 	private String orderNum;
 	/**
@@ -176,6 +186,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者")
 	private String createBy;
 	@ExcelProperty(value = "创建人名称")
@@ -191,6 +202,7 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "修改人")
 	private String updateBy;
 	@ExcelProperty(value = "修改人名称")

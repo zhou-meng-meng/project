@@ -102,9 +102,9 @@ public class RebuildInboundController {
      */
     @PostMapping("/export")
     @ApiOperation("导出准备重造入库列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto ) {
         List<RebuildInboundInfo> list = rebuildInboundService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "重造入库", RebuildInboundInfo.class,response);
+        ExcelUtil.exportExcel(list, "重造入库", RebuildInboundInfo.class);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,6 +29,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "自增主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
@@ -44,6 +46,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	/**
 	 * 型号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号")
 	private String model;
 
@@ -53,6 +56,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	/**
 	 * 单位
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 
@@ -69,8 +73,10 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	/**
 	 * 生产员工
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "生产员工")
 	private String producer;
+
 	@ExcelProperty(value = "生产员工")
 	@ApiModelProperty(value = "生产员工")
 	private String producerName;
@@ -84,27 +90,34 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	/**
 	 * 入库方编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "入库方编号")
 	private String inCode;
+
 	@ExcelProperty(value = "入库方")
 	@ApiModelProperty(value = "入库方名称")
 	private String inName;
 	/**
 	 * 审批状态
 	 */
-	@ApiModelProperty(value = "审批状态")
+	@ExcelIgnore
+	@ApiModelProperty(value = "审核状态")
 	private String approveState;
 	/**
 	 * 单据状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单据状态")
 	private String billState;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "班组编号")
 	private String dutyCode;
 	@ExcelProperty(value = "班组")
 	@ApiModelProperty(value = "班组名称")
 	private String dutyName;
+
+	@ExcelIgnore
 	@ApiModelProperty(value = "机器编号")
 	private String machineCode;
 	@ExcelProperty(value = "机器号")
@@ -114,6 +127,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
 	@ExcelProperty(value = "创建者名字")
@@ -129,6 +143,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
 	@ExcelProperty(value = "更新者名字")

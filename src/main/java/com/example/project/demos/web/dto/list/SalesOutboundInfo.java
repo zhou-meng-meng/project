@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,6 +29,7 @@ public class SalesOutboundInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "自增主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
@@ -40,12 +42,14 @@ public class SalesOutboundInfo implements Serializable {
 	@ApiModelProperty(value = "物料名称")
 	private String materialName;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号")
 	private String model;
 	@ExcelProperty(value = "型号")
 	@ApiModelProperty(value = "型号")
 	private String modelName;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 	@ExcelProperty(value = "单位")
@@ -70,6 +74,8 @@ public class SalesOutboundInfo implements Serializable {
 	@ExcelProperty(value = "总金额")
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
+
+	@ExcelIgnore
 	@ApiModelProperty(value = "购货客户编号")
 	private String customerCode;
 	@ExcelProperty(value = "购货客户名称")
@@ -78,6 +84,7 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 出库方编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "出库方编号")
 	private String outCode;
 	@ExcelProperty(value = "出库方名称")
@@ -86,6 +93,7 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 销售员英文名
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "销售员英文名")
 	private String saler;
 	@ExcelProperty(value = "销售员名称")
@@ -108,16 +116,20 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 单据状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单据状态")
 	private String billState;
+
 	@ExcelProperty(value = "单据状态")
 	@ApiModelProperty(value = "单据状态")
 	private String billStateName;
 	/**
 	 * 运输方式
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "运输方式")
 	private String transportType;
+
 	@ExcelProperty(value = "运输方式")
 	@ApiModelProperty(value = "运输方式")
 	private String transportTypeName;
@@ -141,17 +153,20 @@ public class SalesOutboundInfo implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date receivePaymentTime;
 
-
+	@ExcelIgnore
 	@ApiModelProperty(value = "审核人")
 	private String approveUser;
+
 	@ExcelProperty(value = "审核人姓名")
 	@ApiModelProperty(value = "审核人姓名")
 	private String approveUserName;
 	/**
 	 * 审批状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "审核状态")
 	private String approveState;
+
 	@ExcelProperty(value = "审核状态")
 	@ApiModelProperty(value = "审核状态")
 	private String approveStateName;
@@ -169,14 +184,17 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 确认状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "确认状态编码")
 	private String confirmState;
+
 	@ExcelProperty(value = "确认状态")
 	@ApiModelProperty(value = "确认状态")
 	private String confirmStateName;
 	/**
 	 * 确认人
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "确认人")
 	private String confirmUser;
 	@ExcelProperty(value = "确认人")
@@ -199,6 +217,7 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
 	@ExcelProperty(value = "创建者名字")
@@ -214,6 +233,7 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
 	@ExcelProperty(value = "更新者名字")

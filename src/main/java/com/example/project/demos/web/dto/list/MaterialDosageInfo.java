@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -16,6 +17,7 @@ public class MaterialDosageInfo {
      * 自增主键
      */
     @ApiModelProperty(value = "主键")
+    @ExcelIgnore
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
@@ -37,16 +39,20 @@ public class MaterialDosageInfo {
     /**
      * 班组 0-白班 1-中班 2-夜班
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "班组 0-白班 1-中班 2-夜班")
     private String dutyCode;
+
     @ExcelProperty(value = "班组")
     @ApiModelProperty(value = "班组")
     private String dutyName;
     /**
      * 机器编号
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "机器编号")
     private String machineCode;
+
     @ExcelProperty(value = "机器号")
     @ApiModelProperty(value = "机器号")
     private String machineName;
@@ -83,8 +89,10 @@ public class MaterialDosageInfo {
     /**
      * 创建者
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "创建者英文名")
     private String createBy;
+
     @ExcelProperty(value = "创建者名字")
     @ApiModelProperty(value = "创建者名字")
     private String createByName;
@@ -98,6 +106,7 @@ public class MaterialDosageInfo {
     /**
      * 更新者
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "更新者英文名")
     private String updateBy;
     @ExcelProperty(value = "更新者名字")

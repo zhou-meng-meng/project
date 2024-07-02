@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,6 +29,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
@@ -43,6 +45,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 型号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号")
 	private String model;
 
@@ -52,6 +55,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 单位
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 
@@ -75,13 +79,14 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 总金额
 	 */
-	@ExcelProperty(value = "")
+	@ExcelProperty(value = "总金额")
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
 
 	/**
 	 * 供货商编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "供货商编号")
 	private String supplyerCode;
 
@@ -91,6 +96,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 入库方编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "入库方编号")
 	private String inCode;
 
@@ -107,6 +113,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 进货人
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "进货人")
 	private String materialBuyer;
 
@@ -120,6 +127,8 @@ public class RawMaterialIncomeInfo implements Serializable {
 	@ApiModelProperty(value = "进货时间")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date materialBuytime;
+
+	@ExcelIgnore
 	@ApiModelProperty(value = "审核状态人英文名")
 	private String approveUser;
 
@@ -129,6 +138,7 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 审批状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "审核状态")
 	private String approveState;
 
@@ -147,14 +157,17 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 单据状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单据状态")
 	private String billState;
 
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
+
 	@ExcelProperty(value = "创建者名字")
 	@ApiModelProperty(value = "创建者名字")
 	private String createByName;
@@ -168,8 +181,10 @@ public class RawMaterialIncomeInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
+
 	@ExcelProperty(value = "更新者名字")
 	@ApiModelProperty(value = "更新者名字")
 	private String updateByName;

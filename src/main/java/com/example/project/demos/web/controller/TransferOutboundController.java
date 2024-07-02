@@ -102,9 +102,9 @@ public class TransferOutboundController {
      */
     @PostMapping("/export")
     @ApiOperation("导出调拨出库列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<TransferOutboundInfo> list = transferOutboundService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "调拨出库", TransferOutboundInfo.class,response);
+        ExcelUtil.exportExcel(list, "调拨出库", TransferOutboundInfo.class);
     }
 
 }

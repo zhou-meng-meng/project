@@ -11,6 +11,9 @@ import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -46,10 +49,14 @@ public class ExcelUtil {
      * @param list      导出数据集合
      * @param sheetName 工作表的名称
      * @param clazz     实体类
-     //* @param response  响应体
+     //* @param response  响应体  HttpServletResponse response
      */
-    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz,HttpServletResponse response) {
+    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz) {
         try {
+            ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            // 获取 response
+            HttpServletResponse response = requestAttributes.getResponse();
+            response.reset();
             resetResponse(sheetName, response);
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, false, os);

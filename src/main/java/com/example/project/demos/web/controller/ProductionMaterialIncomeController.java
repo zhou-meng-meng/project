@@ -103,9 +103,9 @@ public class ProductionMaterialIncomeController {
      */
     @PostMapping("/export")
     @ApiOperation("导出产量入库列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<ProductionMaterialIncomeInfo> list = productionMaterialIncomeService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "产量入库", ProductionMaterialIncomeInfo.class,response);
+        ExcelUtil.exportExcel(list, "产量入库", ProductionMaterialIncomeInfo.class);
     }
 
 }

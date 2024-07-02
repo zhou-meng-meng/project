@@ -88,10 +88,10 @@ public class CustomerPayDetailController {
      * 导出销售客户往来账列表
      */
     @PostMapping("/export")
-    @ApiOperation("导出销售客户往来账列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    @ApiOperation("导出往来账明细")
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<CustomerPayDetailInfo> list = customerPayDetailService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "销售客户往来账列表", CustomerPayDetailInfo.class,response);
+        ExcelUtil.exportExcel(list, "往来账明细列表", CustomerPayDetailInfo.class);
     }
 
 

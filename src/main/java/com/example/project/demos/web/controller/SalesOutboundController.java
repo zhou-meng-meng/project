@@ -115,9 +115,9 @@ public class SalesOutboundController {
      */
     @PostMapping("/export")
     @ApiOperation("导出销售出库列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<SalesOutboundInfo> list = salesOutboundService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "销售出库", SalesOutboundInfo.class,response);
+        ExcelUtil.exportExcel(list, "销售出库", SalesOutboundInfo.class);
     }
 
 }

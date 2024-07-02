@@ -174,7 +174,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         try {
             //转换实体入参
             MaterialInfoEntity entity = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
-            list = materialInfoDao.queryListForExport(entity);
+            list = materialInfoDao.queryListForExport(entity,dto.getSupplyerName());
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());

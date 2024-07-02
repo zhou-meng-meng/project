@@ -311,6 +311,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 confirmOperationQueueDao.insertBatch(queueEntityList);
                 log.info("修改业务员下单表单据冲销信息");
                 entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+                entity.setBillState(BillStateEnums.BILL_STATE_UNCONFIRM.getCode());
                 entity.setChargeoffUser(user.getUserLogin());
                 entity.setChargeoffTime(date);
                 entity.setChargeoffOpinion(dto.getChargeoffOpinion());
@@ -364,7 +365,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");
-            entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
+            entity.setBillState(BillStateEnums.BILL_STATE_CONFIRM_REJECT.getCode());
         }
         int i = salersOrderDao.updateById(entity);
         log.info("业务员下单确认更新结束");

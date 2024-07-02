@@ -282,7 +282,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         Date date = new Date();
         List<CustomerPayDetailInfo> list = new ArrayList<>();
         try {
-            list = customerPayDetailDao.queryListForExport(dto.getCustomerCode());
+            list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName());
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());

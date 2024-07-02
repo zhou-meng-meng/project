@@ -32,5 +32,5 @@ public interface MaterialInfoDao extends BaseMapper<MaterialInfoEntity> {
     MaterialInfo selectMaterialInfoById(Long id);
     MaterialInfo selectMaterialInfoByCode(String code);
 
-    List<MaterialInfo> queryListForExport(@Param("info") MaterialInfoEntity materialInfo);
+    List<MaterialInfo> queryListForExport(@Param("info") MaterialInfoEntity materialInfo,@Param("supplyerName") String supplyerName);
 }

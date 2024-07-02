@@ -32,13 +32,13 @@ public class RawMaterialIncomeController {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
     @PostMapping("/queryPageList")
     @ApiOperation("查询列表(分页)")
-    public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO queryByPageDTO) {
-        QueryByPageOutDTO outDTO = this.rawMaterialIncomeService.queryByPage(queryByPageDTO);
+    public QueryByPageOutDTO queryByPage(@RequestBody QueryByPageDTO dto) {
+        QueryByPageOutDTO outDTO = this.rawMaterialIncomeService.queryByPage(dto);
         return outDTO;
     }
 
@@ -96,12 +96,13 @@ public class RawMaterialIncomeController {
 
     /**
      * 导出来料入库列表
+     * HttpServletResponse response
      */
     @PostMapping("/export")
     @ApiOperation("导出来料入库列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<RawMaterialIncomeInfo> list = rawMaterialIncomeService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "来料入库", RawMaterialIncomeInfo.class,response);
+        ExcelUtil.exportExcel(list, "来料入库", RawMaterialIncomeInfo.class);
     }
 
 }

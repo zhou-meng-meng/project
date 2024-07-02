@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,6 +29,7 @@ public class TransferOutboundInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
@@ -40,12 +42,14 @@ public class TransferOutboundInfo implements Serializable {
 	@ApiModelProperty(value = "物料名称")
 	private String materialName;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号")
 	private String model;
 	@ExcelProperty(value = "型号")
 	@ApiModelProperty(value = "型号")
 	private String modelName;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 	@ExcelProperty(value = "单位")
@@ -61,6 +65,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 调拨类型 0-原材料；1-产量
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "调拨类型 0-原材料；1-产量")
 	private String transferType;
 	@ExcelProperty(value = "调拨类型")
@@ -77,6 +82,7 @@ public class TransferOutboundInfo implements Serializable {
 	@ExcelProperty(value = "单据号")
 	@ApiModelProperty(value = "单据号")
 	private String billNo;
+	@ExcelIgnore
 	@ApiModelProperty(value = "确认人英文名")
 	private String confirmUser;
 	@ExcelProperty(value = "确认人")
@@ -85,6 +91,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 单据(确认)状态
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单据(确认)状态 0-未确认 ;1-已确认；2-拒绝确认")
 	private String confirmState;
 	@ExcelProperty(value = "确认状态")
@@ -107,6 +114,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 调出厂(仓库)编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "调出厂(仓库)编号")
 	private String outCode;
 	@ExcelProperty(value = "调出方")
@@ -115,6 +123,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 调入厂（仓库）编号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "调入厂（仓库）编号")
 	private String inCode;
 	@ExcelProperty(value = "调入方")
@@ -123,6 +132,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
 	@ExcelProperty(value = "创建者名字")
@@ -138,6 +148,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
 	@ExcelProperty(value = "更新者名字")

@@ -95,9 +95,9 @@ public class MaterialInfoController {
      */
     @PostMapping("/export")
     @ApiOperation("导出物料维护列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<MaterialInfo> list = materialInfoService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "物料维护", MaterialInfo.class,response);
+        ExcelUtil.exportExcel(list, "物料维护", MaterialInfo.class);
     }
 
 }

@@ -304,6 +304,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 }
                 confirmOperationQueueDao.insertBatch(queueEntityList);
                 log.info("修改销售出库表冲销字段");
+                entity.setBillState(BillStateEnums.BILL_STATE_UNCONFIRM.getCode());
                 entity.setChargeoffUser(user.getUserLogin());
                 entity.setChargeoffTime(date);
                 entity.setChargeoffOpinion(dto.getChargeOpinion());
@@ -360,7 +361,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");
-            entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
+            entity.setBillState(BillStateEnums.BILL_STATE_CONFIRM_REJECT.getCode());
         }
         int i = salesOutboundDao.updateById(entity);
         log.info("厂区下单确认更新结束");

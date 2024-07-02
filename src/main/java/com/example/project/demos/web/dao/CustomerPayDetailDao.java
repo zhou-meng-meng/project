@@ -38,5 +38,5 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
     int reduceBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
     int addBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
 
-    List<CustomerPayDetailInfo> queryListForExport(@Param("customerCode") String customerCode);
+    List<CustomerPayDetailInfo> queryListForExport(@Param("customerCode") String customerCode,@Param("customerName") String customerName);
 }

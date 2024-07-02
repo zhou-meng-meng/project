@@ -101,9 +101,9 @@ public class MaterialDosageController {
      */
     @PostMapping("/export")
     @ApiOperation("导出用量表列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto) {
         List<MaterialDosageInfo> list = materialDosageService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "用量表", MaterialDosageInfo.class,response);
+        ExcelUtil.exportExcel(list, "用量表", MaterialDosageInfo.class);
     }
 
 }

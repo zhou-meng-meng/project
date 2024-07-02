@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -26,11 +27,13 @@ public class SalesCustomerPayInfo implements Serializable {
 	 * 自增主键
 	 */
 	@ApiModelProperty(value = "主键")
+	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
 	 * 销售出库主键
 	 */
+	@ExcelIgnore
 	private Long saleId;
 	/**
 	 * 客户编号
@@ -55,6 +58,7 @@ public class SalesCustomerPayInfo implements Serializable {
 	/**
 	 * 型号
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "型号")
 	private String model;
 	@ExcelProperty(value = "型号")
@@ -64,6 +68,7 @@ public class SalesCustomerPayInfo implements Serializable {
 	/**
 	 * 单位
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "单位")
 	private String unit;
 	@ExcelProperty(value = "单位")
@@ -95,6 +100,7 @@ public class SalesCustomerPayInfo implements Serializable {
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
 
+	@ExcelIgnore
 	@ApiModelProperty(value = "业务类型编码")
 	private String functionType;
 	@ExcelProperty(value = "业务类型")
@@ -104,6 +110,7 @@ public class SalesCustomerPayInfo implements Serializable {
 	/**
 	 * 创建者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "创建者英文名")
 	private String createBy;
 	@ExcelProperty(value = "创建者名字")
@@ -119,6 +126,7 @@ public class SalesCustomerPayInfo implements Serializable {
 	/**
 	 * 更新者
 	 */
+	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
 	@ExcelProperty(value = "更新者名字")

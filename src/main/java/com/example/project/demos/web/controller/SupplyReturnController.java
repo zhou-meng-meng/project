@@ -102,9 +102,9 @@ public class SupplyReturnController {
      */
     @PostMapping("/export")
     @ApiOperation("导出供货方退回列表")
-    public void export(@RequestBody QueryByPageDTO dto, HttpServletResponse response) {
+    public void export(@RequestBody QueryByPageDTO dto ) {
         List<SupplyReturnInfo> list = supplyReturnService.queryListForExport(dto);
-        ExcelUtil.exportExcel(list, "供货方退回", SupplyReturnInfo.class,response);
+        ExcelUtil.exportExcel(list, "供货方退回", SupplyReturnInfo.class);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.list;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,6 +16,7 @@ public class CustomerPayDetailInfo {
     /**
      * 自增主键
      */
+    @ExcelIgnore
     @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "自增主键")
     private Long id;
@@ -24,12 +26,15 @@ public class CustomerPayDetailInfo {
     @ExcelProperty(value = "客户编号")
     @ApiModelProperty(value = "客户编号")
     private String customerCode;
+
     @ExcelProperty(value = "客户名称")
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
     @ExcelProperty(value = "单价")
     @ApiModelProperty(value = "单价")
     private BigDecimal unitPrice;
+
     @ExcelProperty(value = "数量")
     @ApiModelProperty(value = "数量")
     private BigDecimal materialCount;
@@ -56,8 +61,10 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
 
+    @ExcelIgnore
     @ApiModelProperty(value = "经办人英文名")
     private String operatorBy;
+
     @ExcelProperty(value = "经办人")
     @ApiModelProperty(value = "经办人名字")
     private String operatorByName;
@@ -65,15 +72,19 @@ public class CustomerPayDetailInfo {
     /**
      * 付款类型  0-入款 1-出款
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "付款类型  0-入款 1-出款")
     private String payType;
+    @ExcelIgnore
     @ApiModelProperty(value = "付款类型")
     private String payTypeName;
+    @ExcelIgnore
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;
     /**
      * 创建者
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "创建者英文名")
     private String createBy;
     @ExcelProperty(value = "创建者名字")
@@ -89,6 +100,7 @@ public class CustomerPayDetailInfo {
     /**
      * 更新者
      */
+    @ExcelIgnore
     @ApiModelProperty(value = "更新者英文名")
     private String updateBy;
     @ExcelProperty(value = "更新者名字")

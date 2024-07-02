@@ -212,6 +212,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
                 info.setGrindingWeight(tollInfo.getGrindingWeightToll());
                 info.setMachineWeight(tollInfo.getMachineWeightToll());
                 info.setDifferentWeight(tollInfo.getDifferentWeightToll());
+                list.add(info);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
