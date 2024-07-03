@@ -104,14 +104,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             String userType = user.getUserType();
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
-                log.info("当前登录人属于总公司，判断是否有审核权限");
-                List<String> list = user.getAuthorityType();
-                if(list.contains("0")){
-                    log.info("具有审核权限，查询所有数据");
-                }else{
-                    log.info("不具有审核权限，查询自己提交的数据");
-                    dto.setSaler(user.getUserLogin());
-                }
+                log.info("当前登录人属于总公司，查询所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库提交的数据");
                 dto.setOutCode(user.getDeptId());
@@ -381,14 +374,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             String userType = user.getUserType();
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
-                log.info("当前登录人属于总公司，判断是否有审核权限");
-                List<String> listAuth = user.getAuthorityType();
-                if(listAuth.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
-                    log.info("具有审核权限，查询所有数据");
-                }else{
-                    log.info("不具有审核权限，查询自己提交的数据");
-                    dto.setSaler(user.getUserLogin());
-                }
+                log.info("当前登录人属于总公司，查询所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看自己所在厂区/仓库提交的数据");
                 dto.setOutCode(user.getDeptId());

@@ -1,9 +1,11 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.list.SalersOrderInfo;
 import com.example.project.demos.web.dto.salersOrder.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 业务员下单表
@@ -24,10 +26,10 @@ public interface SalersOrderService {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     /**
      * 新增数据
@@ -65,6 +67,7 @@ public interface SalersOrderService {
      */
     int chargeOffConfirm(Long id, String result, String opinion, String userLogin,  Date date);
 
+    List<SalersOrderInfo>  queryListForExport(QueryByPageDTO dto);
 
 }
 

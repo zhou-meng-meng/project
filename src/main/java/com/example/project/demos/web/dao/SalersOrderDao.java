@@ -30,4 +30,6 @@ public interface SalersOrderDao extends BaseMapper<SalersOrderEntity> {
     int count(QueryByPageDTO queryByPageDTO);
 
     SalersOrderInfo selectSalersOrderInfoById(Long id);
+
+    List<SalersOrderInfo> queryListForExport(@Param("order") QueryByPageDTO dto);
 }

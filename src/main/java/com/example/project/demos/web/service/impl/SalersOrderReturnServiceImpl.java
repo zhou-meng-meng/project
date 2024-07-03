@@ -57,7 +57,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("销售退回queryById开始");
+        log.info("业务员下单退回queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -76,13 +76,13 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("销售退回queryById结束");
+        log.info("业务员下单queryById结束");
         return outDTO;
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info("销售退回queryByPage开始");
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
+        log.info("业务员下单退回queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -90,21 +90,21 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
             List<String> listType = user.getAuthorityType();
-            if(listType.contains("0")){
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
                 log.info("具有审核权限，查询所有数据");
             }else{
                 log.info("不具有审核权限，查询自己提交的数据");
-                queryByPageDTO.setReturnUser(user.getUserLogin());
+                dto.setReturnUser(user.getUserLogin());
             }
             //先用查询条件查询总条数
-            long total = this.salersOrderReturnDao.count(queryByPageDTO);
+            long total = this.salersOrderReturnDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<SalersOrderReturnInfo> page = new PageImpl<>(this.salersOrderReturnDao.selectSalersOrderReturnInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<SalersOrderReturnInfo> page = new PageImpl<>(this.salersOrderReturnDao.selectSalersOrderReturnInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalersOrderReturnInfo> list = page.toList();
                 list = setSalersOrderReturnObject(list);
@@ -119,7 +119,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("销售退回queryByPage结束");
+        log.info("业务员下单queryByPage结束");
         return outDTO;
     }
 
@@ -286,37 +286,73 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         return i;
     }
 
+    @Override
+    public List<SalersOrderReturnInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("业务员下单退回queryListForExport开始");
+        List<SalersOrderReturnInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
+            List<String> listType = user.getAuthorityType();
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+                log.info("具有审核权限，查询所有数据");
+            }else{
+                log.info("不具有审核权限，查询自己提交的数据");
+                dto.setReturnUser(user.getUserLogin());
+            }
+            list = salersOrderReturnDao.queryListForExport(dto);
+            list = setSalersOrderReturnObject(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_RETURN.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("业务员下单queryListForExport结束");
+        return list;
+    }
+
     /**
      * 赋值销售退回  入库方名称
      * @param list
      * @return
      */
     private List<SalersOrderReturnInfo> setSalersOrderReturnObject(List<SalersOrderReturnInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(SalersOrderReturnInfo info : list){
-            //退货方
-            String inCode = info.getInCode();
-            if(null != inCode && !"".equals(inCode) && ""!= inCode){
-                if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
-                    //工厂
-                    for(SysFactoryInfo fInfo : factoryInfoList){
-                        if(inCode.equals(fInfo.getCode())){
-                            info.setInName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(SalersOrderReturnInfo info : list){
+                //退货方
+                String inCode = info.getInCode();
+                if(null != inCode && !"".equals(inCode) && ""!= inCode){
+                    if(Constants.FACTORY_CODE_PREFIX.equals(inCode.substring(0,1))){
+                        //工厂
+                        for(SysFactoryInfo fInfo : factoryInfoList){
+                            if(inCode.equals(fInfo.getCode())){
+                                info.setInName(fInfo.getName());
+                            }
+                        }
+                    }else{
+                        //仓库
+                        for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                            if(inCode.equals(sInfo.getCode())){
+                                info.setInName(sInfo.getName());
+                            }
                         }
                     }
-                }else{
-                    //仓库
-                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                        if(inCode.equals(sInfo.getCode())){
-                            info.setInName(sInfo.getName());
-                        }
-                    }
+                }else {
+                    log.info("inCode is null");
                 }
-            }else {
-                log.info("inCode is null");
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

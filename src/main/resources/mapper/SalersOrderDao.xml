@@ -212,4 +212,88 @@
     </select>
 
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.SalersOrderInfo">
+        SELECT
+        t.id,
+        t.material_code,
+        m.NAME AS materialName,
+        m.model,
+        d2.dict_value as modelName,
+        m.unit,
+        d3.dict_value as unitName,
+        t.bill_code,
+        t.customer_code,
+        s.name as customerName,
+        t.customer_link,
+        t.customer_tel,
+        t.load_date,
+        t.load_num,
+        t.unit_price,
+        t.toll_amount,
+        t.load_type,
+        d4.dict_value as loadTypeName,
+        t.out_code,
+        t.saler,
+        u4.user_name AS salerName,
+        t.approve_state,
+        d5.dict_value as approveStateName,
+        t.approve_user,
+        u2.user_name AS approveUserName,
+        t.approve_opinion,
+        t.approve_time,
+        t.confirm_state,
+        d6.dict_value as confirmStateName,
+        t.confirm_user,
+        u3.user_name AS confirmUserName,
+        t.confirm_opinion,
+        t.confirm_time,
+        t.bill_state,
+        d7.dict_value as billStateName,
+        t.chargeoff_user,
+        u5.user_name AS chargeoffUserName,
+        t.chargeoff_time,
+        t.chargeoff_opinion,
+        t.remit,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	salers_order  t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.approve_user
+        LEFT JOIN sys_user u3 ON u3.user_login = t.confirm_user
+        LEFT JOIN sys_user u4 ON u4.user_login = t.saler
+        LEFT JOIN sys_user u5 ON u5.user_login = t.chargeoff_user
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        left join customer_sale s on s.code = t.customer_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
+        LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.load_type and  d4.dict_type = 'load_type'
+        LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.approve_state and  d5.dict_type = 'approve_state'
+        LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.confirm_state and  d6.dict_type = 'confirm_state'
+        LEFT JOIN sys_dict_data d7 ON d7.dict_code = t.bill_state and  d7.dict_type = 'bill_state'
+        where  1=1
+        <if test="order.materialName != null and order.materialName != ''">
+            and m.name    like concat('%', #{order.materialName}, '%')
+        </if>
+        <if test="order.customerName != null and order.customerName != ''">
+            and s.name   like concat('%', #{order.customerName}, '%')
+        </if>
+        <if test="order.billCode != null and order.billCode != ''">
+            and t.bill_code   like concat('%', #{order.billCode}, '%')
+        </if>
+        <if test="order.saler != null and order.saler != ''">
+            and t.saler  = #{order.saler}
+        </if>
+        <if test="order.salerName != null and order.salerName != ''">
+            and t.saler  like concat('%', #{order.salerName}, '%')
+        </if>
+        order  by  t.id  desc
+    </select>
+
+
 </mapper>

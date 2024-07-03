@@ -86,7 +86,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("销售员下单queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -94,23 +94,22 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         try {
             //添加权限  总公司审核权限的  查看所有  销售员只能查看自己的数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
-            String userType = user.getUserType();
-            log.info("userType:"+userType);
-            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
-                log.info("当前登录人属于总公司，可以查看所有数据");
+            List<String> listType = user.getAuthorityType();
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+                log.info("具有审核权限，查询所有数据");
             }else{
-                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                queryByPageDTO.setSaler(user.getUserLogin());
+                log.info("不具有审核权限，查询自己提交的数据");
+                dto.setSaler(user.getUserLogin());
             }
             //先用查询条件查询总条数
-            long total = this.salersOrderDao.count(queryByPageDTO);
+            long total = this.salersOrderDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<SalersOrderInfo> page = new PageImpl<>(this.salersOrderDao.selectSalersOrderInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<SalersOrderInfo> page = new PageImpl<>(this.salersOrderDao.selectSalersOrderInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalersOrderInfo> list = page.toList();
                 list = setSalersOrderObject(list);
@@ -372,35 +371,72 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         return i;
     }
 
+    @Override
+    public List<SalersOrderInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("销售员下单queryListForExport开始");
+        List<SalersOrderInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try {
+            //添加权限  总公司审核权限的  查看所有  销售员只能查看自己的数据
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可以查看所有数据");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看自己提交的数据");
+                dto.setSaler(user.getUserLogin());
+            }
+            list = salersOrderDao.queryListForExport(dto);
+            list = setSalersOrderObject(list);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info =  "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("销售员下单queryListForExport结束");
+        return list;
+    }
+
     /**
      * 赋值销售员下单  出库方名称
      * @param list
      * @return
      */
     private List<SalersOrderInfo> setSalersOrderObject(List<SalersOrderInfo> list){
-        //获取厂区和仓库集合
-        List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
-        List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
-        for(SalersOrderInfo info : list){
-            //出库方
-            String outCode = info.getOutCode();
-            if(null != outCode && !"".equals(outCode) && ""!= outCode){
-                if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
-                    //工厂
-                    for(SysFactoryInfo fInfo : factoryInfoList){
-                        if(outCode.equals(fInfo.getCode())){
-                            info.setOutName(fInfo.getName());
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0 ){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(SalersOrderInfo info : list){
+                //出库方
+                String outCode = info.getOutCode();
+                if(null != outCode && !"".equals(outCode) && ""!= outCode){
+                    if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
+                        //工厂
+                        for(SysFactoryInfo fInfo : factoryInfoList){
+                            if(outCode.equals(fInfo.getCode())){
+                                info.setOutName(fInfo.getName());
+                            }
                         }
-                    }
-                }else{
-                    //仓库
-                    for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
-                        if(outCode.equals(sInfo.getCode())){
-                            info.setOutName(sInfo.getName());
+                    }else{
+                        //仓库
+                        for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                            if(outCode.equals(sInfo.getCode())){
+                                info.setOutName(sInfo.getName());
+                            }
                         }
                     }
                 }
             }
+        }else{
+            log.info("list is null");
         }
         return list;
     }

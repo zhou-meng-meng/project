@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
+import com.example.project.demos.web.dto.list.SalersOrderInfo;
 import com.example.project.demos.web.dto.salersOrder.*;
 import com.example.project.demos.web.service.SalersOrderService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 销售员下单维护表(salers_order)表控制层
@@ -19,7 +23,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("salersOrder")
-@Api(tags="销售员下单维护表")
+@Api(tags="业务员下单维护表")
 public class SalersOrderController {
     /**
      * 服务对象
@@ -103,6 +107,17 @@ public class SalersOrderController {
     public ChargeOffOutDTO chargeOffSubmit(@RequestBody ChargeOffDTO dto) {
         ChargeOffOutDTO outDTO = salersOrderService.chargeOffSubmit(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出业务员下单列表
+     *
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出业务员下单列表")
+    public void export(@RequestBody QueryByPageDTO dto) {
+        List<SalersOrderInfo> list = salersOrderService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "业务员下单", SalersOrderInfo.class);
     }
 
 }

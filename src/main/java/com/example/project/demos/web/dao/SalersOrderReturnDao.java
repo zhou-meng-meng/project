@@ -31,4 +31,5 @@ public interface SalersOrderReturnDao extends BaseMapper<SalersOrderReturnEntity
     int count(QueryByPageDTO queryByPageDTO);
 
     SalersOrderReturnInfo selectSalersOrderReturnInfoById(Long id);
+    List<SalersOrderReturnInfo> queryListForExport(@Param("return") QueryByPageDTO dto);
 }
