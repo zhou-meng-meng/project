@@ -75,7 +75,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("销售客户queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -90,17 +90,17 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                 log.info("具有审核权限，可以查看所有数据");
             }else{
                 log.info("不具有审核权限，只能查看自己的客户信息");
-                queryByPageDTO.setSaler(user.getUserLogin());
+                dto.setSaler(user.getUserLogin());
             }
             //先用查询条件查询总条数
-            long total = this.customerSaleDao.count(queryByPageDTO);
+            long total = this.customerSaleDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectCustomerSaleInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectCustomerSaleInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerSaleInfo> list = page.toList();
                 //出参赋值
@@ -119,21 +119,21 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
     }
 
     @Override
-    public QueryByPageOutDTO queryPopByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryPopByPage(QueryByPageDTO dto) {
         log.info("销售客户queryPopByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.customerSaleDao.countPop(queryByPageDTO);
+            long total = this.customerSaleDao.countPop(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectPopListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<CustomerSaleInfo> page = new PageImpl<>(this.customerSaleDao.selectPopListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerSaleInfo> list = page.toList();
                 //出参赋值
@@ -149,6 +149,39 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         outDTO.setErrorMsg(errortMsg);
         log.info("销售客户queryPopByPage结束");
         return outDTO;
+    }
+
+    @Override
+    public List<CustomerSaleInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("销售客户queryListForExport开始");
+        List<CustomerSaleInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //权限判断  总公司审核人员可查看所有数据 其他人员只能看属于自己的客户数据
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            List<String> authList = user.getAuthorityType();
+            if(authList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+                log.info("具有审核权限，可以查看所有数据");
+            }else{
+                log.info("不具有审核权限，只能查看自己的客户信息");
+                dto.setSaler(user.getUserLogin());
+            }
+            list = customerSaleDao.queryListForExport(dto);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SALE.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("销售客户queryListForExport结束");
+        return list;
     }
 
 

@@ -35,4 +35,6 @@ public interface CustomerSaleDao extends BaseMapper<CustomerSaleEntity> {
     List<CustomerSaleInfo> selectPopListByPage(@Param("customer") QueryByPageDTO queryByPageDTO, @Param("pageable") Pageable pageable);
     int countPop( QueryByPageDTO queryByPageDTO);
 
+    List<CustomerSaleInfo> queryListForExport(@Param("customer") QueryByPageDTO queryByPageDTO);
+
 }

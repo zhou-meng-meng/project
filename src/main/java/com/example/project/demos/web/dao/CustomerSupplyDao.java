@@ -30,4 +30,6 @@ public interface CustomerSupplyDao extends BaseMapperPlus<CustomerSupplyDao,Cust
     int count(QueryByPageDTO queryByPageDTO);
 
     CustomerSupplyInfo selectCustomerSupplyInfoById(Long id);
+
+    List<CustomerSupplyInfo> queryListForExport(@Param("customer") CustomerSupplyEntity customerSupplyEntity);
 }

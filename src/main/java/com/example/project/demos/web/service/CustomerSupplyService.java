@@ -1,8 +1,10 @@
 package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.customerSupply.*;
+import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
 import com.example.project.demos.web.entity.CustomerSupplyEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,5 +54,7 @@ public interface CustomerSupplyService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
+
+    List<CustomerSupplyInfo> queryListForExport(QueryByPageDTO dto);
 }
 

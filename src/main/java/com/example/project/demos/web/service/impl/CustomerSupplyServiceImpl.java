@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -51,8 +52,8 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            CustomerSupplyInfo CustomerSupplyInfo = customerSupplyDao.selectCustomerSupplyInfoById(dto.getId());
-            outDTO = BeanUtil.copyProperties(CustomerSupplyInfo, QueryByIdOutDTO.class);
+            CustomerSupplyInfo info = customerSupplyDao.selectCustomerSupplyInfoById(dto.getId());
+            outDTO = BeanUtil.copyProperties(info, QueryByIdOutDTO.class);
             //查询对应账户
             List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getCode());
             outDTO.setAccountRelList(list);
@@ -69,7 +70,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("供应商客户queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -77,16 +78,16 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         try {
             //数据权限  总公司审核人和财务可使用此菜单 因为不需要添加数据权限
             //先用查询条件查询总条数
-            long total = this.customerSupplyDao.count(queryByPageDTO);
+            long total = this.customerSupplyDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                CustomerSupplyEntity CustomerSupply = BeanCopyUtils.copy(queryByPageDTO,CustomerSupplyEntity.class);
+                CustomerSupplyEntity entity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
                 //开始分页查询
-                Page<CustomerSupplyInfo> page = new PageImpl<>(this.customerSupplyDao.selectCustomerSupplyInfoListByPage(CustomerSupply, pageRequest), pageRequest, total);
+                Page<CustomerSupplyInfo> page = new PageImpl<>(this.customerSupplyDao.selectCustomerSupplyInfoListByPage(entity, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerSupplyInfo> list = page.toList();
                 //出参赋值
@@ -185,5 +186,30 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+    @Override
+    public List<CustomerSupplyInfo> queryListForExport(QueryByPageDTO dto) {
+        log.info("供应商客户queryListForExport开始");
+        List<CustomerSupplyInfo> list = new ArrayList<>();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        try {
+            //转换实体入参
+            CustomerSupplyEntity entity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
+            list = customerSupplyDao.queryListForExport(entity);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        //记录操作日志
+        String info = "导出Excel操作";
+        sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SUPPLY.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        log.info("供应商客户queryListForExport结束");
+        return list;
     }
 }

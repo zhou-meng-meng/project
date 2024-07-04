@@ -211,5 +211,69 @@
         where   t.id = #{id}
     </select>
 
+    <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.CustomerSaleInfo">
+        SELECT
+        t.id,
+        t.CODE,
+        t.NAME,
+        t.type,
+        d.dict_value typeName,
+        t.cert_type,
+        d1.dict_value certTypeName,
+        t.cert_no,
+        t.link_user,
+        t.link_phone_no,
+        t.address,
+        t.LEVEL,
+        d2.dict_value levelName,
+        t.email,
+        t.wechat_no,
+        t.fax_no,
+        t.saler ,
+        u2.user_name AS salerName,
+        t.approve_state,
+        d3.dict_value approveStateName,
+        t.approve_user,
+        u3.user_name AS approveUserName,
+        t.approve_time,
+        t.approve_opinion,
+        t.create_by,
+        u.user_name AS createByName,
+        t.create_time,
+        t.update_by,
+        u1.user_name AS updateByName,
+        t.update_time,
+        t.remark
+        FROM	customer_sale t
+        LEFT JOIN sys_dict_data d ON d.dict_code = t.type 	AND d.dict_type = 'customer_type'
+        LEFT JOIN sys_dict_data d1 ON d1.dict_code = t.cert_type 	AND d1.dict_type = 'cert_type'
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = t.LEVEL 	AND d2.dict_type = 'customer_level'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = t.approve_state 	AND d3.dict_type = 'approve_state'
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
+        LEFT JOIN sys_user u2 ON u2.user_login = t.saler
+        LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+        where  1=1
+        <if test="customer.code != null and customer.code != ''">
+            and t.code    like concat('%', #{customer.code}, '%')
+        </if>
+        <if test="customer.name != null and customer.name != ''">
+            and t.name    like concat('%', #{customer.name}, '%')
+        </if>
+        <if test="customer.linkUser != null and customer.linkUser != ''">
+            and t.link_user    like concat('%', #{customer.linkUser}, '%')
+        </if>
+        <if test="customer.saler != null and customer.saler != ''">
+            and t.saler  = #{customer.saler}
+        </if>
+        <if test="customer.salerName != null and customer.salerName != ''">
+            and u2.user_name  like concat('%', #{customer.salerName}, '%')
+        </if>
+        <if test="customer.approveState != null and customer.approveState != ''">
+            and t.approve_state  =  #{customer.approveState}
+        </if>
+        order  by  t.id  desc
+    </select>
+
 
 </mapper>

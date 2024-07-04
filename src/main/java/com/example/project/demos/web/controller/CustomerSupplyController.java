@@ -1,7 +1,10 @@
 package com.example.project.demos.web.controller;
 
 import com.example.project.demos.web.dto.customerSupply.*;
+import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
+import com.example.project.demos.web.dto.list.SalersOrderInfo;
 import com.example.project.demos.web.service.CustomerSupplyService;
+import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 供应商客户维护表(customer_supply)表控制层
@@ -90,6 +94,17 @@ public class CustomerSupplyController {
     public DeleteByIdOutDTO deleteById(@RequestBody DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = customerSupplyService.deleteById(dto);
         return outDTO;
+    }
+
+    /**
+     * 导出供应商客户列表
+     *
+     */
+    @PostMapping("/export")
+    @ApiOperation("导出供应商客户列表")
+    public void export(@RequestBody QueryByPageDTO dto) {
+        List<CustomerSupplyInfo> list = customerSupplyService.queryListForExport(dto);
+        ExcelUtil.exportExcel(list, "供应商客户", CustomerSupplyInfo.class);
     }
 
 }
