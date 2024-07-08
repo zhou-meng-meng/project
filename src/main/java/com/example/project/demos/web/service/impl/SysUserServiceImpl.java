@@ -425,6 +425,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             list = sysUserDao.queryListForExport(sysUser);
             //赋值所属单位名称
             list = setDeptName(list);
+            //赋值角色是否有单价权限
+            list = setIsPriceDesc(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -467,6 +469,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                             info.setDeptName(sysStorehouseInfo.getName());
                         }
                     }
+                }
+            }
+        }else{
+            log.info("list is null");
+        }
+        return list;
+    }
+
+    private List<SysUserInfo> setIsPriceDesc(List<SysUserInfo> list){
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            for(SysUserInfo info : list){
+                String roleId = info.getRoleId();
+                if(ObjectUtil.isNotNull(roleId)){
+                    //获取角色权集合
+                    List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
+                    if(CollectionUtil.isNotEmpty(authorityType) && authorityType.size() > 0){
+                        if(authorityType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+                            info.setIsPriceEdit(SysEnums.SYS_YES_FLAG.getDesc());
+                        }else{
+                            info.setIsPriceEdit(SysEnums.SYS_NO_FLAG.getDesc());
+                        }
+                    }
+                }else{
+                    info.setIsPriceEdit(SysEnums.SYS_NO_FLAG.getDesc());
                 }
             }
         }else{

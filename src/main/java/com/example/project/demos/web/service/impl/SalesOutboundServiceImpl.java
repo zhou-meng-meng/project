@@ -152,6 +152,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 SalesOutboundEntity entity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
                 //设置 审核状态 创建人和创建时间
+                entity.setSaler(user.getUserLogin());
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
                 entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
                 entity.setCreateBy(user.getUserLogin());

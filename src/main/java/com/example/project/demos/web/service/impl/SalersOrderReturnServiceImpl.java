@@ -313,7 +313,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         }
         //记录操作日志
         String info = "导出Excel操作";
-        sysLogService.insertSysLog(FunctionTypeEnums.SALES_RETURN.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("业务员下单queryListForExport结束");
         return list;
     }

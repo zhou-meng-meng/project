@@ -157,7 +157,7 @@ public class RawMaterialOutboundInfo implements Serializable {
 	@ExcelIgnore
 	@ApiModelProperty(value = "更新者英文名")
 	private String updateBy;
-	@ExcelProperty(value = "updateByName")
+	@ExcelProperty(value = "更新者名字")
 	@ApiModelProperty(value = "更新者名字")
 	private String updateByName;
 	/**

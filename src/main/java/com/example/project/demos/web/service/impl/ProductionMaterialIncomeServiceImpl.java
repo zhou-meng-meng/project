@@ -249,7 +249,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "导出Excel";
+        String info = "导出Excel操作";
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("产量入库queryListForExport结束");
         return list;

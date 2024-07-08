@@ -96,7 +96,7 @@ public class SalesOutboundInfo implements Serializable {
 	@ExcelIgnore
 	@ApiModelProperty(value = "销售员英文名")
 	private String saler;
-	@ExcelProperty(value = "销售员名称")
+	@ExcelProperty(value = "销售员")
 	@ApiModelProperty(value = "销售员名称")
 	private String salerName;
 	/**

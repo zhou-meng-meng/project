@@ -82,30 +82,6 @@ public class SalesReturnInfo implements Serializable {
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
 
-	@ExcelIgnore
-	@ApiModelProperty(value = "审核人")
-	private String approveUser;
-	@ExcelProperty(value = "审核人")
-	@ApiModelProperty(value = "审核人姓名")
-	private String approveUserName;
-
-	@ExcelIgnore
-	@ApiModelProperty(value = "审核状态")
-	private String approveState;
-	@ExcelProperty(value = "审核状态")
-	@ApiModelProperty(value = "审核状态")
-	private String approveStateName;
-	/**
-	 * 审批意见
-	 */
-	@ExcelProperty(value = "审核意见")
-	@ApiModelProperty(value = "审核意见")
-	private String approveOpinion;
-	@ExcelProperty(value = "审核时间")
-	@ApiModelProperty(value = "审核时间")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date approveTime;
-
 	/**
 	 * 单据号
 	 */
@@ -146,6 +122,32 @@ public class SalesReturnInfo implements Serializable {
 	@ApiModelProperty(value = "退货时间")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date returnTime;
+
+	@ExcelIgnore
+	@ApiModelProperty(value = "审核人")
+	private String approveUser;
+	@ExcelProperty(value = "审核人")
+	@ApiModelProperty(value = "审核人姓名")
+	private String approveUserName;
+
+	@ExcelIgnore
+	@ApiModelProperty(value = "审核状态")
+	private String approveState;
+	@ExcelProperty(value = "审核状态")
+	@ApiModelProperty(value = "审核状态")
+	private String approveStateName;
+	/**
+	 * 审批意见
+	 */
+	@ExcelProperty(value = "审核意见")
+	@ApiModelProperty(value = "审核意见")
+	private String approveOpinion;
+	@ExcelProperty(value = "审核时间")
+	@ApiModelProperty(value = "审核时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date approveTime;
+
+
 	/**
 	 * 创建者
 	 */

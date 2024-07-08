@@ -152,7 +152,7 @@ public class SalersOrderInfo implements Serializable {
 	/**
 	 * 审核意见
 	 */
-	@ExcelProperty(value = "approveOpinion")
+	@ExcelProperty(value = "审核意见")
 	@ApiModelProperty(value = "审核意见")
 	private String approveOpinion;
 	/**
@@ -169,7 +169,7 @@ public class SalersOrderInfo implements Serializable {
 	@ApiModelProperty(value = "确认状态编码")
 	private String confirmState;
 
-	@ExcelProperty(value = "confirmStateName")
+	@ExcelProperty(value = "确认状态")
 	@ApiModelProperty(value = "确认状态")
 	private String confirmStateName;
 	/**
@@ -179,13 +179,13 @@ public class SalersOrderInfo implements Serializable {
 	@ApiModelProperty(value = "确认人")
 	private String confirmUser;
 
-	@ExcelProperty(value = "confirmUserName")
+	@ExcelProperty(value = "确认人")
 	@ApiModelProperty(value = "确认人")
 	private String confirmUserName;
 	/**
 	 * 确认意见
 	 */
-	@ExcelProperty(value = "confirmOpinion")
+	@ExcelProperty(value = "确认意见")
 	@ApiModelProperty(value = "确认意见")
 	private String confirmOpinion;
 	/**

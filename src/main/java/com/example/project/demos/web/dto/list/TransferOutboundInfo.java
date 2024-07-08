@@ -82,6 +82,27 @@ public class TransferOutboundInfo implements Serializable {
 	@ExcelProperty(value = "单据号")
 	@ApiModelProperty(value = "单据号")
 	private String billNo;
+
+	/**
+	 * 调出厂(仓库)编号
+	 */
+	@ExcelIgnore
+	@ApiModelProperty(value = "调出厂(仓库)编号")
+	private String outCode;
+	@ExcelProperty(value = "调出方")
+	@ApiModelProperty(value = "调出厂(仓库)")
+	private String outName;
+
+	/**
+	 * 调入厂（仓库）编号
+	 */
+	@ExcelIgnore
+	@ApiModelProperty(value = "调入厂（仓库）编号")
+	private String inCode;
+	@ExcelProperty(value = "调入方")
+	@ApiModelProperty(value = "调入厂（仓库）")
+	private String inName;
+
 	@ExcelIgnore
 	@ApiModelProperty(value = "确认人英文名")
 	private String confirmUser;
@@ -111,24 +132,6 @@ public class TransferOutboundInfo implements Serializable {
 	@ApiModelProperty(value = "单据(确认)理由")
 	private String confirmOpinion;
 
-	/**
-	 * 调出厂(仓库)编号
-	 */
-	@ExcelIgnore
-	@ApiModelProperty(value = "调出厂(仓库)编号")
-	private String outCode;
-	@ExcelProperty(value = "调出方")
-	@ApiModelProperty(value = "调出厂(仓库)")
-	private String outName;
-	/**
-	 * 调入厂（仓库）编号
-	 */
-	@ExcelIgnore
-	@ApiModelProperty(value = "调入厂（仓库）编号")
-	private String inCode;
-	@ExcelProperty(value = "调入方")
-	@ApiModelProperty(value = "调入厂（仓库）")
-	private String inName;
 	/**
 	 * 创建者
 	 */
