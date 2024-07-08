@@ -21,6 +21,7 @@ import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.DateUtils;
+import com.example.project.demos.web.utils.IpUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -299,11 +300,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
                         outDTO.setAuthorityType(authorityType);
                         //修改当前登录IP和登录时间
-                        InetAddress inetAddress = InetAddress.getLocalHost();
-                        ipAddress = inetAddress.getHostAddress();
+                        String ip = IpUtils.getLocalIp4Address().get().toString().replaceAll("/","");
                         SysUserEntity entity = new SysUserEntity();
                         entity.setId(info.getId());
-                        entity.setLoginIp(ipAddress);
+                        entity.setLoginIp(ip);
                         entity.setLoginDate(date);
                         sysUserDao.updateById(entity);
                     }
