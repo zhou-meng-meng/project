@@ -300,10 +300,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
                         outDTO.setAuthorityType(authorityType);
                         //修改当前登录IP和登录时间
-                        String ip = IpUtils.getLocalIp4Address().get().toString().replaceAll("/","");
+                        ipAddress = IpUtils.getLocalIp4Address().get().toString().replaceAll("/","");
+                        outDTO.setLoginIp(ipAddress);
                         SysUserEntity entity = new SysUserEntity();
                         entity.setId(info.getId());
-                        entity.setLoginIp(ip);
+                        entity.setLoginIp(ipAddress);
                         entity.setLoginDate(date);
                         sysUserDao.updateById(entity);
                     }
@@ -390,8 +391,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 entity.setLastPasswordDate(date);
                 sysUserDao.updateById(entity);
             }
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            ipAddress = inetAddress.getHostAddress();
+            ipAddress = IpUtils.getLocalIp4Address().get().toString().replaceAll("/","");
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
