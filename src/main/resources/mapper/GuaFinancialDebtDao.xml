@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.GuaFinancialDebtDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.GuaFinancialDebtEntity" id="guaFinancialDebtMap">
+        <result property="id" column="id"/>
+        <result property="tableTitle" column="table_title"/>
+        <result property="tableNo" column="table_no"/>
+        <result property="tableOffice" column="table_office"/>
+        <result property="dataUnit" column="data_unit"/>
+        <result property="fillingDept" column="filling_dept"/>
+        <result property="fillingYear" column="filling_year"/>
+        <result property="statisticsManager" column="statistics_manager"/>
+        <result property="statisticsOper" column="statistics_oper"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="importDate" column="import_date"/>
+    </resultMap>
+
+
+</mapper>

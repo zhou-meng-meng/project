@@ -21,6 +21,7 @@ import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.DateUtils;
+import com.example.project.demos.web.utils.IpUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -299,8 +300,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                         List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
                         outDTO.setAuthorityType(authorityType);
                         //修改当前登录IP和登录时间
-                        InetAddress inetAddress = InetAddress.getLocalHost();
-                        ipAddress = inetAddress.getHostAddress();
+                        ipAddress = IpUtils.getLocalIp4Address().get().toString().replaceAll("/","");
+                        outDTO.setLoginIp(ipAddress);
                         SysUserEntity entity = new SysUserEntity();
                         entity.setId(info.getId());
                         entity.setLoginIp(ipAddress);
@@ -390,8 +391,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 entity.setLastPasswordDate(date);
                 sysUserDao.updateById(entity);
             }
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            ipAddress = inetAddress.getHostAddress();
+            ipAddress = IpUtils.getLocalIp4Address().get().toString().replaceAll("/","");
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
