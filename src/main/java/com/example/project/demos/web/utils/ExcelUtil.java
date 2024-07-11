@@ -71,6 +71,28 @@ public class ExcelUtil {
      * @param list      导出数据集合
      * @param sheetName 工作表的名称
      * @param clazz     实体类
+    //* @param response  响应体  HttpServletResponse response
+     */
+    public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge) {
+        try {
+            ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            // 获取 response
+            HttpServletResponse response = requestAttributes.getResponse();
+            response.reset();
+            resetResponse(sheetName, response);
+            ServletOutputStream os = response.getOutputStream();
+            exportExcel(list, sheetName, clazz, merge, os);
+        } catch (IOException e) {
+            throw new RuntimeException("导出Excel异常");
+        }
+    }
+
+    /**
+     * 导出excel
+     *
+     * @param list      导出数据集合
+     * @param sheetName 工作表的名称
+     * @param clazz     实体类
      * @param merge     是否合并单元格
      * @param response  响应体
      */
