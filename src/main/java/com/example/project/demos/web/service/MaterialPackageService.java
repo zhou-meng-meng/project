@@ -2,6 +2,8 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.materialPackage.*;
 
+import java.util.List;
+
 /**
  * 物料产出装袋表
  *
@@ -26,6 +28,8 @@ public interface MaterialPackageService  {
      * @return 查询结果
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+
+    List<MaterialPackageExportDTO> queryByParam(QueryByPageDTO queryByPageDTO);
 
     /**
      * 新增数据

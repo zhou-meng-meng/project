@@ -23,6 +23,8 @@ import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -122,6 +124,54 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
         outDTO.setErrorMsg(errortMsg);
         log.info("装袋表queryByPage结束");
         return outDTO;
+    }
+
+    @Override
+    public List<MaterialPackageExportDTO> queryByParam(QueryByPageDTO queryByPageDTO) {
+        List<MaterialPackageExportDTO> result = new ArrayList<>(16);
+        log.info("装袋表queryByParam开始");
+        try {
+            //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            String userType = user.getUserType();
+            log.info("userType:"+userType);
+            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
+                log.info("当前登录人属于总公司，可查看所有");
+            }else{
+                log.info("当前登录人不属于总公司，只能查看所属厂区");
+                queryByPageDTO.setFactoryCode(user.getDeptId());
+            }
+            //先用查询条件查询总条数
+            long total = this.materialPackageDao.count(queryByPageDTO);
+            //存在数据的   继续查询
+            if(total != 0L){
+                //分页信息
+                //获取分页数据
+                List<MaterialPackageInfo> list = this.materialPackageDao.selectMaterialPackageInfoListByPage(queryByPageDTO, null);
+                //获取每个装袋表的物料明细集合
+                for(MaterialPackageInfo info : list){
+                    List<MaterialPackageDetailInfo> detailInfoList = materialPackageDetailService.queryByPackageId(info.getId());
+                    if(CollectionUtils.isEmpty(detailInfoList)){
+                        MaterialPackageExportDTO pojo = new MaterialPackageExportDTO();
+                        BeanUtils.copyProperties(info,pojo);
+                        result.add(pojo);
+                    }else{
+                        for (MaterialPackageDetailInfo detail : detailInfoList) {
+                            MaterialPackageExportDTO pojo = new MaterialPackageExportDTO();
+                            BeanUtils.copyProperties(info,pojo);
+                            pojo.setMaterialName(detail.getMaterialName());
+                            pojo.setPotWeight(detail.getPotWeight());
+                            result.add(pojo);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+        }
+        log.info("装袋表queryByParam结束");
+        return result;
     }
 
     @Override

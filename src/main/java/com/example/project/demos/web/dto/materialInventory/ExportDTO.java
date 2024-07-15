@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.materialInventory;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.example.project.demos.web.annotation.CellMerge;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,6 +8,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -60,4 +63,7 @@ public class ExportDTO implements Serializable {
     @CellMerge
     @ApiModelProperty(value = "合计")
     private BigDecimal tollNum;
+
+    @ExcelIgnore
+    public List<Integer> mergeColumnIndex = Arrays.asList(0, 1, 2, 3);
 }

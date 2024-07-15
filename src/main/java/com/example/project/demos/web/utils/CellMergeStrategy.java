@@ -51,6 +51,7 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
         }
         Class<?> clazz = list.get(0).getClass();
         Field[] fields = clazz.getDeclaredFields();
+        List<Integer> mergeCols = new ArrayList<>();
         // 有注解的字段
         List<Field> mergeFields = new ArrayList<>();
         List<Integer> mergeFieldsIndex = new ArrayList<>();
@@ -61,6 +62,9 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
                 mergeFields.add(field);
                 mergeFieldsIndex.add(cm.index() == -1 ? (i - 1) : cm.index());
             }
+            if(field.getName().equals("mergeColumnIndex")){
+                mergeCols = (List<Integer>) field.get(list.get(0));
+            }
         }
         // 行合并开始下标
         int rowIndex = hasTitle ? 1 : 0;
@@ -69,10 +73,7 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
         Map<Integer, String> rowMap = new HashMap<>();
         //key 0+1+2+3 value line lists
         Map<String, List<Integer>> mergeIndexMap = new HashMap<>();
-        //合并索引
-        int startIndex = 1;
         //根据导出类进行指定业务类型判断
-        if (ExportDTO.class == clazz) {
             for (int i = 0; i < list.size(); i++) {
                 for (int j = 0; j < mergeFields.size(); j++) {
                     Field field = mergeFields.get(j);
@@ -81,7 +82,7 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
                     Method readMethod = clazz.getMethod(methodName);
                     Object val = readMethod.invoke(list.get(i));
 
-                    if (j == 0 || j == 1 || j == 2 || j == 3) {
+                    if(mergeCols.contains(j)){
                         if (StringUtils.isEmpty(rowMap.get(i))) {
                             rowMap.put(i, val == null ? "" : val.toString());
                         } else {
@@ -114,42 +115,6 @@ public class CellMergeStrategy extends AbstractMergeStrategy {
                 }
             }
             return cellList;
-        }
-
-
-        // 生成两两合并单元格
-        for (int i = 0; i < list.size(); i++) {
-            for (int j = 0; j < mergeFields.size(); j++) {
-                Field field = mergeFields.get(j);
-                String name = field.getName();
-                String methodName = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
-                Method readMethod = clazz.getMethod(methodName);
-                Object val = readMethod.invoke(list.get(i));
-
-                int colNum = mergeFieldsIndex.get(j);
-                if (!map.containsKey(field)) {
-                    map.put(field, new RepeatCell(val, i));
-                } else {
-                    RepeatCell repeatCell = map.get(field);
-                    Object cellValue = repeatCell.getValue();
-                    if (cellValue == null || "".equals(cellValue)) {
-                        // 空值跳过不合并
-                        continue;
-                    }
-                    if (!cellValue.equals(val)) {
-                        if (i - repeatCell.getCurrent() > 1) {
-                            cellList.add(new CellRangeAddress(repeatCell.getCurrent() + rowIndex, i + rowIndex - 1, colNum, colNum));
-                        }
-                        map.put(field, new RepeatCell(val, i));
-                    } else if (i == list.size() - 1) {
-                        if (i > repeatCell.getCurrent()) {
-                            cellList.add(new CellRangeAddress(repeatCell.getCurrent() + rowIndex, i + rowIndex, colNum, colNum));
-                        }
-                    }
-                }
-            }
-        }
-        return cellList;
     }
 
     @Data
