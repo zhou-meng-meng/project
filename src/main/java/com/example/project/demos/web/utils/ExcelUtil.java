@@ -8,9 +8,13 @@ import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -49,7 +53,7 @@ public class ExcelUtil {
      * @param list      导出数据集合
      * @param sheetName 工作表的名称
      * @param clazz     实体类
-     //* @param response  响应体  HttpServletResponse response
+     *                  //* @param response  响应体  HttpServletResponse response
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz) {
         try {
@@ -71,7 +75,7 @@ public class ExcelUtil {
      * @param list      导出数据集合
      * @param sheetName 工作表的名称
      * @param clazz     实体类
-    //* @param response  响应体  HttpServletResponse response
+     *                  //* @param response  响应体  HttpServletResponse response
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge) {
         try {
@@ -125,9 +129,10 @@ public class ExcelUtil {
      * @param sheetName 工作表的名称
      * @param clazz     实体类
      * @param merge     是否合并单元格
-     //* @param os        输出流
+     *                  //* @param os        输出流
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge, OutputStream os) throws IOException {
+        // 创建自定义样式处理器
         ExcelWriterSheetBuilder builder = EasyExcel.write(os, clazz)
                 .autoCloseStream(false)
                 // 自动适配
@@ -139,8 +144,37 @@ public class ExcelUtil {
             // 合并处理器
             builder.registerWriteHandler(new CellMergeStrategy(list, true));
         }
+        builder.registerWriteHandler(ExcelUtil.styleWrite(Boolean.TRUE));
         builder.doWrite(list);
     }
+
+
+    public static HorizontalCellStyleStrategy styleWrite(boolean isWrapped) {
+        // 头的策略
+        WriteCellStyle headWriteCellStyle = new WriteCellStyle();
+        // 背景设置为红色
+        // headWriteCellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+        //WriteFont headWriteFont = new WriteFont();
+        //headWriteFont.setFontHeightInPoints((short) 18);
+        //headWriteCellStyle.setWriteFont(headWriteFont);
+        // 内容的策略
+        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+        // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND 不然无法显示背景颜色.头默认了 FillPatternType所以可以不指定
+        //contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+        // 背景绿色
+        //contentWriteCellStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+        //WriteFont contentWriteFont = new WriteFont();
+        // 字体大小
+        //contentWriteFont.setFontHeightInPoints((short) 11);
+        //设置 自动换行
+        contentWriteCellStyle.setWrapped(isWrapped);
+        //设置居中
+        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        //contentWriteCellStyle.setWriteFont(contentWriteFont);
+        return new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
+    }
+
 
     /**
      * 单表多数据模板导出 模板格式为 {.属性}
@@ -315,7 +349,7 @@ public class ExcelUtil {
      * 编码文件名
      */
     public static String encodingFilename(String filename) {
-        return  filename + ".xlsx";
+        return filename + ".xlsx";
         //return IdUtil.fastSimpleUUID() + "_" + filename + ".xlsx";
     }
 

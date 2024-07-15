@@ -1,21 +1,22 @@
 package com.example.project.demos.web.service;
 
 
-import com.example.project.demos.web.dto.materialInventory.*;
+import com.example.project.demos.web.dto.list.MaterialInventoryInfo;
+import com.example.project.demos.web.dto.materialInventory.QueryByPageDTO;
+import com.example.project.demos.web.dto.materialInventory.QueryByPageOutDTO;
+import com.example.project.demos.web.dto.materialInventory.QueryByPagePopDTO;
+import com.example.project.demos.web.dto.materialInventory.QueryByPagePopOutDTO;
 
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 /**
- * 
- *
  * @author Mark
  * @email sunlightcs@gmail.com
  * @date 2024-05-23 14:35:27
  */
-public interface MaterialInventoryService  {
+public interface MaterialInventoryService {
     /**
      * 分页查询
      *
@@ -23,18 +24,20 @@ public interface MaterialInventoryService  {
      * @return 查询结果
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+
     QueryByPagePopOutDTO queryPagePopList(QueryByPagePopDTO queryByPageDTO);
 
     /**
-     *
-     * @param materialCode  物料编号
-     * @param code  仓库/厂区编号
+     * @param materialCode 物料编号
+     * @param code         仓库/厂区编号
      * @return
      */
-    int checkIfMaterialCodeExist(String materialCode,String code);
+    int checkIfMaterialCodeExist(String materialCode, String code);
 
-    int updateStockInventory(String materialCode, String code, BigDecimal num,String type, Date date) ;
+    int updateStockInventory(String materialCode, String code, BigDecimal num, String type, Date date);
 
+
+    List<MaterialInventoryInfo> queryByParam(QueryByPageDTO queryByPageDTO);
 
 }
 
