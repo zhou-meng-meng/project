@@ -6,17 +6,20 @@
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.GuaFinancialDebtEntity" id="guaFinancialDebtMap">
         <result property="id" column="id"/>
-        <result property="tableTitle" column="table_title"/>
-        <result property="tableNo" column="table_no"/>
-        <result property="tableOffice" column="table_office"/>
-        <result property="dataUnit" column="data_unit"/>
-        <result property="fillingDept" column="filling_dept"/>
-        <result property="fillingYear" column="filling_year"/>
-        <result property="statisticsManager" column="statistics_manager"/>
-        <result property="statisticsOper" column="statistics_oper"/>
-        <result property="reportDate" column="report_date"/>
-        <result property="importDate" column="import_date"/>
+        <result property="fillingMonth" column="filling_month"/>
+        <result property="fillingOper" column="filling_oper"/>
+        <result property="fillingTime" column="filling_ime"/>
+        <result property="projectName" column="project_name"/>
+        <result property="projectCode" column="project_code"/>
+        <result property="countryAmount" column="country_amount"/>
+        <result property="otherAmount" column="other_amount"/>
+        <result property="tollAmount" column="toll_amount"/>
+        <result property="orderNum" column="order_num"/>
     </resultMap>
 
+    <delete id="deleteByFillingMonth">
+        delete  from gua_financial_debt
+        where filling_month = #{month}
+    </delete>
 
 </mapper>

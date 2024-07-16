@@ -39,5 +39,7 @@ public interface ApproveOperationQueueService {
      * @return
      */
     int deleteByBusinessId(Long businessid);
+
+    QueryUndoNumOutDTO queryUndoNum(QueryUndoNumDTO dto);
 }
 

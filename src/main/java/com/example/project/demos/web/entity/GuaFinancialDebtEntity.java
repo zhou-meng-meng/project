@@ -1,5 +1,6 @@
 package com.example.project.demos.web.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -24,45 +25,45 @@ public class GuaFinancialDebtEntity implements Serializable {
 	 */
 	@TableId
 	private Long id;
+
 	/**
-	 * 表标题
+	 * 月份
 	 */
-	private String tableTitle;
+	private String fillingMonth;
 	/**
-	 * 表号
+	 * 填报人
 	 */
-	private String tableNo;
+	private String fillingOper;
 	/**
-	 * 制表机关
+	 * 填表时间
 	 */
-	private String tableOffice;
+	private Date fillingTime;
 	/**
-	 * 数据单位
+	 * 项目
 	 */
-	private String dataUnit;
+	@ExcelProperty(index =0)
+	private String projectName;
 	/**
-	 * 填报单位
+	 * 代码
 	 */
-	private String fillingDept;
+	@ExcelProperty(index =1)
+	private String projectCode;
 	/**
-	 * 年份
+	 * 国有控股 融资担保机构
 	 */
-	private String fillingYear;
+	@ExcelProperty(index =2)
+	private String countryAmount;
 	/**
-	 * 统计负责人
+	 * 民营及外资融资担保机构
 	 */
-	private String statisticsManager;
+	@ExcelProperty(index =3)
+	private String otherAmount;
 	/**
-	 * 填表人
+	 * 合计
 	 */
-	private String statisticsOper;
-	/**
-	 * 报出日期
-	 */
-	private String reportDate;
-	/**
-	 * 导入时间
-	 */
-	private Date importDate;
+	@ExcelProperty(index =4)
+	private String tollAmount;
+
+	private int orderNum;
 
 }

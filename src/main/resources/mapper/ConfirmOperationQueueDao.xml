@@ -94,5 +94,10 @@
         delete  from confirm_operation_queue where business_id = #{businessId}
     </delete>
 
+    <select id="queryConfirmUnDoNum">
+        select count(1) from  confirm_operation_queue  t
+        where   t.confirm_user = #{userName}
+    </select>
+
 
 </mapper>

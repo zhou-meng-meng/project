@@ -63,5 +63,15 @@ public class ApproveOperationQueueController {
         return outDTO;
     }
 
+    @PostMapping("/queryUndoNum")
+    @ApiOperation("获取代办数量提醒")
+    public QueryUndoNumOutDTO queryUndoNum(@RequestBody QueryUndoNumDTO dto)  {
+        QueryUndoNumOutDTO outDTO = this.approveOperationQueueService.queryUndoNum(dto);
+        return outDTO;
+    }
+
+
+
+
 
 }

@@ -7,24 +7,23 @@ import com.alibaba.excel.metadata.CellExtra;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.example.project.demos.web.dao.GuaFinancialDebtDao;
-import com.example.project.demos.web.dao.GuaFinancialDebtDetailDao;
-import com.example.project.demos.web.entity.GuaFinancialDebtDetailEntity;
 import com.example.project.demos.web.entity.GuaFinancialDebtEntity;
 import com.example.project.demos.web.utils.SpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancialDebtDetailEntity> {
+public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancialDebtEntity> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuaFinancialDebtListener.class);
 
     private HttpServletRequest request;
 
     private final GuaFinancialDebtDao guaFinancialDebtDao;
-    private final GuaFinancialDebtDetailDao guaFinancialDebtDetailDao;
+
+    private final String fillingMonth;
+    private final String fillingOper;
 
     /**
      * 表头数据（存储所有的表头数据）
@@ -37,25 +36,27 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
     private List<Map<Integer, String>> dataList = new ArrayList<>();
 
 
-    public GuaFinancialDebtListener(HttpServletRequest request, Integer headRowNumber,GuaFinancialDebtDao guaFinancialDebtDao,GuaFinancialDebtDetailDao guaFinancialDebtDetailDao) {
+    public GuaFinancialDebtListener(HttpServletRequest request, Integer headRowNumber,GuaFinancialDebtDao guaFinancialDebtDao,String fillingMonth,String fillingOper) {
         this.request = request;
         this.headRowNumber = headRowNumber;
         this.guaFinancialDebtDao = SpringUtils.getBean(GuaFinancialDebtDao.class);
-        this.guaFinancialDebtDetailDao = SpringUtils.getBean(GuaFinancialDebtDetailDao.class);
+        this.fillingMonth = fillingMonth;
+        this.fillingOper = fillingOper;
     }
-    public GuaFinancialDebtListener() {
+    public GuaFinancialDebtListener(String fillingMonth,String fillingOper) {
         this.guaFinancialDebtDao = SpringUtils.getBean(GuaFinancialDebtDao.class);
-        this.guaFinancialDebtDetailDao = SpringUtils.getBean(GuaFinancialDebtDetailDao.class);
+        this.fillingMonth = fillingMonth;
+        this.fillingOper = fillingOper;
     }
     /**
      * 最终返回的解析数据list
      */
-    private final List<GuaFinancialDebtDetailEntity> data = new ArrayList<>();
+    private final List<GuaFinancialDebtEntity> data = new ArrayList<>();
     /**
      * 解析数据
      * key是sheetName，value是相应sheet的解析数据
      */
-    private final Map<String, List<GuaFinancialDebtDetailEntity>> dataMap = new HashMap<>();
+    private final Map<String, List<GuaFinancialDebtEntity>> dataMap = new HashMap<>();
     /**
      * 合并单元格
      * key键是sheetName，value是相应sheet的合并单元格数据
@@ -80,7 +81,7 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
      * 这个每一条数据解析都会来调用
      */
     @Override
-    public void invoke(GuaFinancialDebtDetailEntity excelData1, AnalysisContext context) {
+    public void invoke(GuaFinancialDebtEntity excelData1, AnalysisContext context) {
         LOGGER.info("解析到一条数据:{}", JSON.toJSONString(data));
         String sheetName = context.readSheetHolder().getSheetName();
         dataMap.computeIfAbsent(sheetName, k -> new ArrayList<>());
@@ -117,11 +118,11 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
      * 将具有多个sheet数据的dataMap转变成一个data
      */
     private void convertDataMapToData() {
-        Iterator<Map.Entry<String, List<GuaFinancialDebtDetailEntity>>> iterator = dataMap.entrySet().iterator();
+        Iterator<Map.Entry<String, List<GuaFinancialDebtEntity>>> iterator = dataMap.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String, List<GuaFinancialDebtDetailEntity>> next = iterator.next();
+            Map.Entry<String, List<GuaFinancialDebtEntity>> next = iterator.next();
             String sheetName = next.getKey();//sheet的名称
-            List<GuaFinancialDebtDetailEntity> list = next.getValue();//sheet中的集合数据
+            List<GuaFinancialDebtEntity> list = next.getValue();//sheet中的集合数据
             List<CellExtra> mergeList = mergeMap.get(sheetName);//合并单元格信息
             if (!CollectionUtils.isEmpty(mergeList)) {
                 list = explainMergeData(list, mergeList);
@@ -136,7 +137,7 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
      * @param mergeList 合并单元格信息
      * @return 填充好的解析数据
      */
-    private List<GuaFinancialDebtDetailEntity> explainMergeData(List<GuaFinancialDebtDetailEntity> list, List<CellExtra> mergeList) {
+    private List<GuaFinancialDebtEntity> explainMergeData(List<GuaFinancialDebtEntity> list, List<CellExtra> mergeList) {
         // 循环所有合并单元格信息
         for (CellExtra item : mergeList) {
             Integer firstRowIndex = item.getFirstRowIndex() - headRowNumber;//起始行
@@ -165,9 +166,9 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
      * @param list             列数据
      * @return 初始值
      */
-    private Object getInitValueFromList(Integer firstRowIndex, Integer firstColumnIndex, List<GuaFinancialDebtDetailEntity> list) {
+    private Object getInitValueFromList(Integer firstRowIndex, Integer firstColumnIndex, List<GuaFinancialDebtEntity> list) {
         Object filedValue = null;
-        GuaFinancialDebtDetailEntity object = list.get(firstRowIndex);
+        GuaFinancialDebtEntity object = list.get(firstRowIndex);
         for (Field field : object.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             ExcelProperty annotation = field.getAnnotation(ExcelProperty.class);
@@ -193,8 +194,8 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
      * @param columnIndex 列
      * @param list        解析数据
      */
-    public void setInitValueToList(Object filedValue, Integer rowIndex, Integer columnIndex, List<GuaFinancialDebtDetailEntity> list) {
-        GuaFinancialDebtDetailEntity object = list.get(rowIndex);//
+    public void setInitValueToList(Object filedValue, Integer rowIndex, Integer columnIndex, List<GuaFinancialDebtEntity> list) {
+        GuaFinancialDebtEntity object = list.get(rowIndex);//
         for (Field field : object.getClass().getDeclaredFields()) {
             field.setAccessible(true);//提升反射性能，关闭安全检查
             ExcelProperty annotation = field.getAnnotation(ExcelProperty.class);
@@ -221,110 +222,161 @@ public class GuaFinancialDebtListener extends AnalysisEventListener<GuaFinancial
         //在invok解析完数据以后，才去处理合并单元格数据，最后得到合并完以后的数据
         convertDataMapToData();
         LOGGER.info("所有数据解析完成！"+data);
+        LOGGER.info("先删除原月份的数据！"+fillingMonth);
+        guaFinancialDebtDao.deleteByFillingMonth(fillingMonth);
+
         LOGGER.info("开始准备插入数据！");
-        /**
-         * Excel的数据是从填报单位 年份这一行开始的  为第一行  list下标为0
-         * 实际数据是从第二行开始的  list下标为1
-         */
-        //先插入主表数据
-        GuaFinancialDebtEntity entity = new GuaFinancialDebtEntity();
-        entity.setTableTitle("融资担保公司资产负债情况表");
-        entity.setTableNo("G3表");
-        entity.setTableOffice("山东省地方金融监督管理局");
-        entity.setDataUnit("万元");
-        entity.setFillingDept(data.get(0).getProjectName());
-        entity.setFillingYear(data.get(0).getOtherAmount());
-        entity.setStatisticsManager(data.get(24).getProjectName());
-        entity.setStatisticsOper(data.get(24).getProjectCode());
-        entity.setReportDate(data.get(24).getTollAmount());
-        entity.setImportDate(new Date());
-        guaFinancialDebtDao.insert(entity);
-        Long id = entity.getId();
-        int num = 1;
-        for(GuaFinancialDebtDetailEntity detailEntity : data){
-            detailEntity.setDebtId(id);
-            detailEntity.setOrderNum(num);
-            num ++ ;
+        //准备数据
+        List<GuaFinancialDebtEntity> list = new ArrayList<>();
+        //资产总额  不换行
+        GuaFinancialDebtEntity entity = data.get(4);
+        entity.setOrderNum(0);
+        list.add(entity);
+
+        //其中：货币资金  二级
+        entity = data.get(5);
+        StringBuffer sb = new StringBuffer();
+        sb.append("    ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(1);
+        list.add(entity);
+
+        //存出保证金  三级
+        entity = data.get(6);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(2);
+        list.add(entity);
+
+        //债权投资  三级
+        entity = data.get(7);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(3);
+        list.add(entity);
+
+        //应收代偿款  三级
+        entity = data.get(8);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(4);
+        list.add(entity);
+
+        //应其中：期限在2年以上（含）的应收代偿款 四级
+        entity = data.get(9);
+        sb = new StringBuffer();
+        sb.append("            ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(5);
+        list.add(entity);
+
+        //其他应收款  三级
+        entity = data.get(10);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(6);
+        list.add(entity);
+
+        //委托贷款 三级
+        entity = data.get(11);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(7);
+        list.add(entity);
+
+        //其他资产  三级
+        entity = data.get(12);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(8);
+        list.add(entity);
+
+        //负债总额 一级
+        entity = data.get(13);
+        entity.setOrderNum(9);
+        list.add(entity);
+
+        //其中：借款 二级
+        entity = data.get(14);
+        sb = new StringBuffer();
+        sb.append("    ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(10);
+        list.add(entity);
+
+        //存入保证金 三级
+        entity = data.get(15);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(11);
+        list.add(entity);
+
+        //未到期责任准备金 三级
+        entity = data.get(16);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(12);
+        list.add(entity);
+
+        //担保赔偿准备金 三级
+        entity = data.get(17);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(13);
+        list.add(entity);
+
+        //其他负债 三级
+        entity = data.get(18);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(14);
+        list.add(entity);
+
+        //净资产 一级
+        entity = data.get(19);
+        entity.setOrderNum(15);
+        list.add(entity);
+
+        //其中：实收资本  二级
+        entity = data.get(20);
+        sb = new StringBuffer();
+        sb.append("    ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(16);
+        list.add(entity);
+
+        //一般风险准备 三级
+        entity = data.get(21);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(17);
+        list.add(entity);
+
+        //其他净资产 三级
+        entity = data.get(22);
+        sb = new StringBuffer();
+        sb.append("        ").append(entity.getProjectName());
+        entity.setProjectName(sb.toString());
+        entity.setOrderNum(18);
+        list.add(entity);
+        Date date = new Date();
+        for(GuaFinancialDebtEntity detailEntity : data){
+            detailEntity.setFillingMonth(fillingMonth);
+            detailEntity.setFillingOper(fillingOper);
+            detailEntity.setFillingTime(date);
         }
-        //开始插入明细表
-        List<GuaFinancialDebtDetailEntity> detailEntityList = new ArrayList<>();
-        GuaFinancialDebtDetailEntity entity5 = data.get(5);
-        entity5.setProjectName("资产总额");
-        detailEntityList.add(entity5);
-
-        GuaFinancialDebtDetailEntity entity6 = data.get(6);
-        entity6.setProjectName("    其中：货币资金");
-        detailEntityList.add(entity6);
-
-        GuaFinancialDebtDetailEntity entity7 = data.get(7);
-        entity7.setProjectName("          存出保证金");
-        detailEntityList.add(entity7);
-
-        GuaFinancialDebtDetailEntity entity8 = data.get(8);
-        entity8.setProjectName("          债权投资");
-        detailEntityList.add(entity8);
-
-        GuaFinancialDebtDetailEntity entity9 = data.get(9);
-        entity9.setProjectName("          应收代偿款");
-        detailEntityList.add(entity9);
-
-        GuaFinancialDebtDetailEntity entity10 = data.get(10);
-        entity10.setProjectName("            其中：期限在2年以上（含）的应收代偿款");
-        detailEntityList.add(entity10);
-
-        GuaFinancialDebtDetailEntity entity11 = data.get(11);
-        entity11.setProjectName("          其他应收款");
-        detailEntityList.add(entity11);
-
-        GuaFinancialDebtDetailEntity entity12 = data.get(12);
-        entity12.setProjectName("          委托贷款");
-        detailEntityList.add(entity12);
-
-        GuaFinancialDebtDetailEntity entity13 = data.get(13);
-        entity13.setProjectName("          其他资产");
-        detailEntityList.add(entity13);
-
-        GuaFinancialDebtDetailEntity entity14 = data.get(14);
-        entity14.setProjectName("负债总额");
-        detailEntityList.add(entity14);
-
-        GuaFinancialDebtDetailEntity entity15 = data.get(15);
-        entity15.setProjectName("    其中：借款");
-        detailEntityList.add(entity15);
-
-        GuaFinancialDebtDetailEntity entity16 = data.get(16);
-        entity16.setProjectName("          存入保证金");
-        detailEntityList.add(entity16);
-
-        GuaFinancialDebtDetailEntity entity17 = data.get(17);
-        entity17.setProjectName("          未到期责任准备金");
-        detailEntityList.add(entity17);
-
-        GuaFinancialDebtDetailEntity entity18 = data.get(18);
-        entity18.setProjectName("          担保赔偿准备金");
-        detailEntityList.add(entity18);
-
-        GuaFinancialDebtDetailEntity entity19 = data.get(19);
-        entity19.setProjectName("          其他负债");
-        detailEntityList.add(entity19);
-
-        GuaFinancialDebtDetailEntity entity20 = data.get(20);
-        entity20.setProjectName("净资产");
-        detailEntityList.add(entity20);
-
-        GuaFinancialDebtDetailEntity entity21 = data.get(21);
-        entity21.setProjectName("    其中：实收资本");
-        detailEntityList.add(entity21);
-
-        GuaFinancialDebtDetailEntity entity22 = data.get(22);
-        entity22.setProjectName("          一般风险准备");
-        detailEntityList.add(entity22);
-
-        GuaFinancialDebtDetailEntity entity23 = data.get(23);
-        entity23.setProjectName("          其他净资产");
-        detailEntityList.add(entity23);
-        LOGGER.info("插入明细数据");
-        guaFinancialDebtDetailDao.insertBatch(detailEntityList);
+        guaFinancialDebtDao.insertBatch(list);
     }
 
 }

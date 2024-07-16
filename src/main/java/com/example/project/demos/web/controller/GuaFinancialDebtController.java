@@ -4,14 +4,15 @@ package com.example.project.demos.web.controller;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.example.project.demos.web.dao.GuaFinancialDebtDao;
-import com.example.project.demos.web.dao.GuaFinancialDebtDetailDao;
-import com.example.project.demos.web.entity.GuaFinancialDebtDetailEntity;
+import com.example.project.demos.web.dto.customerSupply.QueryByIdDTO;
+import com.example.project.demos.web.dto.customerSupply.QueryByIdOutDTO;
+import com.example.project.demos.web.entity.GuaFinancialDebtEntity;
 import com.example.project.demos.web.listener.GuaFinancialDebtListener;
+import com.example.project.demos.web.service.GuaFinancialDebtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,25 +26,25 @@ import java.io.InputStream;
  */
 @RestController
 @RequestMapping("guaFinancialDebt")
-@Api(tags="融资担保公司资产负债情况表（G3）")
+@Api(tags="华丽达-融资担保公司资产负债情况表（G3）")
 public class GuaFinancialDebtController {
 
     @Resource
     private GuaFinancialDebtDao guaFinancialDebtDao;
 
-    @Resource
-    private GuaFinancialDebtDetailDao guaFinancialDebtDetailDao;
+    @Autowired
+    private GuaFinancialDebtService guaFinancialDebtService;
 
     @PostMapping("/importData")
     @ApiOperation("导入数据")
-    public void importData(HttpServletRequest request, MultipartFile file) {
+    public void importData(HttpServletRequest request, MultipartFile file,String fillingMonth, String fillingOper) {
         try {
             InputStream inputStream = file.getInputStream();
             /**
              *DynamicEasyExcelListener1:导入监听类
              * 1：是正文起始行，用于处理合并单元格
              **/
-            GuaFinancialDebtListener listener1 = new GuaFinancialDebtListener(request,0,guaFinancialDebtDao,guaFinancialDebtDetailDao);
+            GuaFinancialDebtListener listener1 = new GuaFinancialDebtListener(request,0,guaFinancialDebtDao,fillingMonth,fillingOper);
 
             //读取全部sheet使用extraRead(CellExtraTypeEnum.MERGE).doReadAll()
             /**
@@ -53,11 +54,21 @@ public class GuaFinancialDebtController {
              * CellExtraTypeEnum.HYPERLINK：读取超链接
              * extraRead(CellExtraTypeEnum.MERGE).doReadAll()：如果多sheet，直接使用这个方法
              **/
-            EasyExcel.read(inputStream, GuaFinancialDebtDetailEntity.class,listener1).headRowNumber(0).extraRead(CellExtraTypeEnum.MERGE).sheet(0).doRead();
+            EasyExcel.read(inputStream, GuaFinancialDebtEntity.class,listener1).headRowNumber(0).extraRead(CellExtraTypeEnum.MERGE).sheet(0).doRead();
             inputStream.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 导出数据
+     */
+
+    @GetMapping("/export")
+    @ApiOperation("导出Excel")
+    public void export() {
+        guaFinancialDebtService.export();
     }
 
 

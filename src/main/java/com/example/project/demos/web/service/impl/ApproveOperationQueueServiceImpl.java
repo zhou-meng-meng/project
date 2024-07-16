@@ -258,5 +258,12 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
         return approveOperationQueueDao.deleteByBusinessId(businessId);
     }
 
-
+    @Override
+    public QueryUndoNumOutDTO queryUndoNum(QueryUndoNumDTO dto) {
+        QueryUndoNumOutDTO outDTO = new QueryUndoNumOutDTO();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        outDTO.setApproveNum(approveOperationQueueDao.queryApproveUnDoNum(user.getUserName()));
+        outDTO.setConfirmNum(confirmOperationQueueDao.queryConfirmUnDoNum(user.getUserLogin()));
+        return outDTO;
+    }
 }
