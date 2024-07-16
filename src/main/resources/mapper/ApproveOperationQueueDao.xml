@@ -85,7 +85,7 @@
         delete  from approve_operation_queue t where  t.business_id = #{businessId}
     </delete>
 
-    <select id="queryApproveUnDoNum">
+    <select id="queryApproveUnDoNum" resultType="java.lang.Integer">
         select count(1) from  approve_operation_queue  t
         where   t.approve_user = #{userName}
     </select>
