@@ -35,7 +35,7 @@ public interface ConfirmOperationQueueDao extends BaseMapperPlus<ConfirmOperatio
 
     int deleteByBusinessId(Long businessId);
 
-    int queryConfirmUnDoNum(String userName);
+    int queryConfirmUnDoNum(String userLogin);
 
 
 }

@@ -87,7 +87,7 @@
 
     <select id="queryApproveUnDoNum" resultType="java.lang.Integer">
         select count(1) from  approve_operation_queue  t
-        where   t.approve_user = #{userName}
+        where   t.approve_user = #{userLogin}
     </select>
 
 </mapper>

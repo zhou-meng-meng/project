@@ -36,5 +36,5 @@ public interface ApproveOperationQueueDao extends BaseMapperPlus<ApproveOperatio
 
     int deleteByBusinessId(Long businessId);
 
-    int queryApproveUnDoNum(String userName);
+    int queryApproveUnDoNum(String userLogin);
 }

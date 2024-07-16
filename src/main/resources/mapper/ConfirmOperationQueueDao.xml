@@ -96,7 +96,7 @@
 
     <select id="queryConfirmUnDoNum" resultType="java.lang.Integer">
         select count(1) from  confirm_operation_queue  t
-        where   t.confirm_user = #{userName}
+        where   t.confirm_user = #{userLogin}
     </select>
 
 

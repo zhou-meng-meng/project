@@ -262,8 +262,17 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     public QueryUndoNumOutDTO queryUndoNum(QueryUndoNumDTO dto) {
         QueryUndoNumOutDTO outDTO = new QueryUndoNumOutDTO();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
-        outDTO.setApproveNum(approveOperationQueueDao.queryApproveUnDoNum(user.getUserName()));
-        outDTO.setConfirmNum(confirmOperationQueueDao.queryConfirmUnDoNum(user.getUserLogin()));
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        try{
+            outDTO.setApproveNum(approveOperationQueueDao.queryApproveUnDoNum(user.getUserLogin()));
+            outDTO.setConfirmNum(confirmOperationQueueDao.queryConfirmUnDoNum(user.getUserLogin()));
+        }catch (Exception e){
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
 }
