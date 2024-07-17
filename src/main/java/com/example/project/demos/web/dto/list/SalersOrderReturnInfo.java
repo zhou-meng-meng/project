@@ -134,7 +134,7 @@ public class SalersOrderReturnInfo implements Serializable {
 	/**
 	 * 单据号
 	 */
-	@ExcelProperty(value = "单据号")
+	@ExcelIgnore
 	@ApiModelProperty(value = "单据号")
 	private String billNo;
 	/**

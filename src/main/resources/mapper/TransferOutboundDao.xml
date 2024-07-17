@@ -232,5 +232,10 @@
         order  by  t.transfer_date  desc
     </select>
 
+    <select id="queryBillNoListByParam" resultType="java.lang.String">
+        select t.bill_no from   transfer_outbound  t
+        where   t.bill_no like concat( #{billNoPrefix}, '%')
+    </select>
+
 
 </mapper>

@@ -256,5 +256,10 @@
         order  by  t.return_time  desc
     </select>
 
+    <select id="queryBillNoListByParam" resultType="java.lang.String">
+        select t.bill_no from   sales_return  t
+        where   t.bill_no like concat( #{billNoPrefix}, '%')
+    </select>
+
 
 </mapper>

@@ -60,6 +60,9 @@ public class EditDTO {
     @ApiModelProperty(value = "机器名称")
     private String machineName;
 
+    @ApiModelProperty(value = "单据号")
+    private String billNo;
+
     /**
      * 备注
      */

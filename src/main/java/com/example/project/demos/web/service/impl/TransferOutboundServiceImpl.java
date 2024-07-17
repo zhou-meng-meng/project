@@ -15,6 +15,7 @@ import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +151,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
                 entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+                //生成单据号
+                entity.setBillNo(getBillNoList(user));
                 log.info("插入调拨出库表");
                 int i = transferOutboundDao.insert(entity);
                 //生成待确认流水
@@ -344,6 +347,25 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             log.info("list is null");
         }
         return list;
+    }
+
+    /**
+     * 格式化单据号
+     * @param user
+     * @return
+     */
+    private String getBillNoList(UserLoginOutDTO user){
+        String billNo="";
+        String prefix = DataUtils.formatBillNoPrefix(user,"出");
+        List<String> list = transferOutboundDao.queryBillNoListByParam(prefix);
+        StringBuffer sb = new StringBuffer();
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            billNo = DataUtils.formatBillNo(list);
+        }else{
+            sb.append(prefix).append("0001");
+            billNo = sb.toString();
+        }
+        return billNo;
     }
 
 }

@@ -24,6 +24,7 @@ import com.example.project.demos.web.service.MaterialInventoryService;
 import com.example.project.demos.web.service.ProductionMaterialIncomeService;
 import com.example.project.demos.web.service.SysLogService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,6 +138,8 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             ProductionMaterialIncomeEntity entity = BeanCopyUtils.copy(dto,ProductionMaterialIncomeEntity.class);
             entity.setCreateBy(user.getUserLogin());
             entity.setCreateTime(date);
+            //生成单据号
+            entity.setBillNo(getBillNoList(user));
             int i = productionMaterialIncomeDao.insert(entity);
             //修改库存
             i = materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getInCode(), dto.getIncomeNum(),"add",date);
@@ -289,6 +292,25 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             log.info("list is null");
         }
         return list;
+    }
+
+    /**
+     * 格式化单据号
+     * @param user
+     * @return
+     */
+    private String getBillNoList(UserLoginOutDTO user){
+        String billNo="";
+        String prefix = DataUtils.formatBillNoPrefix(user,"进");
+        List<String> list = productionMaterialIncomeDao.queryBillNoListByParam(prefix);
+        StringBuffer sb = new StringBuffer();
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            billNo = DataUtils.formatBillNo(list);
+        }else{
+            sb.append(prefix).append("0001");
+            billNo = sb.toString();
+        }
+        return billNo;
     }
 
 }

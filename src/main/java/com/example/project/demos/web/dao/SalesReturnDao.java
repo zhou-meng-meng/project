@@ -33,4 +33,5 @@ public interface SalesReturnDao extends BaseMapper<SalesReturnEntity> {
     SalesReturnInfo selectSalesReturnInfoById(Long id);
 
     List<SalesReturnInfo> queryListForExport(@Param("return") QueryByPageDTO dto);
+    List<String> queryBillNoListByParam(@Param("billNoPrefix") String billNoPrefix);
 }

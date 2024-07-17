@@ -32,4 +32,6 @@ public interface SalesOutboundDao extends BaseMapper<SalesOutboundEntity> {
     SalesOutboundInfo selectSalesOutboundInfoById(Long id);
 
     List<SalesOutboundInfo> queryListForExport(@Param("sale") QueryByPageDTO dto);
+
+    List<String> queryBillNoListByParam(@Param("billNoPrefix") String billNoPrefix);
 }

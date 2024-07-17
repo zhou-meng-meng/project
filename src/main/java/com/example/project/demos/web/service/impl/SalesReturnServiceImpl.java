@@ -15,6 +15,7 @@ import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -141,6 +142,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
+                //生成单据号
+                entity.setBillNo(getBillNoList(user));
                 int i = salesReturnDao.insert(entity);
                 log.info("生成审核流水记录");
                 ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
@@ -329,5 +332,24 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             log.info("list is null");
         }
         return list;
+    }
+
+    /**
+     * 格式化单据号
+     * @param user
+     * @return
+     */
+    private String getBillNoList(UserLoginOutDTO user){
+        String billNo="";
+        String prefix = DataUtils.formatBillNoPrefix(user,"进");
+        List<String> list = salesReturnDao.queryBillNoListByParam(prefix);
+        StringBuffer sb = new StringBuffer();
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            billNo = DataUtils.formatBillNo(list);
+        }else{
+            sb.append(prefix).append("0001");
+            billNo = sb.toString();
+        }
+        return billNo;
     }
 }

@@ -83,6 +83,8 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "单据状态")
     private String billState;
+    @ApiModelProperty(value = "单据号")
+    private String billNo;
     /**
      * 创建者
      */

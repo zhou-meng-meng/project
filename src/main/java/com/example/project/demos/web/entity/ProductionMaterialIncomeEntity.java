@@ -59,6 +59,7 @@ public class ProductionMaterialIncomeEntity implements Serializable {
 	 * 审批状态
 	 */
 	private String approveState;
+	private String billNo;
 	/**
 	 * 单据状态
 	 */

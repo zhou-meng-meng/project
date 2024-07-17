@@ -97,6 +97,11 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	@ExcelProperty(value = "入库方")
 	@ApiModelProperty(value = "入库方名称")
 	private String inName;
+
+	@ExcelProperty(value = "单据号")
+	@ApiModelProperty(value = "单据号")
+	private String billNo;
+
 	/**
 	 * 审批状态
 	 */

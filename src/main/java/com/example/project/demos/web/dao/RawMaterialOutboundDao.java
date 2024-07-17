@@ -32,4 +32,6 @@ public interface RawMaterialOutboundDao extends BaseMapper<RawMaterialOutboundEn
     RawMaterialOutboundInfo selectRawMaterialOutboundInfoById(Long id);
 
     List<RawMaterialOutboundInfo> queryListForExport(@Param("raw") QueryByPageDTO dto);
+
+    List<String> queryBillNoListByParam(@Param("billNoPrefix") String billNoPrefix);
 }

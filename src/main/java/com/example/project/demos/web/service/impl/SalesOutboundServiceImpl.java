@@ -16,6 +16,7 @@ import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +158,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
+                //生成单据号
+                entity.setBillNo(getBillNoList(user));
                 log.info("插入销售出库表");
                 int i = salesOutboundDao.insert(entity);
                 log.info("生成审核流水记录");
@@ -457,5 +460,24 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             log.info("list is null");
         }
         return list;
+    }
+
+    /**
+     * 格式化单据号
+     * @param user
+     * @return
+     */
+    private String getBillNoList(UserLoginOutDTO user){
+        String billNo="";
+        String prefix = DataUtils.formatBillNoPrefix(user,"出");
+        List<String> list = salesOutboundDao.queryBillNoListByParam(prefix);
+        StringBuffer sb = new StringBuffer();
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            billNo = DataUtils.formatBillNo(list);
+        }else{
+            sb.append(prefix).append("0001");
+            billNo = sb.toString();
+        }
+        return billNo;
     }
 }

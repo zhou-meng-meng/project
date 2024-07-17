@@ -31,4 +31,6 @@ public interface ProductionMaterialIncomeDao extends BaseMapper<ProductionMateri
     ProductionMaterialIncomeInfo selectProductionMaterialIncomeInfoById(Long id);
 
     List<ProductionMaterialIncomeInfo> queryListForExport(@Param("prod") QueryByPageDTO dto);
+
+    List<String> queryBillNoListByParam(@Param("billNoPrefix") String billNoPrefix);
 }

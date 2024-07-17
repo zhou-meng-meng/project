@@ -113,6 +113,10 @@ public interface Constants {
      * 仓库编号前缀
      */
     String STORE_CODE_PREFIX = "S";
+    /**
+     * 短横线
+     */
+    String SHORT_TERM_LINE = "-";
 
     String INITE_PWD = "123456";
     public static String YYYY = "yyyy";
@@ -120,6 +124,7 @@ public interface Constants {
     public static String YYYY_MM = "yyyy-MM";
 
     public static String YYYY_MM_DD = "yyyy-MM-dd";
+    public static String YYYYMMDD = "yyyyMMdd";
 
     public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 

@@ -13,6 +13,7 @@
         <result property="inCode" column="in_code"/>
         <result property="dutyCode" column="duty_code"/>
         <result property="machineCode" column="machine_code"/>
+        <result property="billNo" column="bill_no"/>
         <result property="approveState" column="approve_state"/>
         <result property="billState" column="bill_state"/>
         <result property="createBy" column="create_by"/>
@@ -40,6 +41,7 @@
             d4.dict_value dutyName,
             t.machine_code,
             d5.dict_value as machineName,
+            t.bill_no,
             t.approve_state,
             t.bill_state ,
             t.create_by,
@@ -136,6 +138,7 @@
             d4.dict_value dutyName,
             t.machine_code,
             d5.dict_value as machineName,
+            t.bill_no,
             t.approve_state,
             t.bill_state ,
             t.create_by,
@@ -175,6 +178,7 @@
         d4.dict_value dutyName,
         t.machine_code,
         d5.dict_value as machineName,
+        t.bill_no,
         t.approve_state,
         t.bill_state ,
         t.create_by,
@@ -219,6 +223,11 @@
             and t.machine_code   = #{prod.machineCode}
         </if>
         order  by   t.id  desc
+    </select>
+
+    <select id="queryBillNoListByParam" resultType="java.lang.String">
+        select t.bill_no from   production_material_income  t
+        where   t.bill_no like concat( #{billNoPrefix}, '%')
     </select>
 
 

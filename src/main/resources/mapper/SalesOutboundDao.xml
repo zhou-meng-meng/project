@@ -283,5 +283,10 @@
         order  by  t.id desc
     </select>
 
+    <select id="queryBillNoListByParam" resultType="java.lang.String">
+        select t.bill_no from   sales_outbound  t
+        where   t.bill_no like concat( #{billNoPrefix}, '%')
+    </select>
+
 
 </mapper>

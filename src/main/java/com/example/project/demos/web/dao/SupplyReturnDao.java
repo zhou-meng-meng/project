@@ -33,4 +33,6 @@ public interface SupplyReturnDao extends BaseMapper<SupplyReturnEntity> {
     SupplyReturnInfo selectSupplyReturnInfoById(Long id);
 
     List<SupplyReturnInfo> queryListForExport(@Param("return") QueryByPageDTO dto);
+
+    List<String> queryBillNoListByParam(@Param("billNoPrefix") String billNoPrefix);
 }
