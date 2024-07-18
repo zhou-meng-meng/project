@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -44,7 +46,7 @@ public class CommomTestController {
 
     @PostMapping("/fileInfoDeal")
     @ApiOperation("对接档案系统")
-    public String fileInfoDeal(FileInfoDealDTO dto) {
+    public String fileInfoDeal(FileInfoDealDTO dto) throws IOException {
         return  commomTestService.getArcfondNO(dto.getJkid(),dto.getCompanyname());
     }
 

@@ -127,6 +127,9 @@ public interface Constants {
     public static String YYYYMMDD = "yyyyMMdd";
 
     public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+    public static String YYYYMMDDHHMMSSSSS = "yyyyMMddHHmmssSSS";
 
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
+    public String filePath = "/home/wms/app/uploadFiles/";
 }
