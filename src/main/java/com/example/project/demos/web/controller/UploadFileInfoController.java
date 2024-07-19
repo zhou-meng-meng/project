@@ -25,7 +25,7 @@ public class UploadFileInfoController {
 
     @ApiOperation(value = "附件校验和上传")
     @PostMapping("/uploadFile")
-    public UploadFileInfoOutDTO uploadFile( @RequestBody UploadFileInfoDTO dto, @RequestParam(value = "files",required = false) MultipartFile[] files) {
+    public UploadFileInfoOutDTO uploadFile( @RequestPart UploadFileInfoDTO dto, @RequestPart(value = "files",required = false) MultipartFile[] files) {
         UploadFileInfoOutDTO outDTO = this.uploadFileInfoService.uploadFile(dto,files);
         return outDTO;
     }
