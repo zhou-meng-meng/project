@@ -51,6 +51,9 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     @Resource
     private ApproveOperationQueueDao approveOperationQueueDao;
 
+    @Resource
+    private UploadFileInfoDao uploadFileInfoDao;
+
     @Autowired
     private SysLogService sysLogService;
 
@@ -165,6 +168,10 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                List<Long> fileIdList = dto.getFileIdList();
+                if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
+                    uploadFileInfoDao.updateByBusinessId(entity.getId(), fileIdList);
+                }
             }else{
                 errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();

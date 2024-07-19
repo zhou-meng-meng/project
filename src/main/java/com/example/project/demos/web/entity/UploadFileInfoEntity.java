@@ -29,9 +29,14 @@ public class UploadFileInfoEntity implements Serializable {
 	 */
 	private Long businessId;
 	/**
+	 * 文件原名称
+	 */
+	private String fileOriginalName;
+
+	/**
 	 * 文件名称
 	 */
-	private String fileName;
+	private String fileFullName;
 	/**
 	 * 文件路径
 	 */

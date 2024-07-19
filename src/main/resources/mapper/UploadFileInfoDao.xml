@@ -7,7 +7,8 @@
     <resultMap type="com.example.project.demos.web.entity.UploadFileInfoEntity" id="uploadFileInfoMap">
         <result property="id" column="id"/>
         <result property="businessId" column="business_id"/>
-        <result property="fileName" column="file_name"/>
+        <result property="fileOriginalName" column="file_original_name"/>
+        <result property="fileFullName" column="file_full_name"/>
         <result property="filePath" column="file_path"/>
         <result property="functionId" column="function_id"/>
         <result property="createBy" column="create_by"/>
@@ -16,6 +17,27 @@
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
     </resultMap>
+
+    <select id="queryByParam" resultMap="uploadFileInfoMap">
+        select id,business_id,file_original_name,file_full_name,file_path,function_id
+        from  upload_file_info  t
+        <if test="businessId != null ">
+            and t.business_id    =#{businessId}
+        </if>
+    </select>
+
+    <delete id="deleteByBusinessId">
+        delete  from upload_file_info  where  business_id    =#{businessId}
+    </delete>
+
+    <update id="updateByBusinessId">
+        update upload_file_info
+        set business_id    =#{businessId}
+        where  id    in
+        <foreach item="id" collection="idList" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
 
 </mapper>

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class UploadFileInfoOutDTO {
-    private List<Long> idList;
+    private List<Long> fileIdList;
 
     /**
      * 操作结果编码:null

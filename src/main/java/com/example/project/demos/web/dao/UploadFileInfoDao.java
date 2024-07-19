@@ -2,6 +2,9 @@ package com.example.project.demos.web.dao;
 
 import com.example.project.demos.web.entity.UploadFileInfoEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 上传附件信息表
@@ -12,5 +15,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface UploadFileInfoDao extends BaseMapperPlus<UploadFileInfoDao, UploadFileInfoEntity> {
-	
+	List<UploadFileInfoEntity> queryByParam(@Param(value = "businessId") Long businessId );
+
+    int deleteByBusinessId(@Param(value = "businessId") Long businessId);
+
+    int updateByBusinessId(@Param(value = "businessId") Long businessId,@Param(value = "idList") List<Long> idList);
 }
