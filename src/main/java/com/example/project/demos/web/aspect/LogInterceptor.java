@@ -46,6 +46,7 @@ public class LogInterceptor {
      */
     private final static String PASS_AOP_EXPORT = "export";
     private final static String PASS_AOP_IMPORT = "import";
+    private final static String PASS_AOP_UPLOAD = "uploadFile";
 
     static {
         ignorePaths.add("userLogin");
@@ -77,7 +78,7 @@ public class LogInterceptor {
             Map<String, String[]> parameterMap = httpServletRequest.getParameterMap();
             log.info("█ param={}", JSON.toJSONString(parameterMap));
         }
-        if (Constants.REQ_TYPE_POST.equals(method) && !(url.contains(PASS_AOP_EXPORT)) && !(url.contains(PASS_AOP_IMPORT))) {
+        if (Constants.REQ_TYPE_POST.equals(method) && !(url.contains(PASS_AOP_EXPORT)) && !(url.contains(PASS_AOP_IMPORT)) && !(url.contains(PASS_AOP_UPLOAD))) {
             for (Object arg : point.getArgs()) {
                 log.info("█ paramClass={}", JSON.toJSONString(arg.getClass()));
                 log.info("█ param={}", JSON.toJSONString(arg));
