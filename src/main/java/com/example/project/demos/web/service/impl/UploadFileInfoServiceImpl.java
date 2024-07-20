@@ -3,15 +3,25 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.UploadFileInfoDao;
+import com.example.project.demos.web.dto.list.SysUserInfo;
+import com.example.project.demos.web.dto.list.UploadFileInfo;
+import com.example.project.demos.web.dto.uploadFileInfo.QueryUploadFileInfoListDTO;
+import com.example.project.demos.web.dto.uploadFileInfo.QueryUploadFileInfoListOutDTO;
 import com.example.project.demos.web.dto.uploadFileInfo.UploadFileInfoDTO;
 import com.example.project.demos.web.dto.uploadFileInfo.UploadFileInfoOutDTO;
+import com.example.project.demos.web.entity.SysUserEntity;
 import com.example.project.demos.web.entity.UploadFileInfoEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.UploadFileInfoService;
+import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,8 +38,9 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
     private UploadFileInfoDao uploadFileInfoDao;
 
     @Override
-    public UploadFileInfoOutDTO uploadFile( UploadFileInfoDTO dto, MultipartFile[] files) {
+    public UploadFileInfoOutDTO uploadFile( String bodyDto, MultipartFile[] files) {
         log.info("上传文件，判断businessId");
+        UploadFileInfoDTO dto =JSONObject.parseObject(bodyDto,UploadFileInfoDTO.class);
         Long businessId = dto.getBusinessId();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
@@ -111,6 +122,40 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
+        return outDTO;
+    }
+
+    @Override
+    public QueryUploadFileInfoListOutDTO queryFiileInfoList(QueryUploadFileInfoListDTO dto) {
+        log.info("获取附件列表queryFiileInfoList开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        QueryUploadFileInfoListOutDTO outDTO = new QueryUploadFileInfoListOutDTO();
+        try {
+            //先用查询条件查询总条数
+            List<UploadFileInfoEntity> entityList = uploadFileInfoDao.queryByParam(dto.getBusinessId());
+            if(CollectionUtil.isNotEmpty(entityList) && entityList.size() >0 ){
+                outDTO.setTurnPageTotalNum(entityList.size());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
+                //开始分页查询
+                Page<UploadFileInfo> page = new PageImpl<>(this.uploadFileInfoDao.selectUploadFileInfoListByPage(dto.getBusinessId(), pageRequest), pageRequest, Long.valueOf(entityList.size()));
+                //获取分页数据
+                List<UploadFileInfo> list = page.toList();
+                //出参赋值
+                outDTO.setFileInfoList(list);
+            }else{
+                log.info("list is null ");
+                outDTO.setTurnPageTotalNum(0);
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = e.getMessage();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("获取附件列表queryFiileInfoList结束");
         return outDTO;
     }
 }

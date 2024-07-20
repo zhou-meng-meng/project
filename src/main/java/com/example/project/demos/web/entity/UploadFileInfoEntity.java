@@ -38,6 +38,10 @@ public class UploadFileInfoEntity implements Serializable {
 	 */
 	private String fileFullName;
 	/**
+	 * 文件类型
+	 */
+	private String fileType;
+	/**
 	 * 文件路径
 	 */
 	private String filePath;

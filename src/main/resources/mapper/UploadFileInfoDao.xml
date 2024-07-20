@@ -9,6 +9,7 @@
         <result property="businessId" column="business_id"/>
         <result property="fileOriginalName" column="file_original_name"/>
         <result property="fileFullName" column="file_full_name"/>
+        <result property="fileType" column="file_type"/>
         <result property="filePath" column="file_path"/>
         <result property="functionId" column="function_id"/>
         <result property="createBy" column="create_by"/>
@@ -19,8 +20,8 @@
     </resultMap>
 
     <select id="queryByParam" resultMap="uploadFileInfoMap">
-        select id,business_id,file_original_name,file_full_name,file_path,function_id
-        from  upload_file_info  t
+        select id,business_id,file_original_name,file_full_name,file_type,file_path,function_id
+        from  upload_file_info  t  where 1=1
         <if test="businessId != null ">
             and t.business_id    =#{businessId}
         </if>
@@ -38,6 +39,18 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="selectUploadFileInfoListByPage" resultType="com.example.project.demos.web.dto.list.UploadFileInfo">
+        select t.id,t.business_id,t.file_original_name,t.file_full_name,t.file_type,t.file_path,t.function_id ,
+        u.user_name AS createByName  from  upload_file_info  t
+        LEFT JOIN sys_user u ON u.user_login = t.create_by
+        where 1=1
+        <if test="businessId != null ">
+            and t.business_id    =#{businessId}
+        </if>
+        order  by  t.create_time  desc
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
 
 
 </mapper>
