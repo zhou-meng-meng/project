@@ -27,7 +27,8 @@ public enum ErrorCodeEnums {
     STORE_CODE_IS_EXIST("000011","输入的仓库编号已经存在"),
     AUTH_USER_NOT_EXIST("000012","没有找到对应的审核人员"),
     CONFIRM_USER_NOT_EXIST("000013","没有找到对应的确认人员"),
-    UPLOAD_FILE_ERROR("000014","上传附件失败");
+    UPLOAD_FILE_ERROR("000014","上传附件失败"),
+    UPLOAD_FILE_NOT_EXISTS("000015","文件不存在");
 
 
     public static String getDescByCode(String code){

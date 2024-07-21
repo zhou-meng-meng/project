@@ -81,7 +81,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -157,7 +157,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
-            errortMsg = e.getMessage();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

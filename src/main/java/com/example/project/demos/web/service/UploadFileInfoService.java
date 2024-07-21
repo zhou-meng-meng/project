@@ -1,11 +1,9 @@
 package com.example.project.demos.web.service;
 
-import com.example.project.demos.web.dto.uploadFileInfo.QueryUploadFileInfoListDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.QueryUploadFileInfoListOutDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.UploadFileInfoDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.UploadFileInfoOutDTO;
+import com.example.project.demos.web.dto.uploadFileInfo.*;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 
 /**
@@ -19,7 +17,12 @@ public interface UploadFileInfoService  {
 
     UploadFileInfoOutDTO uploadFile(String bodyDto,  MultipartFile[] files);
 
-    QueryUploadFileInfoListOutDTO queryFiileInfoList(QueryUploadFileInfoListDTO dto);
+    QueryUploadFileInfoListOutDTO queryFileInfoList(QueryUploadFileInfoListDTO dto);
+
+    DownloadFileInfoOutDTO getFileInfoBase64Str(DownloadFileInfoDTO dto) ;
+
+    int deleteFileByBusinessId(Long businessId);
+
 
 }
 

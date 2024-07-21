@@ -168,6 +168,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                log.info("开始处理附件信息");
                 List<Long> fileIdList = dto.getFileIdList();
                 if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
                     uploadFileInfoDao.updateByBusinessId(entity.getId(), fileIdList);
@@ -202,6 +203,11 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             entity.setUpdateBy(user.getUserLogin());
             entity.setUpdateTime(date);
             int i = rawMaterialIncomeDao.updateById(entity);
+            log.info("开始处理附件信息");
+            List<Long> fileIdList = dto.getFileIdList();
+            if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
+                uploadFileInfoDao.updateByBusinessId(entity.getId(), fileIdList);
+            }
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

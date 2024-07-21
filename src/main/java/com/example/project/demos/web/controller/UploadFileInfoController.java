@@ -1,11 +1,6 @@
 package com.example.project.demos.web.controller;
 
-import com.example.project.demos.web.dto.sysUser.QueryByPageDTO;
-import com.example.project.demos.web.dto.sysUser.QueryByPageOutDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.QueryUploadFileInfoListDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.QueryUploadFileInfoListOutDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.UploadFileInfoDTO;
-import com.example.project.demos.web.dto.uploadFileInfo.UploadFileInfoOutDTO;
+import com.example.project.demos.web.dto.uploadFileInfo.*;
 import com.example.project.demos.web.service.UploadFileInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,10 +35,23 @@ public class UploadFileInfoController {
      * @param dto 筛选条件
      * @return 查询结果
      */
-    @PostMapping("/queryFiileInfoList")
+    @PostMapping("/queryFileInfoList")
     @ApiOperation("查询列表(分页)")
-    public QueryUploadFileInfoListOutDTO queryFiileInfoList(@RequestBody QueryUploadFileInfoListDTO dto) {
-        QueryUploadFileInfoListOutDTO outDTO = this.uploadFileInfoService.queryFiileInfoList(dto);
+    public QueryUploadFileInfoListOutDTO queryFileInfoList(@RequestBody QueryUploadFileInfoListDTO dto) {
+        QueryUploadFileInfoListOutDTO outDTO = this.uploadFileInfoService.queryFileInfoList(dto);
+        return outDTO;
+    }
+
+    /**
+     * 文件下载
+     *
+     * @param dto 筛选条件
+     * @return 查询结果
+     */
+    @PostMapping("/downloadFileInfo")
+    @ApiOperation("文件下载")
+    public DownloadFileInfoOutDTO downloadFileInfo(@RequestBody DownloadFileInfoDTO dto) {
+        DownloadFileInfoOutDTO outDTO = this.uploadFileInfoService.getFileInfoBase64Str(dto);
         return outDTO;
     }
 
