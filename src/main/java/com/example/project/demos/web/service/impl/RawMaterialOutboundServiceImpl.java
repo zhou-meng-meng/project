@@ -3,10 +3,7 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.RawMaterialIncomeDao;
-import com.example.project.demos.web.dao.RawMaterialOutboundDao;
-import com.example.project.demos.web.dao.SysFactoryDao;
-import com.example.project.demos.web.dao.SysStorehouseDao;
+import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.list.RawMaterialOutboundInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -20,6 +17,7 @@ import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialInventoryService;
 import com.example.project.demos.web.service.RawMaterialOutboundService;
 import com.example.project.demos.web.service.SysLogService;
+import com.example.project.demos.web.service.UploadFileInfoService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
@@ -54,6 +52,12 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
     private MaterialInventoryService materialInventoryService;
     @Autowired
     private SysLogService sysLogService;
+
+    @Autowired
+    private UploadFileInfoService uploadFileInfoService;
+
+    @Resource
+    private UploadFileInfoDao uploadFileInfoDao;
     
 
     @Override
@@ -150,6 +154,8 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             int i = rawMaterialOutboundDao.insert(entity);
             //修改库存 减少
             materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getOutCode(), dto.getCount(),"reduce",date);
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -197,6 +203,8 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             }else{
                 log.info("修改数量等于原数量，不需要增加库存");
             }
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -222,6 +230,8 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             //删除数据要更新库存
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getCount(),"reduce",date);
             int i = rawMaterialOutboundDao.deleteById(dto.getId());
+            log.info("开始删除附件信息");
+            uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

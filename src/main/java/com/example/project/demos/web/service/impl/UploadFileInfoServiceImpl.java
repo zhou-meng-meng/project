@@ -6,11 +6,13 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.UploadFileInfoDao;
+import com.example.project.demos.web.dto.list.UploadFileEditInfo;
 import com.example.project.demos.web.dto.list.UploadFileInfo;
 import com.example.project.demos.web.dto.uploadFileInfo.*;
 import com.example.project.demos.web.entity.UploadFileInfoEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.UploadFileInfoService;
+import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,11 +131,11 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
     }
 
     @Override
-    public QueryUploadFileInfoListOutDTO queryFileInfoList(QueryUploadFileInfoListDTO dto) {
+    public QueryFileInfoListOutDTO queryFileInfoList(QueryFileInfoListDTO dto) {
         log.info("获取附件列表queryFiileInfoList开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
-        QueryUploadFileInfoListOutDTO outDTO = new QueryUploadFileInfoListOutDTO();
+        QueryFileInfoListOutDTO outDTO = new QueryFileInfoListOutDTO();
         try {
             //先用查询条件查询总条数
             List<UploadFileInfoEntity> entityList = uploadFileInfoDao.queryByParam(dto.getBusinessId());
@@ -195,7 +197,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
 
     @Override
     public int deleteFileByBusinessId(Long businessId) {
-        log.info("删除文件信息deleteFileByBusinessId开始");
+        log.info("删除文件信息deleteFileByBusinessId开始:"+businessId);
         log.info("先获取原配置");
         int i = 0;
         List<UploadFileInfoEntity> list = uploadFileInfoDao.queryByParam(businessId);
@@ -204,17 +206,73 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
             i = uploadFileInfoDao.deleteByBusinessId(businessId);
             log.info("删除附件信息");
             for(UploadFileInfoEntity entity : list){
-                File file = new File(entity.getFilePath());
-                if(file.exists()){
+                //File file = new File(entity.getFilePath());
+                FileUtil.del(entity.getFilePath());
+                /*if(file.exists()){
                     FileUtil.del(entity.getFilePath());
                 }else{
                     log.info(entity.getFilePath() +" 文件不存在");
-                }
+                }*/
             }
         }else{
             log.info("没有附件配置信息");
         }
         log.info("删除文件信息deleteFileByBusinessId结束");
         return i;
+    }
+
+    @Override
+    public int updateByBusinessId(Long businessId, List<Long> fileIdList) {
+        log.info("更新附件配置表的业务主键开始:"+businessId);
+        int  i= 0;
+        if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
+            i = uploadFileInfoDao.updateByBusinessId(businessId, fileIdList);
+        }else{
+            log.info("没有附件信息，不处理");
+        }
+        log.info("更新附件配置表的业务主键结束");
+        return i;
+    }
+
+    /**
+     * 各业务的编辑页面 获取文件的id  文件名  base64 文件类型
+     * @param businessId
+     * @return
+     */
+    @Override
+    public QueryFileInfoEditListOutDTO queryFileInfoEditList(Long businessId) {
+        log.info("获取附件列表queryFileInfoEditList开始");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        QueryFileInfoEditListOutDTO outDTO = new QueryFileInfoEditListOutDTO();
+        log.info("获取该业务和附件的配置信息");
+        List<UploadFileInfoEntity> list = uploadFileInfoDao.queryByParam(businessId);
+        List<UploadFileEditInfo> fileInfoList = new ArrayList<>();
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            for(UploadFileInfoEntity entity : list){
+                try{
+                    String base64Str = "";
+                    File file = new File(entity.getFilePath());
+                    if(file.exists()){
+                        byte[] fileByte = Files.readAllBytes(Paths.get(entity.getFilePath()));
+                        base64Str = Base64.getEncoder().encodeToString(fileByte);
+                        UploadFileEditInfo info = BeanCopyUtils.copy(entity,UploadFileEditInfo.class);
+                        info.setBase64Str(base64Str);
+                        fileInfoList.add(info);
+                    }else{
+                        log.info(entity.getFilePath() +" 文件不存在");
+                    }
+                }catch (IOException e){
+                    log.info("获取base64异常:"+e.getMessage());
+                }
+            }
+        }else{
+            log.info("没有附件配置信息");
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        outDTO.setFileInfoList(fileInfoList);
+        log.info("获取附件列表queryFileInfoEditList结束");
+        return outDTO;
     }
 }

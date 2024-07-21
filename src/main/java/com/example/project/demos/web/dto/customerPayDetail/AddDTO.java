@@ -63,4 +63,7 @@ public class AddDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "附件主键集合")
+    private List<Long> fileIdList;
+
 }

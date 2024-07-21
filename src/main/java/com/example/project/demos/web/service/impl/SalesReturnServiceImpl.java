@@ -58,6 +58,11 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
     @Resource
     private SalesCustomerPayDao salesCustomerPayDao;
 
+    @Autowired
+    private UploadFileInfoService uploadFileInfoService;
+    @Resource
+    private UploadFileInfoDao uploadFileInfoDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("销售退回queryById开始");
@@ -155,6 +160,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                //开始处理附件信息
+                uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }
         }catch (Exception e){
             log.info(e.getMessage());
@@ -181,6 +188,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             entity.setUpdateBy(user.getUserLogin());
             entity.setUpdateTime(date);
             int i = salesReturnDao.updateById(entity);
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -206,6 +215,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            log.info("开始删除附件信息");
+            uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

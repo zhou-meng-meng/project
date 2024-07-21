@@ -1,8 +1,10 @@
 package com.example.project.demos.web.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerPayDetailDao;
+import com.example.project.demos.web.dao.UploadFileInfoDao;
 import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
@@ -14,6 +16,7 @@ import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.service.SysLogService;
+import com.example.project.demos.web.service.UploadFileInfoService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     @Autowired
     private SysLogService sysLogService;
+
+    @Autowired
+    private UploadFileInfoService uploadFileInfoService;
+    @Resource
+    private UploadFileInfoDao uploadFileInfoDao;
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
@@ -109,6 +117,8 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             newEntity.setUpdateBy(user.getUserLogin());
             newEntity.setUpdateTime(date);
             int i = customerPayDetailDao.insert(newEntity);
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -219,6 +229,8 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             entity1.setUpdateBy(user.getUserLogin());
             entity1.setUpdateTime(date);
             int i = customerPayDetailDao.updateById(entity1);
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(entity1.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -260,6 +272,8 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             //删除往来账  需要将当前记录以后的账面余额全部减去被删除的金额
             customerPayDetailDao.reduceBookBalance(dto.getId(),amount);
             int i = customerPayDetailDao.deleteById(dto.getId());
+            log.info("开始删除附件信息");
+            uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

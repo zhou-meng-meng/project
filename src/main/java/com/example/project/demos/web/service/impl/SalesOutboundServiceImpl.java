@@ -67,6 +67,10 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
     @Resource
     private ConfirmOperationFlowDao confirmOperationFlowDao;
 
+    @Autowired
+    private UploadFileInfoService uploadFileInfoService;
+    @Resource
+    private UploadFileInfoDao uploadFileInfoDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -172,6 +176,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                //开始处理附件信息
+                uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }else{
                 errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
@@ -201,6 +207,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             entity.setUpdateBy(user.getUserLogin());
             entity.setUpdateTime(date);
             int i = salesOutboundDao.updateById(entity);
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -224,6 +232,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            log.info("开始删除附件信息");
+            uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

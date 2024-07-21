@@ -56,6 +56,11 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
     @Autowired
     private MaterialInventoryService materialInventoryService;
 
+    @Autowired
+    private UploadFileInfoService uploadFileInfoService;
+    @Resource
+    private UploadFileInfoDao uploadFileInfoDao;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("调拨出库queryById开始");
@@ -165,6 +170,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                     queueEntityList.add(queueEntity);
                 }
                 confirmOperationQueueDao.insertBatch(queueEntityList);
+                //开始处理附件信息
+                uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }else{
                 errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
                 errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
@@ -197,6 +204,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             entity.setUpdateTime(date);
             log.info("插入调拨出库表");
             int i = transferOutboundDao.updateById(entity);
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -222,6 +231,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             log.info("删除提交的待确认记录");
             confirmOperationQueueDao.deleteByBusinessId(dto.getId());
             confirmOperationFlowDao.deleteByBusinessId(dto.getId());
+            log.info("开始删除附件信息");
+            uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

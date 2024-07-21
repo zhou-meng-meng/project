@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class QueryUploadFileInfoListDTO {
+public class QueryFileInfoListDTO {
     @ApiModelProperty(value = "业务主键")
     private Long businessId;
 

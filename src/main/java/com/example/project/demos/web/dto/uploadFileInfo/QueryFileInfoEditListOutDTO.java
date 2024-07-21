@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.uploadFileInfo;
 
+import com.example.project.demos.web.dto.list.UploadFileEditInfo;
 import com.example.project.demos.web.dto.list.UploadFileInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,8 +8,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class QueryUploadFileInfoListOutDTO {
-    private List<UploadFileInfo> fileInfoList;
+public class QueryFileInfoEditListOutDTO {
+    private List<UploadFileEditInfo> fileInfoList;
 
     /**
      * 操作结果编码:null
@@ -21,8 +22,5 @@ public class QueryUploadFileInfoListOutDTO {
      */
     @ApiModelProperty(value = "操作结果信息")
     private String errorMsg;
-
-    @ApiModelProperty(value = "总数 ")
-    private Integer turnPageTotalNum;
 
 }

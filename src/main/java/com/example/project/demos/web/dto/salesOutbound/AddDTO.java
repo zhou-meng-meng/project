@@ -1,13 +1,12 @@
 package com.example.project.demos.web.dto.salesOutbound;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class AddDTO {
@@ -89,4 +88,7 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "附件主键集合")
+    private List<Long> fileIdList;
 }

@@ -66,6 +66,9 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     @Autowired
     private CustomerPayDetailService customerPayDetailService;
 
+    @Autowired
+    private UploadFileInfoService uploadFileInfoService;
+
     @Override
     public QueryByIdOutDTO queryById(Long id) {
         log.info("来料入库queryById开始");
@@ -168,11 +171,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
-                log.info("开始处理附件信息");
-                List<Long> fileIdList = dto.getFileIdList();
-                if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
-                    uploadFileInfoDao.updateByBusinessId(entity.getId(), fileIdList);
-                }
+                //开始处理附件信息
+                uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }else{
                 errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
@@ -203,11 +203,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             entity.setUpdateBy(user.getUserLogin());
             entity.setUpdateTime(date);
             int i = rawMaterialIncomeDao.updateById(entity);
-            log.info("开始处理附件信息");
-            List<Long> fileIdList = dto.getFileIdList();
-            if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
-                uploadFileInfoDao.updateByBusinessId(entity.getId(), fileIdList);
-            }
+            //开始处理附件信息
+            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -231,6 +228,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            log.info("开始删除附件信息");
+            uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

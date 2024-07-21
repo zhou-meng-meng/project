@@ -17,11 +17,15 @@ public interface UploadFileInfoService  {
 
     UploadFileInfoOutDTO uploadFile(String bodyDto,  MultipartFile[] files);
 
-    QueryUploadFileInfoListOutDTO queryFileInfoList(QueryUploadFileInfoListDTO dto);
+    QueryFileInfoListOutDTO queryFileInfoList(QueryFileInfoListDTO dto);
 
     DownloadFileInfoOutDTO getFileInfoBase64Str(DownloadFileInfoDTO dto) ;
 
     int deleteFileByBusinessId(Long businessId);
+
+    int updateByBusinessId(Long businessId, List<Long> idList);
+
+    QueryFileInfoEditListOutDTO queryFileInfoEditList(Long businessId);
 
 
 }

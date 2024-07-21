@@ -24,7 +24,8 @@ public class UploadFileInfoController {
 
     @ApiOperation(value = "附件校验和上传")
     @PostMapping("/uploadFile")
-    public UploadFileInfoOutDTO uploadFile( @RequestParam("bodyDto") String bodyDto, @RequestPart(value = "files",required = false) MultipartFile[] files) {
+    //RequestPart
+    public UploadFileInfoOutDTO uploadFile( @RequestParam("bodyDto") String bodyDto, @RequestParam(value = "files",required = false) MultipartFile[] files) {
         UploadFileInfoOutDTO outDTO = this.uploadFileInfoService.uploadFile(bodyDto,files);
         return outDTO;
     }
@@ -37,8 +38,21 @@ public class UploadFileInfoController {
      */
     @PostMapping("/queryFileInfoList")
     @ApiOperation("查询列表(分页)")
-    public QueryUploadFileInfoListOutDTO queryFileInfoList(@RequestBody QueryUploadFileInfoListDTO dto) {
-        QueryUploadFileInfoListOutDTO outDTO = this.uploadFileInfoService.queryFileInfoList(dto);
+    public QueryFileInfoListOutDTO queryFileInfoList(@RequestBody QueryFileInfoListDTO dto) {
+        QueryFileInfoListOutDTO outDTO = this.uploadFileInfoService.queryFileInfoList(dto);
+        return outDTO;
+    }
+
+    /**
+     * 编辑页面查询
+     *
+     * @param dto 筛选条件
+     * @return 查询结果
+     */
+    @PostMapping("/queryFileInfoEditList")
+    @ApiOperation("编辑页面查询列表(不分页)")
+    public QueryFileInfoEditListOutDTO queryFileInfoEditList(@RequestBody QueryFileInfoEditListDTO dto) {
+        QueryFileInfoEditListOutDTO outDTO = this.uploadFileInfoService.queryFileInfoEditList(dto.getBusinessId());
         return outDTO;
     }
 
