@@ -10,14 +10,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 上传附件信息表-各业务编辑页面反显使用
+ * 上传附件信息表
  * 
  * @author Mark
  * @email sunlightcs@gmail.com
  * @date 2024-07-18 13:45:31
  */
 @Data
-public class UploadFileEditInfo implements Serializable {
+public class UploadFileId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -26,20 +26,4 @@ public class UploadFileEditInfo implements Serializable {
 	@JsonSerialize(using = ToStringSerializer.class)
 	@ApiModelProperty(value = "主键")
 	private Long id;
-
-	/**
-	 * 文件原名称
-	 */
-	@ApiModelProperty(value = "文件原名称")
-	private String fileOriginalName;
-
-	@ApiModelProperty(value = "base64str")
-	private String base64Str;
-
-	@ApiModelProperty(value = "文件类型")
-	private String fileType;
-
-
-
-
 }

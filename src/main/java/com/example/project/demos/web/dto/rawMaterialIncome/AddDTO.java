@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.rawMaterialIncome;
 
+import com.example.project.demos.web.dto.list.UploadFileId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -93,6 +94,6 @@ public class AddDTO {
     private String remark;
 
     @ApiModelProperty(value = "附件主键集合")
-    private List<Long> fileIdList;
+    private List<UploadFileId> fileIdList;
 
 }

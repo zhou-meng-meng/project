@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.uploadFileInfo;
 
+import com.example.project.demos.web.dto.list.UploadFileId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 @Data
 public class UploadFileInfoOutDTO {
-    private List<Long> fileIdList;
+    private List<UploadFileId> fileIdList;
 
     /**
      * 操作结果编码:null

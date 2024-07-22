@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.UploadFileInfoDao;
 import com.example.project.demos.web.dto.list.UploadFileEditInfo;
+import com.example.project.demos.web.dto.list.UploadFileId;
 import com.example.project.demos.web.dto.list.UploadFileInfo;
 import com.example.project.demos.web.dto.uploadFileInfo.*;
 import com.example.project.demos.web.entity.UploadFileInfoEntity;
@@ -43,7 +44,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         UploadFileInfoOutDTO outDTO = new UploadFileInfoOutDTO();
-        List<Long> idList = new ArrayList<>();
+        List<UploadFileId> idList = new ArrayList<>();
         try{
             if(ObjectUtil.isNotNull(businessId)){
                 log.info("businessId is not null,先获取原配置");
@@ -115,7 +116,9 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 entity.setFunctionId(dto.getFunctionId());
                 log.info("插入文件信息");
                 uploadFileInfoDao.insert(entity);
-                idList.add(entity.getId());
+                UploadFileId fileId = new UploadFileId();
+                fileId.setId(entity.getId());
+                idList.add(fileId);
             }
             outDTO.setFileIdList(idList);
         }catch (Exception e){
@@ -222,11 +225,15 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
     }
 
     @Override
-    public int updateByBusinessId(Long businessId, List<Long> fileIdList) {
+    public int updateByBusinessId(Long businessId, List<UploadFileId> fileIdList) {
         log.info("更新附件配置表的业务主键开始:"+businessId);
         int  i= 0;
+        List<Long> list = new ArrayList<>();
         if(CollectionUtil.isNotEmpty(fileIdList) && fileIdList.size()> 0){
-            i = uploadFileInfoDao.updateByBusinessId(businessId, fileIdList);
+            for(UploadFileId fileId : fileIdList){
+                list.add(fileId.getId());
+            }
+            i = uploadFileInfoDao.updateByBusinessId(businessId, list);
         }else{
             log.info("没有附件信息，不处理");
         }

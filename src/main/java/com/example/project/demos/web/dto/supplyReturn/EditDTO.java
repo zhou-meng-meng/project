@@ -1,6 +1,7 @@
 package com.example.project.demos.web.dto.supplyReturn;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.example.project.demos.web.dto.list.UploadFileId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -90,5 +91,5 @@ public class EditDTO {
     private String remark;
 
     @ApiModelProperty(value = "附件主键集合")
-    private List<Long> fileIdList;
+    private List<UploadFileId> fileIdList;
 }

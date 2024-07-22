@@ -1,5 +1,6 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.list.UploadFileId;
 import com.example.project.demos.web.dto.uploadFileInfo.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,7 @@ public interface UploadFileInfoService  {
 
     int deleteFileByBusinessId(Long businessId);
 
-    int updateByBusinessId(Long businessId, List<Long> idList);
+    int updateByBusinessId(Long businessId, List<UploadFileId> idList);
 
     QueryFileInfoEditListOutDTO queryFileInfoEditList(Long businessId);
 

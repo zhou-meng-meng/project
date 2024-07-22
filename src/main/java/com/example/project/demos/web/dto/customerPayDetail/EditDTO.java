@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.customerPayDetail;
 
+import com.example.project.demos.web.dto.list.UploadFileId;
 import com.example.project.demos.web.entity.CustomerAccountRelEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -63,5 +64,5 @@ public class EditDTO {
     private String remark;
 
     @ApiModelProperty(value = "附件主键集合")
-    private List<Long> fileIdList;
+    private List<UploadFileId> fileIdList;
 }
