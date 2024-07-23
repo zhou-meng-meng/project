@@ -20,7 +20,7 @@ public interface  CommomTestService {
      * @return
      * 档案系统的fteas/arcfiling/CommonfilingFile 上传附件接口
      */
-    String commonfilingFile(String arcfondno,String jkid,String fileurl,String origfile) throws IOException;
+    String commonfilingFile(String arcfondno,String jkid,String fileurl,String origfile,String uuid) throws IOException;
 
     /**
      * arcfondno:全宗号
@@ -28,7 +28,7 @@ public interface  CommomTestService {
      * 	Eepinfo:目录组成的eep报文
      * 	档案系统的 fteas/arcfiling/CommonfilingData  上传目录接口
      */
-    String commonfilingData (String arcfondno,String jkid,String eepinfo) throws IOException;
+    String commonfilingData (String arcfondno,String jkid,String eepinfo,String uuid) throws IOException;
 
 
 }

@@ -61,6 +61,10 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
 
+    @ExcelProperty(value = "折扣金额")
+    @ApiModelProperty(value = "折扣金额")
+    private BigDecimal discountBalance;
+
     @ExcelIgnore
     @ApiModelProperty(value = "经办人英文名")
     private String operatorBy;

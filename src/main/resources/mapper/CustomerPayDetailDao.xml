@@ -13,6 +13,7 @@
         <result property="materialBalance" column="material_balance"/>
         <result property="payBalance" column="pay_balance"/>
         <result property="returnBalance" column="return_balance"/>
+        <result property="discountBalance" column="discount_balance"/>
         <result property="operatorBy" column="operator_by"/>
         <result property="payType" column="pay_type"/>
         <result property="isDefault" column="is_default"/>
@@ -33,6 +34,7 @@
         t.material_count,
         t.material_balance,
         t.pay_balance,
+        t.discount_balance,
         t.pay_type,
         t.return_balance,
         t.is_default,
@@ -65,6 +67,7 @@
                t.customer_code,
                t.book_balance,
                t.pay_balance,
+               t.discount_balance,
                t.pay_type,
                t.return_balance,
                t.is_default,
@@ -92,6 +95,7 @@
             t.material_count,
             t.material_balance,
             t.pay_balance,
+            t.discount_balance,
             t.pay_type,
             t.return_balance,
             t.is_default,

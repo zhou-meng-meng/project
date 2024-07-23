@@ -42,6 +42,10 @@ public class AddPayBySystemDTO {
      */
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
+
+    @ApiModelProperty(value = "折扣金额")
+    private BigDecimal discountBalance;
+
     /**
      * 付款类型  0-入款 1-出款
      */
@@ -68,7 +72,7 @@ public class AddPayBySystemDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    public AddPayBySystemDTO(Long id,String customerCode,BigDecimal unitPrice,BigDecimal materialCount, BigDecimal materialBalance,BigDecimal bookBalance,BigDecimal payBalance,BigDecimal returnBalance,String payType,String isDefault,String operatorBy,Date date,String remark){
+    public AddPayBySystemDTO(Long id,String customerCode,BigDecimal unitPrice,BigDecimal materialCount, BigDecimal materialBalance,BigDecimal bookBalance,BigDecimal payBalance,BigDecimal returnBalance,BigDecimal discountBalance,String payType,String isDefault,String operatorBy,Date date,String remark){
         this.id = id;
         this.customerCode = customerCode;
         this.unitPrice = unitPrice;
@@ -77,6 +81,7 @@ public class AddPayBySystemDTO {
         this.bookBalance= bookBalance;
         this.payBalance= payBalance;
         this.returnBalance = returnBalance;
+        this.discountBalance = discountBalance;
         this.payType =payType;
         this.isDefault = isDefault;
         this.createBy = operatorBy;

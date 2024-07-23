@@ -26,7 +26,7 @@ public interface RebuildInboundService {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO dto);

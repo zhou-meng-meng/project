@@ -44,6 +44,9 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
+
+    @ApiModelProperty(value = "折扣金额")
+    private BigDecimal discountBalance;
     /**
      * 付款类型  0-入款 1-出款
      */

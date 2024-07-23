@@ -58,6 +58,10 @@ public class CustomerPayDetailEntity implements Serializable {
 	 */
 	private BigDecimal returnBalance;
 	/**
+	 * 折扣金额
+	 */
+	private BigDecimal discountBalance;
+	/**
 	 * 付款类型  入款 出款
 	 */
 	private String payType;
