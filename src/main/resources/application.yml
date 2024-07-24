@@ -43,5 +43,11 @@ logging:
   level:
     com.example.project.demos.web.dao: debug
 
+#上传文件路径
 upload:
   filePath: /home/wms/app/uploadFiles/
+
+#token过期时间 单位：分钟
+token:
+  expir: 5
+

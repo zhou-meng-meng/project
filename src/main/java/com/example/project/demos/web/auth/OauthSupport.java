@@ -9,8 +9,10 @@ import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.exception.CustomException;
 import com.example.project.demos.web.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
@@ -34,6 +36,11 @@ public class OauthSupport {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Value("${token.expir}")
+    public String expir;
+
+
 
 
     /**
@@ -78,7 +85,7 @@ public class OauthSupport {
      */
     public String persistenceToken(UserLoginOutDTO dto, String token) {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.opsForValue().set(TokenUtils.buildToken(TokenUtils.USER_LOGIN_TOKEN, token), dto, 120, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(TokenUtils.buildToken(TokenUtils.USER_LOGIN_TOKEN, token), dto, (StringUtils.isBlank(expir) ? 5 : Integer.parseInt(expir)), TimeUnit.MINUTES);
         return token;
     }
 
