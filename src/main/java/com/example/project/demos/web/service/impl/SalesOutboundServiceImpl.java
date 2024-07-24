@@ -255,6 +255,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         SalesOutboundEntity  entity = salesOutboundDao.selectById(id);
         entity.setUnitPrice(unitPrice);
         entity.setTollAmount(tollAmount);
+        entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
         entity.setApproveTime(date);
@@ -311,6 +312,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 }
                 confirmOperationQueueDao.insertBatch(queueEntityList);
                 log.info("修改销售出库表冲销字段");
+                entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
                 entity.setBillState(BillStateEnums.BILL_STATE_UNCONFIRM.getCode());
                 entity.setChargeoffUser(user.getUserLogin());
                 entity.setChargeoffTime(date);

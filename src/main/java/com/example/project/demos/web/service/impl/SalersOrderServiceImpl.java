@@ -310,12 +310,17 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 confirmOperationQueueDao.insertBatch(queueEntityList);
                 log.info("修改业务员下单表单据冲销信息");
                 entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+                //将确认人   确认时间   确认意见 清空
+                entity.setConfirmUser("");
+                entity.setConfirmOpinion("");
+                entity.setConfirmTime(null);
                 entity.setBillState(BillStateEnums.BILL_STATE_UNCONFIRM.getCode());
                 entity.setChargeoffUser(user.getUserLogin());
                 entity.setChargeoffTime(date);
                 entity.setChargeoffOpinion(dto.getChargeoffOpinion());
                 entity.setUpdateBy(user.getUserLogin());
                 entity.setUpdateTime(date);
+
                 salersOrderDao.updateById(entity);
             }else{
                 errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();

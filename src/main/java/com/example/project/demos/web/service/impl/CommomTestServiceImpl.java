@@ -92,7 +92,7 @@ public class CommomTestServiceImpl implements CommomTestService {
         MultiValueMap<String,Object> param = new LinkedMultiValueMap<>();
         param.add("arcfondno",arcfondno);
         param.add("jkid",jkid);
-        param.add("eppinfo",resource);
+        param.add("eepinfo",resource);
         Object object = restTemplate.postForObject("http://10.72.10.167:8090/fteas/arcfiling/CommonfilingData",param,Object.class);
         log.info(object.toString());
         //解析返回值
