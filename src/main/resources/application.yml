@@ -42,3 +42,6 @@ logging:
   config: classpath:logback-spring.xml
   level:
     com.example.project.demos.web.dao: debug
+
+upload:
+  filePath: /home/wms/app/uploadFiles/

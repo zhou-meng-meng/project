@@ -17,6 +17,7 @@ import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,10 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
 
     @Autowired
     private UploadFileInfoDao uploadFileInfoDao;
+
+    @Value("${upload.filePath}")
+    public String filePath;
+
 
     @Override
     public UploadFileInfoOutDTO uploadFile( String bodyDto, MultipartFile[] files) {
@@ -85,7 +90,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 log.info("name:"+name);
                 String fileFullName = name + "_" + String.valueOf(randomNumber)+ "."+type;
                 log.info("fileFullName:"+fileFullName);
-                String path  = Constants.filePath + month ;
+                String path  = filePath + month ;
                 log.info("path:"+path);
                 log.info("文件上传至服务器开始");
                 //创建文件夹
