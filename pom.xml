@@ -203,7 +203,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>hld-wms-test-${version}</finalName>
+        <finalName>hld-wms-${version}</finalName>
     </build>
 
 
