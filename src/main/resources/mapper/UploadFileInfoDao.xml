@@ -42,7 +42,7 @@
 
     <select id="selectUploadFileInfoListByPage" resultType="com.example.project.demos.web.dto.list.UploadFileInfo">
         select t.id,t.business_id,t.file_original_name,t.file_full_name,t.file_type,t.file_path,t.function_id ,
-        u.user_name AS createByName ,create_time  from  upload_file_info  t
+        u.user_name AS createByName ,t.create_time  from  upload_file_info  t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         where 1=1
         <if test="businessId != null ">

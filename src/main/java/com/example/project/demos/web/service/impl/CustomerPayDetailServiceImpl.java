@@ -9,6 +9,7 @@ import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.CustomerPayDetailEntity;
+import com.example.project.demos.web.entity.CustomerSaleEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
@@ -93,11 +94,12 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         BigDecimal materialBalance = dto.getMaterialBalance();
         BigDecimal returnBalance = dto.getReturnBalance();
         BigDecimal payBalance = dto.getPayBalance();
+        BigDecimal discountBalance = dto.getDiscountBalance();
         try{
             CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
             //需要获取该客户最新一笔来往账信息
             CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
-            //账面金额=上次账面余额-总金额+退回金额+打款金额
+            //账面金额=上次账面余额-总金额+退回金额+打款金额+折扣金额
             if(ObjectUtil.isNull(materialBalance)){
                 materialBalance = new BigDecimal(0);
             }
@@ -107,8 +109,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             if(ObjectUtil.isNull(payBalance)){
                 payBalance = new BigDecimal(0);
             }
-            BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance);
-            log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"=" +bookBalance);
+            if(ObjectUtil.isNull(discountBalance)){
+                discountBalance = new BigDecimal(0);
+            }
+            BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance).add(discountBalance);
+            log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"+"+discountBalance+"=" +bookBalance);
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(user.getUserLogin());
             newEntity.setCreateTime(date);
@@ -151,6 +156,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             BigDecimal materialBalance = dto.getMaterialBalance();
             BigDecimal returnBalance = dto.getReturnBalance();
             BigDecimal payBalance = dto.getPayBalance();
+
             CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
             //需要获取该客户最新一笔来往账信息
             CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
@@ -164,6 +170,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             if(ObjectUtil.isNull(payBalance)){
                 payBalance = new BigDecimal(0);
             }
+
             BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance);
             log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"=" +bookBalance);
             newEntity.setUnitPrice(dto.getUnitPrice());
@@ -254,12 +261,17 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         BigDecimal amount = new BigDecimal("0");
         BigDecimal payBalance = dto.getPayBalance();
         BigDecimal returnBalance = dto.getReturnBalance();
+        CustomerPayDetailEntity entity = customerPayDetailDao.selectById(dto.getId());
+        BigDecimal discountBalance = entity.getDiscountBalance();
         try{
             if(ObjectUtil.isNull(returnBalance)){
                 returnBalance = new BigDecimal(0);
             }
             if(ObjectUtil.isNull(payBalance)){
                 payBalance = new BigDecimal(0);
+            }
+            if(ObjectUtil.isNull(discountBalance)){
+                discountBalance = new BigDecimal(0);
             }
             //判断panBalance不为0还是returnBalance 不为0
             if(payBalance.compareTo(new BigDecimal("0")) == 0){
@@ -269,7 +281,8 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 log.info("有打款金额不为0的删除");
                 amount = payBalance;
             }
-            //删除往来账  需要将当前记录以后的账面余额全部减去被删除的金额
+            amount = amount.add(discountBalance);
+            //删除往来账  需要将当前记录以后的账面余额全部减去被删除的金额+折扣金额
             customerPayDetailDao.reduceBookBalance(dto.getId(),amount);
             int i = customerPayDetailDao.deleteById(dto.getId());
             log.info("开始删除附件信息");
