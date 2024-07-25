@@ -116,10 +116,10 @@
         m.CODE as materialCode,
         m.NAME as materialName,
         m.model,
-        d1.dict_value as modelName,
+        d.dict_value as modelName,
         m.unit,
         t.stock_code,
-        d.dict_value as unitName,
+        d1.dict_value as unitName,
         t.inventory_num
         FROM	material_inventory t,	material_info m
         left join  sys_dict_data   d on d.dict_code = m.model and   d.dict_type = 'material_model'

@@ -61,7 +61,7 @@
         t.approve_opinion,
         t.approve_time,
         t.confirm_state,
-        d6.dict_value as confirmStateName,
+        d7.dict_value as confirmStateName,
         t.confirm_user,
         u4.user_name AS confirmUserName,
         t.confirm_opinion,
@@ -89,6 +89,7 @@
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.approve_state and  d4.dict_type = 'approve_state'
         LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.transport_type and  d5.dict_type = 'transport_type'
         LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.bill_state and  d6.dict_type = 'bill_state'
+        LEFT JOIN sys_dict_data d7 ON d7.dict_code = t.confirm_state and  d7.dict_type = 'confirm_state'
         where 1 = 1
         <if test="sale.materialCode != null and sale.materialCode != ''">
             and t.material_code    like concat('%', #{sale.materialCode}, '%')
@@ -167,7 +168,7 @@
             t.approve_opinion,
             t.approve_time,
             t.confirm_state,
-            d6.dict_value as confirmStateName,
+            d7.dict_value as confirmStateName,
             t.confirm_user,
             u4.user_name AS confirmUserName,
             t.confirm_opinion,
@@ -204,6 +205,7 @@
                     LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.approve_state and  d4.dict_type = 'approve_state'
                     LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.transport_type and  d5.dict_type = 'transport_type'
                     LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.bill_state and  d6.dict_type = 'bill_state'
+                    LEFT JOIN sys_dict_data d7 ON d7.dict_code = t.confirm_state and  d7.dict_type = 'confirm_state'
         where t.id =#{id}
     </select>
 
@@ -230,7 +232,7 @@
         t.approve_opinion,
         t.approve_time,
         t.confirm_state,
-        d6.dict_value as confirmStateName,
+        d7.dict_value as confirmStateName,
         t.confirm_user,
         u4.user_name AS confirmUserName,
         t.confirm_opinion,
@@ -258,6 +260,7 @@
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.approve_state and  d4.dict_type = 'approve_state'
         LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.transport_type and  d5.dict_type = 'transport_type'
         LEFT JOIN sys_dict_data d6 ON d6.dict_code = t.bill_state and  d6.dict_type = 'bill_state'
+        LEFT JOIN sys_dict_data d7 ON d7.dict_code = t.confirm_state and  d7.dict_type = 'confirm_state'
         where 1 = 1
         <if test="sale.materialCode != null and sale.materialCode != ''">
             and t.material_code    like concat('%', #{sale.materialCode}, '%')

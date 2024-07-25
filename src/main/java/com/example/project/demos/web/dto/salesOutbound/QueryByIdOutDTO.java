@@ -121,7 +121,7 @@ public class QueryByIdOutDTO {
      * 确认时间
      */
     @ApiModelProperty(value = "确认时间")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date confirmTime;
 
 
@@ -142,7 +142,7 @@ public class QueryByIdOutDTO {
     @ApiModelProperty(value = "冲销人姓名")
     private String chargeoffUserName;
     @ApiModelProperty(value = "冲销时间")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date chargeoffTime;
     @ApiModelProperty(value = "冲销意见")
     private String chargeoffOpinion;

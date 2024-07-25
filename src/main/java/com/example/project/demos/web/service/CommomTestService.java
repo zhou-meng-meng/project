@@ -2,6 +2,7 @@ package com.example.project.demos.web.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 public interface  CommomTestService {
     /**
@@ -28,7 +29,7 @@ public interface  CommomTestService {
      * 	Eepinfo:目录组成的eep报文
      * 	档案系统的 fteas/arcfiling/CommonfilingData  上传目录接口
      */
-    String commonfilingData (String arcfondno,String jkid,String eepinfo,String uuid) throws IOException;
+    String commonfilingData (String arcfondno, String jkid, String eepinfo, String uuid, BigDecimal size,String fileMD5) throws IOException;
 
 
 }

@@ -3,6 +3,13 @@ package com.example.project.demos.web.utils;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +55,30 @@ public class DataUtils {
             log.info("格式化单据号失败:"+e.getMessage());
         }
         return sb.toString();
+    }
+
+    public static String getFileMD5(String filePath){
+        String md5 ="";
+        BigInteger bi = null;
+        try {
+            byte[] buffer = new byte[8192];
+            int len = 0;
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            File f = new File(filePath);
+            FileInputStream fis = new FileInputStream(f);
+            while ((len = fis.read(buffer)) != -1) {
+                md.update(buffer, 0, len);
+            }
+            fis.close();
+            byte[] b = md.digest();
+            bi = new BigInteger(1, b);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        md5 = bi.toString();
+        return md5;
     }
 
 }
