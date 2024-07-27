@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.confirmOperationQueue;
 
 import com.example.project.demos.web.dto.list.ConfirmOperationQueueInfo;
-import com.example.project.demos.web.dto.list.CustomerSaleInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

@@ -3,8 +3,6 @@ package com.example.project.demos.web.dto.list;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 public class ExcelData1 {
     @ExcelProperty(index =0)

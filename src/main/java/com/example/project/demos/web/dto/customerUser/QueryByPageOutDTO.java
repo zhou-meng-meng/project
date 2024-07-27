@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.customerUser;
 
-import com.example.project.demos.web.dto.list.CustomerUserInfo;
 import com.example.project.demos.web.entity.CustomerUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

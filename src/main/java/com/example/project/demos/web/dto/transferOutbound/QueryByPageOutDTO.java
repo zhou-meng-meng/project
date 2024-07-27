@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.transferOutbound;
 
-
 import com.example.project.demos.web.dto.list.TransferOutboundInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

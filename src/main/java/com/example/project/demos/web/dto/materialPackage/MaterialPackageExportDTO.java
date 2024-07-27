@@ -6,7 +6,6 @@ import com.example.project.demos.web.annotation.CellMerge;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;

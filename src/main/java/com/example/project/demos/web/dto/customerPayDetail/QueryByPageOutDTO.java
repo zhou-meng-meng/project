@@ -1,7 +1,6 @@
 package com.example.project.demos.web.dto.customerPayDetail;
 
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
-import com.example.project.demos.web.dto.list.CustomerSaleInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

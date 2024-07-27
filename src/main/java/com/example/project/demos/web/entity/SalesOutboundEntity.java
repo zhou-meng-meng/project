@@ -3,7 +3,6 @@ package com.example.project.demos.web.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;

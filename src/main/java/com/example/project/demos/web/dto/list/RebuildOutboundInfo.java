@@ -2,14 +2,11 @@ package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -57,8 +54,8 @@ public class RebuildOutboundInfo implements Serializable {
 	/**
 	 * 重造出库数量
 	 */
-	@ExcelProperty(value = "重造出库数量")
-	@ApiModelProperty(value = "重造出库数量")
+	@ExcelProperty(value = "数量")
+	@ApiModelProperty(value = "数量")
 	private BigDecimal rebuildCount;
 	/**
 	 * 重造时间

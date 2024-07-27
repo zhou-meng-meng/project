@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.salersOrder;
 
 import com.example.project.demos.web.dto.list.SalersOrderInfo;
-import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

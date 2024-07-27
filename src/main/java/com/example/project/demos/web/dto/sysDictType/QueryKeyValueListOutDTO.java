@@ -3,7 +3,6 @@ package com.example.project.demos.web.dto.sysDictType;
 import com.example.project.demos.web.dto.list.SysDictDataKeyValueInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
 

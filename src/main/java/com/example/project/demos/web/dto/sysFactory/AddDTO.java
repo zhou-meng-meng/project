@@ -3,8 +3,6 @@ package com.example.project.demos.web.dto.sysFactory;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class AddDTO {
 

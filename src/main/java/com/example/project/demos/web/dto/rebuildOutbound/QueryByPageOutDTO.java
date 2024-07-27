@@ -3,7 +3,6 @@ package com.example.project.demos.web.dto.rebuildOutbound;
 import com.example.project.demos.web.dto.list.RebuildOutboundInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

@@ -3,7 +3,6 @@ package com.example.project.demos.web.dto.salesCustomerPay;
 import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

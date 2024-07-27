@@ -1,7 +1,6 @@
 package com.example.project.demos.web.dto.materialInfo;
 
 import com.example.project.demos.web.dto.list.MaterialInfo;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

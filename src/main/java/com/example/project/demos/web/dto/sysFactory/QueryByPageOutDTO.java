@@ -1,7 +1,6 @@
 package com.example.project.demos.web.dto.sysFactory;
 
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
-import com.example.project.demos.web.dto.list.SysRoleInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

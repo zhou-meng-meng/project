@@ -4,7 +4,6 @@ package com.example.project.demos.web.dto.salesReturn;
 import com.example.project.demos.web.dto.list.SalesReturnInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.rawMaterialIncome;
 
-import com.example.project.demos.web.dto.list.MaterialInfo;
 import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

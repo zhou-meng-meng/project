@@ -1,18 +1,14 @@
 package com.example.project.demos.web.dto.approveOperationFlow;
 
-import com.example.project.demos.web.entity.CustomerAccountRelEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.Date;
-import java.util.List;
 
 @Data
 public class AddDTO {
-
 
     @ApiModelProperty(value = "各审核业务主键")
     @JsonSerialize(using = ToStringSerializer.class)

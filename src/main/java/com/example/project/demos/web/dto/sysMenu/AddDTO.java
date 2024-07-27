@@ -1,10 +1,7 @@
 package com.example.project.demos.web.dto.sysMenu;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class AddDTO {

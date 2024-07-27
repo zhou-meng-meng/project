@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.customerSupply;
 
 import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
-import com.example.project.demos.web.dto.list.MaterialPackageInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

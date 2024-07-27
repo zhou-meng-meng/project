@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.uploadFileInfo;
 
 import com.example.project.demos.web.dto.list.UploadFileEditInfo;
-import com.example.project.demos.web.dto.list.UploadFileInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

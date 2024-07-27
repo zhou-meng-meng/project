@@ -1,11 +1,8 @@
 package com.example.project.demos.web.dto.sysMenu;
 
 import com.example.project.demos.web.dto.list.SysMenuTreeInfo;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 import java.util.List;
 
 @Data

@@ -1,10 +1,8 @@
 package com.example.project.demos.web.dto.materialDosage;
 
 import com.example.project.demos.web.dto.list.MaterialDosageInfo;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.List;
 

@@ -1,10 +1,7 @@
 package com.example.project.demos.web.dto.customerSupply;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class QueryByPageDTO {

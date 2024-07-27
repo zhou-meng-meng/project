@@ -2,14 +2,11 @@ package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -128,7 +125,7 @@ public class TransferOutboundInfo implements Serializable {
 	/**
 	 * 单据(确认)理由
 	 */
-	@ExcelProperty(value = "确认理由")
+	@ExcelProperty(value = "确认意见")
 	@ApiModelProperty(value = "单据(确认)理由")
 	private String confirmOpinion;
 

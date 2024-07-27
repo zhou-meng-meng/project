@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -56,8 +55,8 @@ public class RebuildInboundInfo implements Serializable {
 	/**
 	 * 重造出库数量
 	 */
-	@ExcelProperty(value = "重造入库数量")
-	@ApiModelProperty(value = "重造入库数量")
+	@ExcelProperty(value = "数量")
+	@ApiModelProperty(value = "数量")
 	private BigDecimal rebuildCount;
 	/**
 	 * 重造日期

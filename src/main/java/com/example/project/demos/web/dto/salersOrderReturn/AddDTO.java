@@ -3,7 +3,6 @@ package com.example.project.demos.web.dto.salersOrderReturn;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.Date;
 

@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
-
 import java.io.Serializable;
-import java.util.Date;
+
 
 /**
  * 角色和菜单关联表

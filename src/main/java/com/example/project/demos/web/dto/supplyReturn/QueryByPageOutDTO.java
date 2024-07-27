@@ -2,10 +2,8 @@ package com.example.project.demos.web.dto.supplyReturn;
 
 
 import com.example.project.demos.web.dto.list.SupplyReturnInfo;
-import com.example.project.demos.web.dto.list.TransferOutboundInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data

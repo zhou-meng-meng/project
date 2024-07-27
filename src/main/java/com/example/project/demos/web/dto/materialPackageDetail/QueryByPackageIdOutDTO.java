@@ -4,7 +4,6 @@ package com.example.project.demos.web.dto.materialPackageDetail;
 import com.example.project.demos.web.dto.list.MaterialPackageDetailInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.util.List;
 
 @Data
