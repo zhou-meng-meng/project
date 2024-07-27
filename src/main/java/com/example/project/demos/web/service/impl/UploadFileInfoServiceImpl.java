@@ -240,7 +240,23 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
             }
             i = uploadFileInfoDao.updateByBusinessId(businessId, list);
         }else{
-            log.info("没有附件信息，不处理");
+            log.info("没有附件信息，将原配置删除");
+            List<UploadFileInfoEntity> fileList = uploadFileInfoDao.queryByParam(businessId);
+            if(CollectionUtil.isNotEmpty(fileList) && fileList.size() > 0){
+                log.info("删除原配置");
+                uploadFileInfoDao.deleteByBusinessId(businessId);
+                log.info("删除附件信息");
+                for(UploadFileInfoEntity entity : fileList){
+                    File file = new File(entity.getFilePath());
+                    if(file.exists()){
+                        FileUtil.del(entity.getFilePath());
+                    }else{
+                        log.info(entity.getFilePath() +" 文件不存在");
+                    }
+                }
+            }else{
+                log.info("原数据没有附件配置信息");
+            }
         }
         log.info("更新附件配置表的业务主键结束");
         return i;
