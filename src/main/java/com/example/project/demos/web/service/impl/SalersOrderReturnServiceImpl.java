@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.SalersOrderReturnInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -67,6 +68,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             List<SalersOrderReturnInfo> list = new ArrayList<>();
             list.add(info);
             list = setSalersOrderReturnObject(list);
+            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -349,6 +351,31 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                     }
                 }else {
                     log.info("inCode is null");
+                }
+            }
+        }else{
+            log.info("list is null");
+        }
+        return list;
+    }
+
+    /**
+     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
+     * @param list
+     * @param userInfo
+     * @return
+     */
+    private List<SalersOrderReturnInfo> formatPriceByRoleType(List<SalersOrderReturnInfo> list, UserLoginOutDTO userInfo){
+        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
+        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
+            List<String> typeList = userInfo.getAuthorityType();
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+                log.info("具有单价权限,不处理");
+            }else{
+                log.info("没有单价权限，将单价和总金额置为0");
+                for(SalersOrderReturnInfo info : list){
+                    info.setUnitPrice(new BigDecimal(0));
+                    info.setTollAmount(new BigDecimal(0));
                 }
             }
         }else{

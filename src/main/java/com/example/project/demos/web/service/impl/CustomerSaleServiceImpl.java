@@ -60,7 +60,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             CustomerSaleInfo info = customerSaleDao.selectCustomerSaleInfoById(dto.getId());
             outDTO = BeanUtil.copyProperties(info, QueryByIdOutDTO.class);
             //查询对应账户
-            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(info.getCode());
+            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getId());
             outDTO.setAccountRelList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -193,27 +193,49 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            log.info("查询总公司具有审核权限的人员");
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
-            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0) {
-                CustomerSaleEntity entity = BeanCopyUtils.copy(dto, CustomerSaleEntity.class);
+            /**
+             * 总公司审核员提交的数据不需要审核，立即生效
+             */
+            log.info("判断当前登录人角色和权限");
+            List<String> listType = user.getAuthorityType();
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+                log.info("总公司人员且具有审核权限，提交立即生效");
+                CustomerSaleEntity entity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
+                entity.setApproveUser(user.getUserLogin());
+                entity.setApproveState(ApproveStateEnums.APPROVE_STATE_PASSED.getCode());
+                entity.setApproveOpinion("审核员添加，立即生效");
+                entity.setApproveTime(date);
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
-                //添加待审状态
-                entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
-                int i = customerSaleDao.insert(entity);
-                //添加账号对应关系
-                customerAccountRelService.savaBatch(dto.getCode(), dto.getList());
-                log.info("生成审核流水记录");
-                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null, entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), user.getUserLogin(), date, ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
-                approveOperationFlowDao.insert(flowEntity);
-                log.info("生成审核队列记录");
-                List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
-                for (SysUserEntity userEntity : userList) {
-                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null, flowEntity.getId(), entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), userEntity.getUserLogin(), user.getUserLogin(), date, Constants.SYSTEM_CODE);
-                    queueEntityList.add(queueEntity);
+                int i =customerSaleDao.insert(entity);
+                log.info("生成默认往来账");
+                AddPayBySystemDTO addDto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
+                i = customerPayDetailService.addPayBySystem(addDto);
+                //插入账号对应关系
+                customerAccountRelService.savaBatch(entity.getId(),dto.getList());
+            }else{
+                log.info("不具有审核权限，提交需要审核,查询总公司具有审核权限的人员");
+                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+                if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0) {
+                    CustomerSaleEntity entity = BeanCopyUtils.copy(dto, CustomerSaleEntity.class);
+                    entity.setCreateBy(user.getUserLogin());
+                    entity.setCreateTime(date);
+                    //添加待审状态
+                    entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
+                    int i = customerSaleDao.insert(entity);
+                    //添加账号对应关系
+                    customerAccountRelService.savaBatch(entity.getId(), dto.getList());
+                    log.info("生成审核流水记录");
+                    ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null, entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), user.getUserLogin(), date, ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
+                    approveOperationFlowDao.insert(flowEntity);
+                    log.info("生成审核队列记录");
+                    List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
+                    for (SysUserEntity userEntity : userList) {
+                        ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null, flowEntity.getId(), entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), userEntity.getUserLogin(), user.getUserLogin(), date, Constants.SYSTEM_CODE);
+                        queueEntityList.add(queueEntity);
+                    }
+                    approveOperationQueueDao.insertBatch(queueEntityList);
                 }
-                approveOperationQueueDao.insertBatch(queueEntityList);
             }
         }catch (Exception e){
             log.info(e.getMessage());
@@ -241,9 +263,9 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             entity.setUpdateTime(new Date());
             int i = customerSaleDao.updateById(entity);
             //先删除原账号对应关系
-            customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
+            customerAccountRelService.deleteRelByCustomerCode(entity.getId());
             //重新插入账号对应关系
-            customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
+            customerAccountRelService.savaBatch(entity.getId(),dto.getList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -267,7 +289,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         try{
             int i = customerSaleDao.deleteById(dto.getId());
             //删除客户对应账号
-            customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
+            customerAccountRelService.deleteRelByCustomerCode(dto.getId());
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
@@ -301,8 +323,8 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
-            log.info("审核拒绝，删除账户信息");
-            customerAccountRelService.deleteRelByCustomerCode(entity.getCode());
+            log.info("审核拒绝");
+            //customerAccountRelService.deleteRelByCustomerCode(entity.getCode());
         }
         log.info("销售维护审核更新结束");
         return i;

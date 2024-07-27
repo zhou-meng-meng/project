@@ -27,9 +27,9 @@ public class CustomerAccountRelEntity implements Serializable {
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
 	/**
-	 * 客户编号
+	 * 客户主键
 	 */
-	private String customerCode;
+	private Long customerId;
 	/**
 	 * 账号
 	 */

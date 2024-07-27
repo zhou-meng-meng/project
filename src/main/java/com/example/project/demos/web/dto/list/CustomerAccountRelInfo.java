@@ -29,8 +29,9 @@ public class CustomerAccountRelInfo implements Serializable {
 	/**
 	 * 客户编号
 	 */
-	@ApiModelProperty(value = "客户编号")
-	private String customerCode;
+	@ApiModelProperty(value = "客户主键")
+	@JsonSerialize(using = ToStringSerializer.class)
+	private String customerId;
 	/**
 	 * 账号
 	 */

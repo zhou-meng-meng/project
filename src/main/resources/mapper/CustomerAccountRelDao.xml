@@ -6,7 +6,7 @@
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.CustomerAccountRelEntity" id="customerAccountRelMap">
         <result property="id" column="id"/>
-        <result property="customerCode" column="customer_code"/>
+        <result property="customerId" column="customer_id"/>
         <result property="accountNo" column="account_no"/>
         <result property="accountName" column="account_name"/>
         <result property="openBankNo" column="open_bank_no"/>
@@ -22,7 +22,7 @@
     <select id="queryRelListByCustomerCode" resultType="com.example.project.demos.web.dto.list.CustomerAccountRelInfo">
         SELECT
             t.id,
-            t.customer_code,
+            t.customer_id,
             t.account_no,
             t.account_name,
             t.open_bank_no,
@@ -40,11 +40,11 @@
                     LEFT JOIN sys_dict_data d ON d.dict_code = t.STATUS 	AND d.dict_type = 'account_status'
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        where  t.customer_code = #{customerCode}
+        where  t.customer_id = #{customerId}
     </select>
 
     <delete id="deleteRelByCustomerCode">
-        delete  from customer_account_rel   where  customer_code = #{customerCode}
+        delete  from customer_account_rel   where  customer_id = #{customerId}
     </delete>
 
 

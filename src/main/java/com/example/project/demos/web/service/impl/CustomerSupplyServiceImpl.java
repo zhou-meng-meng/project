@@ -41,8 +41,6 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
     @Autowired
     private CustomerPayDetailService customerPayDetailService;
     @Autowired
-    private SysUserService sysUserService;
-    @Autowired
     private SysLogService sysLogService;
 
     @Override
@@ -55,7 +53,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             CustomerSupplyInfo info = customerSupplyDao.selectCustomerSupplyInfoById(dto.getId());
             outDTO = BeanUtil.copyProperties(info, QueryByIdOutDTO.class);
             //查询对应账户
-            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getCode());
+            List<CustomerAccountRelInfo> list  = customerAccountRelService.queryRelListByCustomerCode(dto.getId());
             outDTO.setAccountRelList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -118,7 +116,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             entity.setCreateTime(date);
             int i = customerSupplyDao.insert(entity);
             //添加账号对应关系
-            customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
+            customerAccountRelService.savaBatch(entity.getId(), dto.getList());
             log.info("添加一条默认往来账信息，金额都为0");
             AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,"默认往来账");
             customerPayDetailService.addPayBySystem(addDTO);
@@ -148,9 +146,9 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             entity.setUpdateTime(date);
             int i = customerSupplyDao.updateById(entity);
             //先删除原账号对应关系
-            customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
+            customerAccountRelService.deleteRelByCustomerCode(entity.getId());
             //重新插入账号对应关系
-            customerAccountRelService.savaBatch(dto.getCode(),dto.getList());
+            customerAccountRelService.savaBatch(entity.getId(), dto.getList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -174,7 +172,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         try{
             int i = customerSupplyDao.deleteById(dto.getId());
             //删除该客户账户
-            customerAccountRelService.deleteRelByCustomerCode(dto.getCode());
+            customerAccountRelService.deleteRelByCustomerCode(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

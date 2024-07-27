@@ -16,8 +16,8 @@ import java.util.List;
  */
 @Mapper
 public interface CustomerAccountRelDao extends BaseMapperPlus<CustomerAccountRelDao, CustomerAccountRelEntity> {
-    List<CustomerAccountRelInfo> queryRelListByCustomerCode(String customerCode);
+    List<CustomerAccountRelInfo> queryRelListByCustomerCode(Long customerId);
 
-    int deleteRelByCustomerCode(String customerCode);
+    int deleteRelByCustomerCode(Long customerId);
 
 }

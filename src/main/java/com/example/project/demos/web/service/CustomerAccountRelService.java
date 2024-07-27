@@ -16,11 +16,11 @@ public interface CustomerAccountRelService {
     /**
      * 不分页查询
      */
-    List<CustomerAccountRelInfo> queryRelListByCustomerCode(String customerCode);
+    List<CustomerAccountRelInfo> queryRelListByCustomerCode(Long customerId);
 
-    int deleteRelByCustomerCode(String customerCode);
+    int deleteRelByCustomerCode(Long customerId);
 
-    boolean savaBatch(String customerCode,List<CustomerAccountRelEntity>list);
+    boolean savaBatch(Long customerId,List<CustomerAccountRelEntity>list);
 
 }
 
