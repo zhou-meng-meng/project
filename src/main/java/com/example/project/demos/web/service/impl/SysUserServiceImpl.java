@@ -485,7 +485,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                     //获取角色权集合
                     List<String> authorityType = sysRoleAuthorityTypeService.queryRoleAuthorityTypeList(info.getRoleId());
                     if(CollectionUtil.isNotEmpty(authorityType) && authorityType.size() > 0){
-                        if(authorityType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+                        if(authorityType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
                             info.setIsPriceEdit(SysEnums.SYS_YES_FLAG.getDesc());
                         }else{
                             info.setIsPriceEdit(SysEnums.SYS_NO_FLAG.getDesc());

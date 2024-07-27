@@ -163,7 +163,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                         log.info("出库方为仓库");
                         userType = UserTypeEnums.USER_TYPE_STORE.getCode();
                     }
-                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
+                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),outCode);
                     if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                         //生成待确认流水
                         ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
@@ -198,7 +198,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                         log.info("调入方为仓库");
                         userType = UserTypeEnums.USER_TYPE_STORE.getCode();
                     }
-                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),inCode);
+                    List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),inCode);
                     if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                         //生成待确认流水
                         ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);

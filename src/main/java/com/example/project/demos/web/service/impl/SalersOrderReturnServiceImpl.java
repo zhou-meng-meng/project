@@ -92,7 +92,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
             List<String> listType = user.getAuthorityType();
-            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("具有审核权限，查询所有数据");
             }else{
                 log.info("不具有审核权限，查询自己提交的数据");
@@ -134,7 +134,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             log.info("查询总公司具有审核权限的人员");
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 SalersOrderReturnEntity entity = BeanCopyUtils.copy(dto,SalersOrderReturnEntity.class);
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
@@ -299,7 +299,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         try {
             //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
             List<String> listType = user.getAuthorityType();
-            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("具有审核权限，查询所有数据");
             }else{
                 log.info("不具有审核权限，查询自己提交的数据");
@@ -369,7 +369,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
         if(CollectionUtil.isNotEmpty(list) && list.size()>0){
             List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
                 log.info("具有单价权限,不处理");
             }else{
                 log.info("没有单价权限，将单价和总金额置为0");

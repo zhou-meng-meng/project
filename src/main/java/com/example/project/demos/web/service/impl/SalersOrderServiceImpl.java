@@ -97,7 +97,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             //添加权限  总公司审核权限的  查看所有  销售员只能查看自己的数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
             List<String> listType = user.getAuthorityType();
-            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("具有审核权限，查询所有数据");
             }else{
                 log.info("不具有审核权限，查询自己提交的数据");
@@ -139,7 +139,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             log.info("查询总公司具有审核权限的人员");
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 SalersOrderEntity entity = BeanCopyUtils.copy(dto,SalersOrderEntity.class);
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
@@ -298,7 +298,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 userType = UserTypeEnums.USER_TYPE_STORE.getCode();
             }
             log.info("生成待确认数据");
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),outCode);
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),outCode);
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 //生成待确认流水
                 ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getCode(),null,user.getUserLogin(),date,null,null,null,null, ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
@@ -457,7 +457,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
         if(CollectionUtil.isNotEmpty(list) && list.size()>0){
             List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
                 log.info("具有单价权限,不处理");
             }else{
                 log.info("没有单价权限，将单价和总金额置为0");

@@ -86,7 +86,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             String userType = user.getUserType();
             log.info("userType:"+userType);
             List<String> authList = user.getAuthorityType();
-            if(authList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+            if(authList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("具有审核权限，可以查看所有数据");
             }else{
                 log.info("不具有审核权限，只能查看自己的客户信息");
@@ -164,7 +164,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             String userType = user.getUserType();
             log.info("userType:"+userType);
             List<String> authList = user.getAuthorityType();
-            if(authList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+            if(authList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("具有审核权限，可以查看所有数据");
             }else{
                 log.info("不具有审核权限，只能查看自己的客户信息");
@@ -198,7 +198,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
              */
             log.info("判断当前登录人角色和权限");
             List<String> listType = user.getAuthorityType();
-            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode())){
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("总公司人员且具有审核权限，提交立即生效");
                 CustomerSaleEntity entity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
                 entity.setApproveUser(user.getUserLogin());
@@ -215,7 +215,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                 customerAccountRelService.savaBatch(entity.getId(),dto.getList());
             }else{
                 log.info("不具有审核权限，提交需要审核,查询总公司具有审核权限的人员");
-                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+                List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
                 if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0) {
                     CustomerSaleEntity entity = BeanCopyUtils.copy(dto, CustomerSaleEntity.class);
                     entity.setCreateBy(user.getUserLogin());

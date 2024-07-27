@@ -8,9 +8,9 @@ package com.example.project.demos.web.enums;
 public enum RoleAuthorityTypeEnums {
 
 
-    ROLE_AUTHORIT_YTYPE_AUTH("0","审核权限"),
-    ROLE_AUTHORIT_YTYPE_PRICE("1","单价权限"),
-    ROLE_AUTHORIT_YTYPE_CONFIRM("2","确认权限");
+    ROLE_AUTHORITY_TYPE_AUTH("0","审核权限"),
+    ROLE_AUTHORITY_TYPE_PRICE("1","单价权限"),
+    ROLE_AUTHORITY_TYPE_CONFIRM("2","确认权限");
 
     private String code;
     private String desc;

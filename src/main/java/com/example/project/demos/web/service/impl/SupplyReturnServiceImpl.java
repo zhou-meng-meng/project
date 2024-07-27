@@ -154,7 +154,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             log.info("查询总公司具有审核权限的人员");
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 SupplyReturnEntity entity = BeanCopyUtils.copy(dto,SupplyReturnEntity.class);
                 //设置 审核状态 创建人和创建时间

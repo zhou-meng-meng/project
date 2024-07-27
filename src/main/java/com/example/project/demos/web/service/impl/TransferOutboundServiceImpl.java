@@ -150,7 +150,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 log.info("调入方为仓库");
                 userType = UserTypeEnums.USER_TYPE_STORE.getCode();
             }
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_CONFIRM.getCode(),dto.getInCode());
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),dto.getInCode());
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 TransferOutboundEntity entity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
                 entity.setCreateBy(user.getUserLogin());

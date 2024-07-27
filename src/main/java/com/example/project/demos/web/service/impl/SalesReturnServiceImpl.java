@@ -141,7 +141,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             log.info("查询总公司具有审核权限的人员");
-            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_AUTH.getCode(),"");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
             if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
                 SalesReturnEntity entity = BeanCopyUtils.copy(dto,SalesReturnEntity.class);
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());

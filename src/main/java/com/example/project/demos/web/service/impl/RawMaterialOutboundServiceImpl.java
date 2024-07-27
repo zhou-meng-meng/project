@@ -324,7 +324,7 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
     private List<RawMaterialOutboundInfo> formatPriceByRoleType(List<RawMaterialOutboundInfo> list,UserLoginOutDTO userInfo){
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORIT_YTYPE_PRICE.getCode())){
+            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
                 log.info("具有单价权限,不处理");
             }else{
                 log.info("没有单价权限，将单价和总金额置为0");
