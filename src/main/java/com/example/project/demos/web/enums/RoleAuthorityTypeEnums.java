@@ -10,7 +10,8 @@ public enum RoleAuthorityTypeEnums {
 
     ROLE_AUTHORITY_TYPE_AUTH("0","审核权限"),
     ROLE_AUTHORITY_TYPE_PRICE("1","单价权限"),
-    ROLE_AUTHORITY_TYPE_CONFIRM("2","确认权限");
+    ROLE_AUTHORITY_TYPE_CONFIRM("2","确认权限"),
+    ROLE_AUTHORITY_TYPE_NULL("3","无权限");
 
     private String code;
     private String desc;
