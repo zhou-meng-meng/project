@@ -89,5 +89,13 @@ public class OauthSupport {
         return token;
     }
 
+    /**
+     * 刷新token有效期
+     * @param token
+     */
+    public void expireKey(String token){
+        redisTemplate.opsForValue().getAndExpire(TokenUtils.buildToken(TokenUtils.USER_LOGIN_TOKEN, token), (StringUtils.isBlank(expir) ? 5 : Integer.parseInt(expir)), TimeUnit.MINUTES);
+    }
+
 
 }
