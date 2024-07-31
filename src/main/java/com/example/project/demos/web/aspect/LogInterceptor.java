@@ -120,6 +120,8 @@ public class LogInterceptor {
         if (StringUtils.isBlank(token) || oauthSupport.tokenIsExpired(token)) {
             throw new CustomException(401, ErrorCodeEnums.TOKEN_IS_INVALID.getDesc(), reqId);
         }
+        //刷新token时间
+        oauthSupport.expireKey(token);
     }
 
     private Boolean putUserInfo(String token, String path) {
