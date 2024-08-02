@@ -5,7 +5,6 @@ import com.example.project.demos.web.entity.SysRoleAuthorityTypeEntity;
 import com.example.project.demos.web.dao.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 
 /**

@@ -276,7 +276,6 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         Date date = new Date();
-        List<ProductionMaterialIncomeInfo> list = new ArrayList<>();
         //最后导出的数据集合
         List<ProductionMaterialIncomeInfo> exportList = new ArrayList<>();
         try {
@@ -289,17 +288,25 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
                 dto.setInCode(user.getDeptId());
             }
-            list = productionMaterialIncomeDao.queryListForExport(dto);
-            //处理入库方名称
-            list = setProductionMaterialIncomeObject(list);
-            //处理生产员工信息
-            for(ProductionMaterialIncomeInfo info : list){
-                List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
-                for(ProductProducerInfo producerInfo : producerInfoList){
-                    info.setProducerName(producerInfo.getProducerName());
-                    info.setProducerNum(producerInfo.getProducerNum());
-                    exportList.add(info);
+            //先用查询条件查询出符合条件的主键集合
+            List<Long> idList = productionMaterialIncomeDao.queryIdList(dto);
+            if(CollectionUtil.isNotEmpty(idList) && idList.size() > 0){
+                //开始查询
+                List<ProductionMaterialIncomeInfo> list = productionMaterialIncomeDao.queryListForExport(idList);
+                //处理入库方名称
+                list = setProductionMaterialIncomeObject(list);
+                //循环获取生产者集合信息
+                for(ProductionMaterialIncomeInfo info : list){
+                    List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
+                    for(ProductProducerInfo producerInfo : producerInfoList){
+                        ProductionMaterialIncomeInfo newInfo = BeanCopyUtils.copy(info,ProductionMaterialIncomeInfo.class);
+                        newInfo.setProducerName(producerInfo.getProducerName());
+                        newInfo.setProducerNum(producerInfo.getProducerNum());
+                        exportList.add(newInfo);
+                    }
                 }
+            }else{
+                log.info("idList  is null");
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值

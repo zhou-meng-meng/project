@@ -2,6 +2,7 @@ package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.example.project.demos.web.utils.LocalDateConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -164,19 +165,19 @@ public class SysUserInfo implements Serializable {
 	/**
 	 * 入职日期
 	 */
-	@ExcelProperty(value = "入职日期")
+	@ExcelProperty(value = "入职日期",converter = LocalDateConverter.class)
 	@ApiModelProperty(value = "入职日期")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date entryDate;
 
-	@ExcelProperty(value = "社保日期")
+	@ExcelProperty(value = "社保日期",converter = LocalDateConverter.class)
 	@ApiModelProperty(value = "社保日期")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date insuranceDate;
 	/**
 	 * 离职日期
 	 */
-	@ExcelProperty(value = "离职日期")
+	@ExcelProperty(value = "离职日期",converter = LocalDateConverter.class)
 	@ApiModelProperty(value = "离职日期")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date leaveDate;

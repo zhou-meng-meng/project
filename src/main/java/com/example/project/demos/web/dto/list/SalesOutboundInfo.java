@@ -2,6 +2,7 @@ package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.example.project.demos.web.utils.LocalDateConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -99,8 +100,8 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 销售时间
 	 */
-	@ExcelProperty(value = "销售时间")
-	@ApiModelProperty(value = "销售时间")
+	@ExcelProperty(value = "销售日期",converter = LocalDateConverter.class)
+	@ApiModelProperty(value = "销售日期")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date saleTime;
 
@@ -145,8 +146,8 @@ public class SalesOutboundInfo implements Serializable {
 	/**
 	 * 回款时间
 	 */
-	@ExcelProperty(value = "回款时间")
-	@ApiModelProperty(value = "回款时间")
+	@ExcelProperty(value = "回款日期",converter = LocalDateConverter.class)
+	@ApiModelProperty(value = "回款日期")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date receivePaymentTime;
 
@@ -208,7 +209,7 @@ public class SalesOutboundInfo implements Serializable {
 	 */
 	@ExcelProperty(value = "确认时间")
 	@ApiModelProperty(value = "确认时间")
-	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date confirmTime;
 
 	/**

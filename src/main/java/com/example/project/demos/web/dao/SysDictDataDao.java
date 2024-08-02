@@ -5,7 +5,6 @@ import com.example.project.demos.web.dto.list.SysDictDataInfo;
 import com.example.project.demos.web.entity.SysDictDataEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 
 /**

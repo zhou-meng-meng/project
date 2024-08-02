@@ -2,6 +2,7 @@ package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.example.project.demos.web.utils.LocalDateConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -82,7 +83,7 @@ public class SalersOrderInfo implements Serializable {
 	/**
 	 * 装车日期
 	 */
-	@ExcelProperty(value = "装车日期")
+	@ExcelProperty(value = "装车日期",converter = LocalDateConverter.class)
 	@ApiModelProperty(value = "装车日期")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date loadDate;
@@ -190,7 +191,7 @@ public class SalersOrderInfo implements Serializable {
 	 */
 	@ExcelProperty(value = "确认时间")
 	@ApiModelProperty(value = "确认时间")
-	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date confirmTime;
 	/**
 	 * 单据状态
@@ -213,7 +214,7 @@ public class SalersOrderInfo implements Serializable {
 
 	@ExcelProperty(value = "冲销时间")
 	@ApiModelProperty(value = "冲销时间")
-	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date chargeoffTime;
 
 	@ExcelProperty(value = "冲销意见")

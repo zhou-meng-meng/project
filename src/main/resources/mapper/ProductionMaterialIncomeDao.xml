@@ -204,28 +204,10 @@
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
         LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
-        where  1=1
-        <if test="prod.materialCode != null and prod.materialCode != ''">
-            and t.material_code    like concat('%', #{prod.materialCode}, '%')
-        </if>
-        <if test="prod.materialName != null and prod.materialName != ''">
-            and m.name    like concat('%', #{prod.materialName}, '%')
-        </if>
-        <if test="prod.beginDate != null and prod.beginDate != ''">
-            and t.produce_time    <![CDATA[ >= ]]> #{prod.beginDate}
-        </if>
-        <if test="prod.endDate != null and prod.endDate != ''">
-            and t.produce_time    <![CDATA[ <= ]]> #{prod.endDate}
-        </if>
-        <if test="prod.inCode != null and prod.inCode != ''">
-            and t.in_code   = #{prod.inCode}
-        </if>
-        <if test="prod.dutyCode != null and prod.dutyCode != ''">
-            and t.duty_code   = #{prod.dutyCode}
-        </if>
-        <if test="prod.machineCode != null and prod.machineCode != ''">
-            and t.machine_code   = #{prod.machineCode}
-        </if>
+        where  1=1  and t.id in
+        <foreach item="id" collection="idList" open="(" separator="," close=")">
+            #{id}
+        </foreach>
         order  by   t.id  desc
     </select>
 

@@ -2,7 +2,6 @@ package com.example.project.demos.web.dao;
 
 import com.example.project.demos.web.dto.list.CustomerAccountRelInfo;
 import com.example.project.demos.web.entity.CustomerAccountRelEntity;
-import com.example.project.demos.web.dao.BaseMapperPlus;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

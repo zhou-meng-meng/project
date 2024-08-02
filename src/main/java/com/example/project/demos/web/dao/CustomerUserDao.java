@@ -1,10 +1,7 @@
 package com.example.project.demos.web.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.project.demos.web.dto.customerUser.QueryByPageDTO;
-import com.example.project.demos.web.dto.list.CustomerUserInfo;
 import com.example.project.demos.web.entity.CustomerUser;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;

@@ -3,6 +3,7 @@ package com.example.project.demos.web.dto.materialPackage;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.example.project.demos.web.annotation.CellMerge;
+import com.example.project.demos.web.utils.LocalDateConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,7 +37,7 @@ public class MaterialPackageExportDTO implements Serializable {
      * 日期
      */
     @CellMerge
-    @ExcelProperty(value = "日期")
+    @ExcelProperty(value = "日期",converter = LocalDateConverter.class)
     @ApiModelProperty(value = "日期")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date packageDate;

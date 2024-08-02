@@ -2,6 +2,7 @@ package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.example.project.demos.web.utils.LocalDateConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -60,7 +61,7 @@ public class RebuildOutboundInfo implements Serializable {
 	/**
 	 * 重造时间
 	 */
-	@ExcelProperty(value = "重造日期")
+	@ExcelProperty(value = "重造日期",converter = LocalDateConverter.class)
 	@ApiModelProperty(value = "重造日期")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date rebuildDate;
