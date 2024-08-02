@@ -35,10 +35,7 @@ public class ProductionMaterialIncomeEntity implements Serializable {
 	 * 入库数量
 	 */
 	private BigDecimal incomeNum;
-	/**
-	 * 生产员工
-	 */
-	private String producer;
+
 	/**
 	 * 生产日期
 	 */

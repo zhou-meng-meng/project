@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.project.demos.web.dao.ProductionMaterialIncomeDetailDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.example.project.demos.web.entity.ProductionMaterialIncomeDetailEntity" id="productionMaterialIncomeDetailMap">
+        <result property="id" column="id"/>
+        <result property="incomeId" column="income_id"/>
+        <result property="producer" column="producer"/>
+        <result property="producerNum" column="producer_num"/>
+    </resultMap>
+
+    <select id="selectProductProducerInfoList"  resultType="com.example.project.demos.web.dto.list.ProductProducerInfo">
+        SELECT
+            t.id,
+            t.income_id,
+            t.producer,
+            u2.user_name AS producerName,
+            t.producer_num
+        FROM   production_material_income_detail t
+              LEFT JOIN sys_user u2 ON u2.user_login = t.producer
+          where  1=1
+        <if test="incomeId != null and incomeId != ''">
+            and t.income_id   =  #{incomeId}
+        </if>
+        <if test="producerName != null and producerName != ''">
+            and u2.user_name   like concat('%', #{producerName}, '%')
+        </if>
+    </select>
+
+    <delete id="deleteByIncomeId">
+        delete  FROM   production_material_income_detail
+        where   income_id   =  #{incomeId}
+    </delete>
+
+
+</mapper>

@@ -1,6 +1,7 @@
 package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -10,6 +11,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -18,6 +20,7 @@ import java.util.Date;
  * @email sunlightcs@gmail.com
  * @date 2024-05-11 09:25:49
  */
+@ExcelIgnoreUnannotated
 @Data
 public class ProductionMaterialIncomeInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -67,16 +70,7 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	@ExcelProperty(value = "入库数量")
 	@ApiModelProperty(value = "入库数量")
 	private BigDecimal incomeNum;
-	/**
-	 * 生产员工
-	 */
-	@ExcelIgnore
-	@ApiModelProperty(value = "生产员工")
-	private String producer;
 
-	@ExcelProperty(value = "生产员工")
-	@ApiModelProperty(value = "生产员工")
-	private String producerName;
 	/**
 	 * 生产日期
 	 */
@@ -84,6 +78,18 @@ public class ProductionMaterialIncomeInfo implements Serializable {
 	@ApiModelProperty(value = "生产日期")
 	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
 	private Date produceTime;
+
+	@ApiModelProperty(value = "员工生产信息列表")
+	List<ProductProducerInfo> producerInfoList;
+
+	@ExcelProperty(value = "生产员工")
+	@ApiModelProperty(value = "生产员工姓名")
+	private String producerName;
+
+	@ExcelProperty(value = "员工产量")
+	@ApiModelProperty(value = "员工产量")
+	private BigDecimal producerNum;
+
 	/**
 	 * 入库方编号
 	 */

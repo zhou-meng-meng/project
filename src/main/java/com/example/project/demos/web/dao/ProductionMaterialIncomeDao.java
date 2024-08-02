@@ -18,15 +18,17 @@ import java.util.List;
  */
 @Mapper
 public interface ProductionMaterialIncomeDao extends BaseMapper<ProductionMaterialIncomeEntity> {
-    List<ProductionMaterialIncomeInfo> selectProductionMaterialIncomeInfoListByPage(@Param("prod") QueryByPageDTO dto, @Param("pageable") Pageable pageable);
+    List<ProductionMaterialIncomeInfo> selectProductionMaterialIncomeInfoListByPage(@Param("idList") List<Long> idList, @Param("pageable") Pageable pageable);
 
     /**
      * 统计总行数
      *
-     * @param queryByPageDTO 查询条件
+     * @param dto 查询条件
      * @return 总行数
      */
-    int count(QueryByPageDTO queryByPageDTO);
+    int count(QueryByPageDTO dto);
+
+    List<Long> queryIdList(QueryByPageDTO dto);
 
     ProductionMaterialIncomeInfo selectProductionMaterialIncomeInfoById(Long id);
 

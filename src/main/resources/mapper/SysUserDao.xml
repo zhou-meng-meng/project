@@ -91,7 +91,7 @@
         <if test="user.deptId != null and user.deptId != ''">
             and t.dept_id   = #{user.deptId}
         </if>
-        order  by  t.user_id
+        order  by  t.user_id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
@@ -136,7 +136,7 @@
         <if test="user.userName != null and user.userName != ''">
             and t.user_name    like concat('%', #{user.userName}, '%')
         </if>
-        order  by  t.user_id
+        order  by  t.user_id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
@@ -348,7 +348,7 @@
         <if test="user.deptId != null and user.deptId != ''">
             and t.dept_id   = #{user.deptId}
         </if>
-        order  by  t.user_id
+        order  by  t.user_id  desc
     </select>
 
 

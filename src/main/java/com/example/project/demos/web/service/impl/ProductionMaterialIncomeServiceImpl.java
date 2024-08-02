@@ -4,14 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.ProductionMaterialIncomeDao;
+import com.example.project.demos.web.dao.ProductionMaterialIncomeDetailDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dao.SysStorehouseDao;
-import com.example.project.demos.web.dto.list.ProductionMaterialIncomeInfo;
-import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
-import com.example.project.demos.web.dto.list.SysStorehouseInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.productionMaterialIncome.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
+import com.example.project.demos.web.entity.ProductionMaterialIncomeDetailEntity;
 import com.example.project.demos.web.entity.ProductionMaterialIncomeEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
@@ -47,6 +46,9 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
     private ProductionMaterialIncomeDao productionMaterialIncomeDao;
 
     @Resource
+    private ProductionMaterialIncomeDetailDao productionMaterialIncomeDetailDao;
+
+    @Resource
     private SysFactoryDao sysFactoryDao;
 
     @Resource
@@ -70,6 +72,9 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             list.add(productionMaterialIncomeInfo);
             list = setProductionMaterialIncomeObject(list);
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
+            //获取员工产量信息
+            List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(outDTO.getId(),null);
+            outDTO.setProducerInfoList(producerInfoList);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -99,21 +104,29 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
                 dto.setInCode(user.getDeptId());
             }
-            //先用查询条件查询总条数
-            long total = this.productionMaterialIncomeDao.count(dto);
-            outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
-            //存在数据的   继续查询
-            if(total != 0L){
+            //先用查询条件查询出符合条件的主键集合
+            List<Long> idList = productionMaterialIncomeDao.queryIdList(dto);
+            if(CollectionUtil.isNotEmpty(idList) && idList.size() > 0){
+                outDTO.setTurnPageTotalNum(idList.size());
+                long total = Long.valueOf(idList.size());
+                //使用idList查询列表
                 //分页信息
                 PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<ProductionMaterialIncomeInfo> page = new PageImpl<>(this.productionMaterialIncomeDao.selectProductionMaterialIncomeInfoListByPage(dto, pageRequest), pageRequest, total);
+                Page<ProductionMaterialIncomeInfo> page = new PageImpl<>(this.productionMaterialIncomeDao.selectProductionMaterialIncomeInfoListByPage(idList, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ProductionMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
                 list = setProductionMaterialIncomeObject(list);
+                //循环获取生产者集合信息
+                for(ProductionMaterialIncomeInfo info : list){
+                    List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
+                    info.setProducerInfoList(producerInfoList);
+                }
                 //出参赋值
                 outDTO.setProductionMaterialIncomeInfoList(list);
+            }else{
+                outDTO.setTurnPageTotalNum(0);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -135,21 +148,35 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
+            String billNo = getBillNoList(user);
             ProductionMaterialIncomeEntity entity = BeanCopyUtils.copy(dto,ProductionMaterialIncomeEntity.class);
             entity.setCreateBy(user.getUserLogin());
             entity.setCreateTime(date);
             //生成单据号
-            entity.setBillNo(getBillNoList(user));
+            entity.setBillNo(billNo);
             int i = productionMaterialIncomeDao.insert(entity);
+            List<ProductProducerInfo> producerInfoList = dto.getProducerInfoList();
+            List<ProductionMaterialIncomeDetailEntity> detailEntities = new ArrayList<>();
+            for(ProductProducerInfo info : producerInfoList){
+                ProductionMaterialIncomeDetailEntity detailEntity = new ProductionMaterialIncomeDetailEntity();
+                //主表主键
+                detailEntity.setIncomeId(entity.getId());
+                //员工
+                detailEntity.setProducer(info.getProducer());
+                //产量
+                detailEntity.setProducerNum(info.getProducerNum());
+                detailEntities.add(detailEntity);
+            }
+            productionMaterialIncomeDetailDao.insertBatch(detailEntities);
             //修改库存
-            i = materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getInCode(), dto.getIncomeNum(),"add",date);
+            materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getInCode(), dto.getIncomeNum(),"add",date);
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getInName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",入库产量:"+dto.getIncomeNum().toString()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -164,12 +191,28 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
+            //修改了数量 要实时更新库存
+            ProductionMaterialIncomeEntity entity = productionMaterialIncomeDao.selectById(dto.getId());
             ProductionMaterialIncomeEntity newEntity = BeanCopyUtils.copy(dto,ProductionMaterialIncomeEntity.class);
             newEntity.setUpdateBy(user.getUserLogin());
             newEntity.setUpdateTime(date);
             int i = productionMaterialIncomeDao.updateById(newEntity);
-            //修改了数量 要实时更新库存
-            ProductionMaterialIncomeEntity entity = productionMaterialIncomeDao.selectById(dto.getId());
+            log.info("删除原员工产量信息");
+            productionMaterialIncomeDetailDao.deleteByIncomeId(dto.getId());
+            log.info("生成新的员工产量信息");
+            List<ProductProducerInfo> producerInfoList = dto.getProducerInfoList();
+            List<ProductionMaterialIncomeDetailEntity> detailEntities = new ArrayList<>();
+            for(ProductProducerInfo info : producerInfoList){
+                ProductionMaterialIncomeDetailEntity detailEntity = new ProductionMaterialIncomeDetailEntity();
+                //主表主键
+                detailEntity.setIncomeId(dto.getId());
+                //员工
+                detailEntity.setProducer(info.getProducer());
+                //产量
+                detailEntity.setProducerNum(info.getProducerNum());
+                detailEntities.add(detailEntity);
+            }
+            productionMaterialIncomeDetailDao.insertBatch(detailEntities);
             BigDecimal count = entity.getIncomeNum();
             log.info("原数量:"+count.toString());
             BigDecimal updateCount = dto.getIncomeNum();
@@ -180,7 +223,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 log.info("修改数量大于原数量，需要增加:"+num.toString()+"的库存");
                 materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"add",date);
             }else if(num.compareTo(new BigDecimal(0)) < 0){
-                log.info("修改数量小于原数量，需要减少:"+num.toString()+"的库存");
+                log.info("修改数量小于原数量，需要减少:"+num.multiply(new BigDecimal(-1))+"的库存");
                 num  = num.multiply(new BigDecimal(-1));
                 materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"reduce",date);
             }else{
@@ -192,7 +235,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getInName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",入库产量:"+dto.getIncomeNum().toString()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -211,13 +254,15 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             //删除数据要更新库存
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getIncomeNum(),"reduce",date);
             int i = productionMaterialIncomeDao.deleteById(dto.getId());
+            log.info("删除员工产量信息");
+            productionMaterialIncomeDetailDao.deleteByIncomeId(dto.getId());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getIncomeNum().toString()+",生产员工:"+dto.getProducerName()+",入库方:"+dto.getInName();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",入库产量:"+dto.getIncomeNum().toString()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -232,6 +277,8 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         Date date = new Date();
         List<ProductionMaterialIncomeInfo> list = new ArrayList<>();
+        //最后导出的数据集合
+        List<ProductionMaterialIncomeInfo> exportList = new ArrayList<>();
         try {
             //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
             String userType = user.getUserType();
@@ -245,6 +292,15 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             list = productionMaterialIncomeDao.queryListForExport(dto);
             //处理入库方名称
             list = setProductionMaterialIncomeObject(list);
+            //处理生产员工信息
+            for(ProductionMaterialIncomeInfo info : list){
+                List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
+                for(ProductProducerInfo producerInfo : producerInfoList){
+                    info.setProducerName(producerInfo.getProducerName());
+                    info.setProducerNum(producerInfo.getProducerNum());
+                    exportList.add(info);
+                }
+            }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -255,7 +311,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         String info = "导出Excel操作";
         sysLogService.insertSysLog(FunctionTypeEnums.PRODUCTION_MATERIAL_INCOME.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("产量入库queryListForExport结束");
-        return list;
+        return exportList;
     }
 
 

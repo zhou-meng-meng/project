@@ -8,7 +8,6 @@
         <result property="id" column="id"/>
         <result property="materialCode" column="material_code"/>
         <result property="incomeNum" column="income_num"/>
-        <result property="producer" column="producer"/>
         <result property="produceTime" column="produce_time"/>
         <result property="inCode" column="in_code"/>
         <result property="dutyCode" column="duty_code"/>
@@ -33,8 +32,6 @@
             m.unit,
             d3.dict_value unitName,
             t.income_num,
-            t.producer,
-            u2.user_name AS producerName,
             t.produce_time,
             t.in_code,
             t.duty_code,
@@ -54,44 +51,21 @@
         FROM   production_material_income t
                 LEFT JOIN sys_user u ON u.user_login = t.create_by
                 LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-                LEFT JOIN sys_user u2 ON u2.user_login = t.producer
                 LEFT JOIN material_info m ON m.CODE = t.material_code
                 LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
                 LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
                 LEFT JOIN sys_dict_data d4 ON d4.dict_code = t.duty_code and  d4.dict_type = 'duty'
                 LEFT JOIN sys_dict_data d5 ON d5.dict_code = t.machine_code and  d5.dict_type = 'machine_code'
-          where  1=1  
-        <if test="prod.materialCode != null and prod.materialCode != ''">
-            and t.material_code    like concat('%', #{prod.materialCode}, '%')
-        </if>
-        <if test="prod.materialName != null and prod.materialName != ''">
-            and m.name    like concat('%', #{prod.materialName}, '%')
-        </if>
-        <if test="prod.beginDate != null and prod.beginDate != ''">
-            and t.produce_time    <![CDATA[ >= ]]> #{prod.beginDate}
-        </if>
-        <if test="prod.endDate != null and prod.endDate != ''">
-            and t.produce_time    <![CDATA[ <= ]]> #{prod.endDate}
-        </if>
-        <if test="prod.producerName != null and prod.producerName != ''">
-            and u2.user_name   like concat('%', #{prod.producerName}, '%')
-        </if>
-        <if test="prod.inCode != null and prod.inCode != ''">
-            and t.in_code   = #{prod.inCode}
-        </if>
-        <if test="prod.dutyCode != null and prod.dutyCode != ''">
-            and t.duty_code   = #{prod.dutyCode}
-        </if>
-        <if test="prod.machineCode != null and prod.machineCode != ''">
-            and t.machine_code   = #{prod.machineCode}
-        </if>
+          where  1=1   and t.id in
+        <foreach item="id" collection="idList" open="(" separator="," close=")">
+            #{id}
+        </foreach>
         order  by   t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
     <select id="count"  resultType="java.lang.Integer">
         SELECT count(1)    FROM   production_material_income t
-        LEFT JOIN sys_user u2 ON u2.user_login = t.producer
         LEFT JOIN material_info m ON m.CODE = t.material_code
         where  1=1
         <if test="materialCode != null and materialCode != ''">
@@ -107,7 +81,46 @@
             and t.produce_time    <![CDATA[ <= ]]> #{endDate}
         </if>
         <if test="producerName != null and producerName != ''">
-            and u2.user_name   like concat('%', #{producerName}, '%')
+            t.id  in (
+            select  d.income_id from  production_material_income_detail  d
+            left join sys_user   u  on u.user_login = d.producer
+            where u.user_name like concat('%', #{producerName}, '%')
+            )
+        </if>
+        <if test="inCode != null and inCode != ''">
+            and t.in_code   = #{inCode}
+        </if>
+        <if test="dutyCode != null and dutyCode != ''">
+            and t.duty_code   = #{dutyCode}
+        </if>
+        <if test="machineCode != null and machineCode != ''">
+            and t.machine_code   = #{machineCode}
+        </if>
+    </select>
+
+
+    <select id="queryIdList"  resultType="java.lang.Long">
+        SELECT  t.id   FROM   production_material_income t
+        LEFT JOIN material_info m ON m.CODE = t.material_code
+        where  1=1
+        <if test="materialCode != null and materialCode != ''">
+            and t.material_code    like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.produce_time    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.produce_time    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="producerName != null and producerName != ''">
+            and t.id  in (
+            select  d.income_id from  production_material_income_detail  d
+            left join sys_user   u  on u.user_login = d.producer
+            where u.user_name like concat('%', #{producerName}, '%')
+            )
         </if>
         <if test="inCode != null and inCode != ''">
             and t.in_code   = #{inCode}
@@ -130,8 +143,6 @@
             m.unit,
             d3.dict_value unitName,
             t.income_num,
-            t.producer,
-            u2.user_name AS producerName,
             t.produce_time,
             t.in_code,
             t.duty_code,
@@ -151,7 +162,6 @@
         FROM   production_material_income t
                    LEFT JOIN sys_user u ON u.user_login = t.create_by
                    LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-                   LEFT JOIN sys_user u2 ON u2.user_login = t.producer
                    LEFT JOIN material_info m ON m.CODE = t.material_code
                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
                    LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
@@ -170,8 +180,6 @@
         m.unit,
         d3.dict_value unitName,
         t.income_num,
-        t.producer,
-        u2.user_name AS producerName,
         t.produce_time,
         t.in_code,
         t.duty_code,
@@ -191,7 +199,6 @@
         FROM   production_material_income t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
-        LEFT JOIN sys_user u2 ON u2.user_login = t.producer
         LEFT JOIN material_info m ON m.CODE = t.material_code
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
@@ -209,9 +216,6 @@
         </if>
         <if test="prod.endDate != null and prod.endDate != ''">
             and t.produce_time    <![CDATA[ <= ]]> #{prod.endDate}
-        </if>
-        <if test="prod.producerName != null and prod.producerName != ''">
-            and u2.user_name   like concat('%', #{prod.producerName}, '%')
         </if>
         <if test="prod.inCode != null and prod.inCode != ''">
             and t.in_code   = #{prod.inCode}

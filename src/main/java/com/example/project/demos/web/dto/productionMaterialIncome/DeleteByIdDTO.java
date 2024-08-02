@@ -31,11 +31,6 @@ public class DeleteByIdDTO {
     private String machineCode;
     @ApiModelProperty(value = "机器名称")
     private String machineName;
-    /**
-     * 生产员工
-     */
-    @ApiModelProperty(value = "生产员工姓名")
-    private String producerName;
 
     @ApiModelProperty(value = "厂区名称")
     private String inName;

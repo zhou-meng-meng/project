@@ -1,5 +1,6 @@
 package com.example.project.demos.web.dto.productionMaterialIncome;
 
+import com.example.project.demos.web.dto.list.ProductProducerInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -7,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class QueryByIdOutDTO {
@@ -44,13 +46,10 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "入库数量")
     private BigDecimal incomeNum;
-    /**
-     * 生产员工
-     */
-    @ApiModelProperty(value = "生产员工")
-    private String producer;
-    @ApiModelProperty(value = "生产员工")
-    private String producerName;
+
+    @ApiModelProperty(value = "员工生产信息列表")
+    List<ProductProducerInfo> producerInfoList;
+
     @ApiModelProperty(value = "班组编号")
     private String dutyCode;
     @ApiModelProperty(value = "班组名称")
