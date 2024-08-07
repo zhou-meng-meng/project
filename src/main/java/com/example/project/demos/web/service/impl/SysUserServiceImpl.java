@@ -400,7 +400,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         //记录操作日志
-        String info = "工号:"+sysUser.getUpdateBy()+",登录名:"+sysUser.getUserLogin()+"姓名:"+sysUser.getUserName();
+        String info = "登录名:"+sysUser.getUserLogin()+"姓名:"+sysUser.getUserName();
         sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE_PWD.getCode(),sysUser.getUserLogin(),date,info,errorCode,errortMsg,ipAddress,null,Constants.SYSTEM_CODE);
         log.info("修改密码结束");
         return outDTO;
