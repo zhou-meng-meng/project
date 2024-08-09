@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SysDictDataDao;
 import com.example.project.demos.web.dto.list.SysDictDataInfo;
-import com.example.project.demos.web.dto.list.SysDictTypeInfo;
 import com.example.project.demos.web.dto.sysDictData.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SysDictDataEntity;
@@ -19,7 +18,6 @@ import com.example.project.demos.web.utils.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;

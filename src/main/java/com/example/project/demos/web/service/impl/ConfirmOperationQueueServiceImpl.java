@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -36,8 +35,6 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
     private ConfirmOperationFlowDao confirmOperationFlowDao;
     @Autowired
     private TransferOutboundService transferOutboundService;
-    @Autowired
-    private SalesReturnService salesReturnService;
 
     @Autowired
     private SalersOrderService salersOrderService;
@@ -71,22 +68,22 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("确认流水queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
-            queryByPageDTO.setConfirmUser(RequestHolder.getUserInfo().getUserLogin());
+            dto.setConfirmUser(RequestHolder.getUserInfo().getUserLogin());
             //先用查询条件查询总条数
-            long total = this.confirmOperationQueueDao.count(queryByPageDTO);
+            long total = this.confirmOperationQueueDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<ConfirmOperationQueueInfo> page = new PageImpl<>(this.confirmOperationQueueDao.selectConfirmOperationQueueInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<ConfirmOperationQueueInfo> page = new PageImpl<>(this.confirmOperationQueueDao.selectConfirmOperationQueueInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ConfirmOperationQueueInfo> list = page.toList();
                 //转换业务类型

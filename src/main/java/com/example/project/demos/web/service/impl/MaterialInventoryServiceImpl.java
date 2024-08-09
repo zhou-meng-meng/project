@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,7 +44,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
     @Autowired
     private SysLogService sysLogService;
 
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("实时库存queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -60,21 +58,21 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
                 log.info("当前登录人属于总公司，可以查看所有数据");
             } else {
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                queryByPageDTO.setStockCode(user.getDeptId());
+                dto.setStockCode(user.getDeptId());
             }
             //先用查询条件查询物料总条数
-            long total = this.materialInventoryDao.countMaterialCode(queryByPageDTO);
+            long total = this.materialInventoryDao.countMaterialCode(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if (total != 0L) {
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos() - 1, queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos() - 1, dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<String> page = new PageImpl<>(this.materialInventoryDao.selectMaterialCodeByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<String> page = new PageImpl<>(this.materialInventoryDao.selectMaterialCodeByPage(dto, pageRequest), pageRequest, total);
                 //获取物料编号数据
                 List<String> codeList = page.toList();
                 //获取物料库存信息
-                List<MaterialInventoryInfo> list = materialInventoryDao.selectMaterialInventoryList(codeList, queryByPageDTO.getStockCode());
+                List<MaterialInventoryInfo> list = materialInventoryDao.selectMaterialInventoryList(codeList, dto.getStockCode());
                 list = setMaterialInventoryObject(list);
                 for (MaterialInventoryInfo info : list) {
                     info.setGroupBy(info.getMaterialCode() + info.getMaterialName() + info.getModelName() + info.getUnitName());
@@ -122,21 +120,21 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
     }
 
     @Override
-    public QueryByPagePopOutDTO queryPagePopList(QueryByPagePopDTO queryByPageDTO) {
+    public QueryByPagePopOutDTO queryPagePopList(QueryByPagePopDTO dto) {
         log.info("实时库存queryByPage开始");
         QueryByPagePopOutDTO outDTO = new QueryByPagePopOutDTO();
         String errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg = ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询物料总条数
-            long total = this.materialInventoryDao.countPop(queryByPageDTO);
+            long total = this.materialInventoryDao.countPop(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if (total != 0L) {
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos() - 1, queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos() - 1, dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<MaterialInventoryInfo> page = new PageImpl<>(this.materialInventoryDao.selectMaterialByPagePop(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<MaterialInventoryInfo> page = new PageImpl<>(this.materialInventoryDao.selectMaterialByPagePop(dto, pageRequest), pageRequest, total);
                 //获取物料编号数据
                 List<MaterialInventoryInfo> list = page.toList();
                 //赋值厂区/仓库名称
@@ -169,7 +167,6 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
      * @param type         增加/减少
      * @param date         日期
      * @return
-     * @throws UnknownHostException
      */
     @Override
     public int updateStockInventory(String materialCode, String code, BigDecimal num, String type, Date date) {
@@ -263,7 +260,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
     }
 
     @Override
-    public List<MaterialInventoryInfo> queryByParam(QueryByPageDTO queryByPageDTO) {
+    public List<MaterialInventoryInfo> queryByParam(QueryByPageDTO dto) {
         log.info("queryByParam start");
         List<MaterialInventoryInfo> returnList = new ArrayList<>();
         try {
@@ -275,17 +272,17 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
                 log.info("当前登录人属于总公司，可以查看所有数据");
             } else {
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                queryByPageDTO.setStockCode(user.getDeptId());
+                dto.setStockCode(user.getDeptId());
             }
             //先用查询条件查询物料总条数
-            long total = this.materialInventoryDao.countMaterialCode(queryByPageDTO);
+            long total = this.materialInventoryDao.countMaterialCode(dto);
             //存在数据的   继续查询
             if (total != 0L) {
                 //开始分页查询
                 //获取物料编号数据
-                List<String> codeList = this.materialInventoryDao.selectMaterialCodeByPage(queryByPageDTO, null);
+                List<String> codeList = this.materialInventoryDao.selectMaterialCodeByPage(dto, null);
                 //获取物料库存信息
-                List<MaterialInventoryInfo> list = materialInventoryDao.selectMaterialInventoryList(codeList, queryByPageDTO.getStockCode());
+                List<MaterialInventoryInfo> list = materialInventoryDao.selectMaterialInventoryList(codeList, dto.getStockCode());
                 list = setMaterialInventoryObject(list);
                 //按照物料编号  物料名称  型号名称  单位名称分组
                 Map<String, BigDecimal> totalMap = list.stream().collect(Collectors.toMap(
@@ -311,7 +308,6 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
 
     /**
      * 赋值实时库存  库存方名称
-     *
      * @param list
      * @return
      */

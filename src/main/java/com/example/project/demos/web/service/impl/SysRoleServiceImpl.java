@@ -23,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -69,21 +67,21 @@ public class SysRoleServiceImpl  implements SysRoleService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("角色维护queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.sysRoleDao.count(queryByPageDTO);
+            long total = this.sysRoleDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                SysRoleEntity sysRole = BeanCopyUtils.copy(queryByPageDTO,SysRoleEntity.class);
+                SysRoleEntity sysRole = BeanCopyUtils.copy(dto,SysRoleEntity.class);
                 //开始分页查询
                 Page<SysRoleInfo> page = new PageImpl<>(this.sysRoleDao.selectSysRoleInfoListByPage(sysRole, pageRequest), pageRequest, total);
                 //获取分页数据

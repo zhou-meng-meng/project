@@ -20,13 +20,11 @@ import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,9 +48,6 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     private ApproveOperationFlowDao approveOperationFlowDao;
     @Resource
     private ApproveOperationQueueDao approveOperationQueueDao;
-
-    @Resource
-    private UploadFileInfoDao uploadFileInfoDao;
 
     @Autowired
     private SysLogService sysLogService;

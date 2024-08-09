@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +49,7 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("确认流水queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -64,17 +63,17 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看自己确认的数据");
-                queryByPageDTO.setConfirmUser(user.getUserLogin());
+                dto.setConfirmUser(user.getUserLogin());
             }
             //先用查询条件查询总条数
-            long total = this.confirmOperationFlowDao.count(queryByPageDTO);
+            long total = this.confirmOperationFlowDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<ConfirmOperationFlowInfo> page = new PageImpl<>(this.confirmOperationFlowDao.selectConfirmOperationFlowInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<ConfirmOperationFlowInfo> page = new PageImpl<>(this.confirmOperationFlowDao.selectConfirmOperationFlowInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ConfirmOperationFlowInfo> list = page.toList();
                 //赋值业务类型

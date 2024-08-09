@@ -1,12 +1,9 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.project.demos.web.dto.customerUser.QueryByIdOutDTO;
 import com.example.project.demos.web.dto.customerUser.QueryByPageDTO;
 import com.example.project.demos.web.dto.customerUser.QueryByPageOutDTO;
-import com.example.project.demos.web.dto.list.CustomerUserInfo;
 import com.example.project.demos.web.entity.CustomerUser;
 import com.example.project.demos.web.dao.CustomerUserDao;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
@@ -18,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.PageImpl;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,21 +55,21 @@ public class CustomerUserServiceImpl implements CustomerUserService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
-        log.info(queryByPageDTO.toString());
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
+        log.info(dto.toString());
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.customerUserDao.count(queryByPageDTO);
+            long total = this.customerUserDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                CustomerUser customerUser = BeanCopyUtils.copy(queryByPageDTO,CustomerUser.class);
+                CustomerUser customerUser = BeanCopyUtils.copy(dto,CustomerUser.class);
                 //开始分页查询
                 Page<CustomerUser> page = new PageImpl<>(this.customerUserDao.queryAllByLimit(customerUser, pageRequest), pageRequest, total);
                 //获取分页数据

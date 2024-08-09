@@ -4,8 +4,6 @@ import com.example.project.demos.web.dao.SysRoleMenuDao;
 import com.example.project.demos.web.entity.SysRoleMenuEntity;
 import com.example.project.demos.web.service.SysRoleMenuService;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;

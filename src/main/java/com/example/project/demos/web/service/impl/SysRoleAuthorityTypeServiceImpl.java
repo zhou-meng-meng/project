@@ -4,7 +4,6 @@ import com.example.project.demos.web.dao.SysRoleAuthorityTypeDao;
 import com.example.project.demos.web.entity.SysRoleAuthorityTypeEntity;
 import com.example.project.demos.web.service.SysRoleAuthorityTypeService;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;

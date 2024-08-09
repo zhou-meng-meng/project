@@ -1,6 +1,5 @@
 package com.example.project.demos.web.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.CustomerPayDetailDao;
@@ -9,7 +8,6 @@ import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.CustomerPayDetailEntity;
-import com.example.project.demos.web.entity.CustomerSaleEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
@@ -43,8 +41,6 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     @Autowired
     private UploadFileInfoService uploadFileInfoService;
-    @Resource
-    private UploadFileInfoDao uploadFileInfoDao;
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {

@@ -60,21 +60,21 @@ public class SysMenuServiceImpl  implements SysMenuService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("菜单管理queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.sysMenuDao.count(queryByPageDTO);
+            long total = this.sysMenuDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                SysMenuEntity sysMenu = BeanCopyUtils.copy(queryByPageDTO,SysMenuEntity.class);
+                SysMenuEntity sysMenu = BeanCopyUtils.copy(dto,SysMenuEntity.class);
                 //开始分页查询
                 Page<SysMenuInfo> page = new PageImpl<>(this.sysMenuDao.selectSysMenuInfoListByPage(sysMenu, pageRequest), pageRequest, total);
                 //获取分页数据

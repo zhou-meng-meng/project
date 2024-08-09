@@ -5,22 +5,17 @@ import com.example.project.demos.web.dao.ApproveOperationFlowDao;
 import com.example.project.demos.web.dto.list.ApproveOperationFlowInfo;
 import com.example.project.demos.web.dto.approveOperationFlow.*;
 import com.example.project.demos.web.entity.ApproveOperationFlowEntity;
-import com.example.project.demos.web.enums.ApproveConfirmResultEnums;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.ApproveOperationFlowService;
-import com.example.project.demos.web.service.RawMaterialIncomeService;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
@@ -52,23 +47,23 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("审核流水queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //只能查询自己审核过的记录
-            queryByPageDTO.setApproveUser(RequestHolder.getUserInfo().getUserLogin());
+            dto.setApproveUser(RequestHolder.getUserInfo().getUserLogin());
             //先用查询条件查询总条数
-            long total = this.approveOperationFlowDao.count(queryByPageDTO);
+            long total = this.approveOperationFlowDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<ApproveOperationFlowInfo> page = new PageImpl<>(this.approveOperationFlowDao.selectApproveOperationFlowInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<ApproveOperationFlowInfo> page = new PageImpl<>(this.approveOperationFlowDao.selectApproveOperationFlowInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ApproveOperationFlowInfo> list = page.toList();
                 //赋值业务类型

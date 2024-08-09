@@ -55,9 +55,6 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
 
     @Autowired
     private UploadFileInfoService uploadFileInfoService;
-
-    @Resource
-    private UploadFileInfoDao uploadFileInfoDao;
     
 
     @Override

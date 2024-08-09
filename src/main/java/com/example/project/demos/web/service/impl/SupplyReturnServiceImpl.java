@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -58,8 +57,6 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
 
     @Autowired
     private UploadFileInfoService uploadFileInfoService;
-    @Resource
-    private UploadFileInfoDao uploadFileInfoDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {

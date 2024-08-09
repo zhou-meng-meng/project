@@ -22,9 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -87,7 +84,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("调拨出库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
@@ -101,17 +98,17 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
-                queryByPageDTO.setOutCode(user.getDeptId());
+                dto.setOutCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.transferOutboundDao.count(queryByPageDTO);
+            long total = this.transferOutboundDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<TransferOutboundInfo> page = new PageImpl<>(this.transferOutboundDao.selectTransferOutboundInfoListByPage(queryByPageDTO, pageRequest), pageRequest, total);
+                Page<TransferOutboundInfo> page = new PageImpl<>(this.transferOutboundDao.selectTransferOutboundInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<TransferOutboundInfo> list = page.toList();
                 //赋值调出方和调入方

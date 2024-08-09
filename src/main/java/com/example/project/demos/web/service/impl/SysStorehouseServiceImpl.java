@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Resource;
 
 
@@ -57,21 +56,21 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
     }
 
     @Override
-    public QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO) {
+    public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
         log.info("仓库queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.sysStorehouseDao.count(queryByPageDTO);
+            long total = this.sysStorehouseDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
-                PageRequest pageRequest = new PageRequest(queryByPageDTO.getTurnPageBeginPos()-1,queryByPageDTO.getTurnPageShowNum());
+                PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //转换实体入参
-                SysStorehouseEntity sysStorehouse = BeanCopyUtils.copy(queryByPageDTO,SysStorehouseEntity.class);
+                SysStorehouseEntity sysStorehouse = BeanCopyUtils.copy(dto,SysStorehouseEntity.class);
                 //开始分页查询
                 Page<SysStorehouseInfo> page = new PageImpl<>(this.sysStorehouseDao.selectSysStorehouseInfoListByPage(sysStorehouse, pageRequest), pageRequest, total);
                 //获取分页数据
