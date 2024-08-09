@@ -165,8 +165,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String newUserId ="";
         try{
+            log.info("获取最新的工号");
+            String maxUserId = sysUserDao.selectMaxUserId();
+            newUserId = String.valueOf(Integer.parseInt(maxUserId) + 1);
             SysUserEntity entity = BeanCopyUtils.copy(dto,SysUserEntity.class);
+            entity.setUserId(newUserId);
             //密码加密处理
             String pwd = DigestUtils.md5DigestAsHex(Constants.INITE_PWD.getBytes());
             entity.setPassword(pwd);
@@ -180,7 +185,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "工号:"+ dto.getUserId() +",登录名:"+dto.getUserLogin()+",姓名:"+dto.getUserName()+",所属类型:"+dto.getUserTypeName()+",角色:"+dto.getRoleName()+",部门:"+dto.getDeptName();
+        String info = "工号:"+ newUserId +",登录名:"+dto.getUserLogin()+",姓名:"+dto.getUserName()+",所属类型:"+dto.getUserTypeName()+",角色:"+dto.getRoleName()+",部门:"+dto.getDeptName();
         sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

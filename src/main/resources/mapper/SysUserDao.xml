@@ -351,5 +351,9 @@
         order  by  t.user_id  desc
     </select>
 
+    <select id="selectMaxUserId" resultType="java.lang.String">
+        select max(t.user_id) from   sys_user t
+    </select>
+
 
 </mapper>

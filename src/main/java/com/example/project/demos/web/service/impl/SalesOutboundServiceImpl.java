@@ -146,6 +146,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String billNo = "";
         try{
             log.info("查询总公司具有审核权限的人员");
             List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
@@ -158,7 +159,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
                 //生成单据号
-                entity.setBillNo(getBillNoList(user));
+                billNo = getBillNoList(user);
+                entity.setBillNo(billNo);
                 log.info("插入销售出库表");
                 int i = salesOutboundDao.insert(entity);
                 log.info("生成审核流水记录");
@@ -183,7 +185,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getOutCount().toString()+",购货方:"+dto.getCustomerName()+",出库方:"+dto.getOutName()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight().toString()+",单据号:"+dto.getBillNo();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getOutCount().toString()+",购货方:"+dto.getCustomerName()+",出库方:"+dto.getOutName()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight().toString()+",单据号:"+billNo;
         sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

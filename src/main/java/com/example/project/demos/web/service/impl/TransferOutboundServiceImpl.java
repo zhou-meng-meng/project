@@ -136,6 +136,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String billNo ="";
         try{
             log.info("获取调入方具有确认权限的人");
             String userType = "";
@@ -154,7 +155,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 entity.setCreateTime(date);
                 entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
                 //生成单据号
-                entity.setBillNo(getBillNoList(user));
+                billNo = getBillNoList(user);
+                entity.setBillNo(billNo);
                 log.info("插入调拨出库表");
                 int i = transferOutboundDao.insert(entity);
                 //生成待确认流水
@@ -179,7 +181,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             errortMsg = e.getMessage();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getTransferCount().toString()+",调出方:"+dto.getOutName()+",调入方:"+dto.getInName()+",单据号:"+dto.getBillNo();
+        String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getTransferCount().toString()+",调出方:"+dto.getOutName()+",调入方:"+dto.getInName()+",单据号:"+billNo;
         sysLogService.insertSysLog(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

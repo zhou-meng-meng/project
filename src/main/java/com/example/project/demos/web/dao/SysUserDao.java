@@ -48,4 +48,6 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
                                                 @Param(value = "deptId") String deptId);
 
     List<SysUserInfo> queryListForExport(@Param("user") SysUserEntity SysUserEntity);
+
+    String selectMaxUserId();
 }
