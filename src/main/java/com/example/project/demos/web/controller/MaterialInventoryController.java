@@ -65,6 +65,21 @@ public class MaterialInventoryController {
     }
 
     /**
+     * 库存维护
+     *
+     * @param dto 实体
+     * @return 编辑结果
+     */
+    @PostMapping("/edit")
+    @ApiOperation("库存维护")
+    public EditOutDTO edit(@RequestBody EditDTO dto) {
+       EditOutDTO outDTO = MaterialInventoryService.updateStockInventory(dto);
+        return outDTO;
+    }
+
+
+
+    /**
      * 导出实时库存
      */
     @PostMapping("/export")

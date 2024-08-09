@@ -140,4 +140,10 @@
         order  by m.code
     </select>
 
+    <delete id="deleteByCode">
+        delete from material_inventory
+        where stock_code  = #{stockCode} and  material_code = #{materialCode}
+    </delete>
+
+
 </mapper>

@@ -32,5 +32,5 @@ public interface MaterialInventoryDao extends BaseMapper<MaterialInventoryEntity
     int reduceStockInventory(@Param("materialCode")String materialCode, @Param("code")String code, @Param("num")BigDecimal num);
     int countPop(QueryByPagePopDTO dto);
     List<MaterialInventoryInfo> selectMaterialByPagePop (@Param("stock") QueryByPagePopDTO dto, @Param("pageable") Pageable pageable);
-
+    int deleteByCode(@Param("materialCode")String materialCode, @Param("stockCode")String stockCode);
 }

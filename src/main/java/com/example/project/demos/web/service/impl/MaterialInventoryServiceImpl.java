@@ -6,21 +6,16 @@ import com.example.project.demos.web.dao.MaterialInventoryDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dao.SysStorehouseDao;
 import com.example.project.demos.web.dto.list.*;
-import com.example.project.demos.web.dto.materialInventory.QueryByPageDTO;
-import com.example.project.demos.web.dto.materialInventory.QueryByPageOutDTO;
-import com.example.project.demos.web.dto.materialInventory.QueryByPagePopDTO;
-import com.example.project.demos.web.dto.materialInventory.QueryByPagePopOutDTO;
+import com.example.project.demos.web.dto.materialInventory.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.MaterialInventoryEntity;
 import com.example.project.demos.web.entity.SysFactoryEntity;
 import com.example.project.demos.web.entity.SysStorehouseEntity;
-import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.enums.FunctionTypeEnums;
-import com.example.project.demos.web.enums.OperationTypeEnums;
-import com.example.project.demos.web.enums.UserTypeEnums;
+import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.MaterialInventoryService;
 import com.example.project.demos.web.service.SysLogService;
+import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,6 +223,43 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
         int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), operationType, user.getUserLogin(), date, info, errorCode, errortMsg, user.getLoginIp(), user.getToken(), Constants.SYSTEM_CODE);
         log.info("更新库存结束");
         return i;
+    }
+
+    @Override
+    public EditOutDTO updateStockInventory(EditDTO dto) {
+        log.info("库存维护开始");
+        String errorCode = ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg = ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        Date date = new Date();
+        EditOutDTO outDTO = new EditOutDTO();
+        try {
+            log.info("判断该操作人权限，只有总公司具有审核权限的人才能操作");
+            List<String> listType = user.getAuthorityType();
+            if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
+                log.info("具有审核权限，可以操作，按照物料编号和厂区/仓库编号删除原有库存");
+                materialInventoryDao.deleteByCode(dto.getMaterialCode(),dto.getStockCode());
+                log.info("新增存库数据");
+                MaterialInventoryEntity entity = BeanCopyUtils.copy(dto,MaterialInventoryEntity.class);
+                entity.setLastUpdateTime(date);
+                materialInventoryDao.insert(entity);
+            }else{
+                log.info("不具有审核权限，不能操作");
+                errorCode = ErrorCodeEnums.HAVE_NO_AUTHORITY.getCode();
+                errortMsg = ErrorCodeEnums.HAVE_NO_AUTHORITY.getDesc();
+            }
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        //记录日志
+        String info = "物料编号:" + dto.getMaterialCode() + ",物料名称:" + dto.getMaterialName() + ",仓库/厂区:" + dto.getStockName() + ",数量:" + dto.getInventoryNum();
+        int i = sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INVENTORY.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(), user.getUserLogin(), date, info, errorCode, errortMsg, user.getLoginIp(), user.getToken(), dto.getRemark());
+        log.info("库存维护结束");
+        return outDTO;
     }
 
     @Override

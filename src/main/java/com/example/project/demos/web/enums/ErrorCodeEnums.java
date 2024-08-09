@@ -28,7 +28,8 @@ public enum ErrorCodeEnums {
     AUTH_USER_NOT_EXIST("000012","没有找到对应的审核人员"),
     CONFIRM_USER_NOT_EXIST("000013","没有找到对应的确认人员"),
     UPLOAD_FILE_ERROR("000014","上传附件失败"),
-    UPLOAD_FILE_NOT_EXISTS("000015","文件不存在");
+    UPLOAD_FILE_NOT_EXISTS("000015","文件不存在"),
+    HAVE_NO_AUTHORITY("000016","您无权限操作此功能");
 
 
     public static String getDescByCode(String code){
