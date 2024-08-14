@@ -60,7 +60,7 @@
         <foreach item="id" collection="idList" open="(" separator="," close=")">
             #{id}
         </foreach>
-        order  by   t.produce_time  desc ,t.material_code,t.duty_code,t.machine_code
+        order  by   t.produce_time  desc ,t.in_code,t.material_code,t.duty_code,t.machine_code
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
