@@ -208,7 +208,7 @@
         <foreach item="id" collection="idList" open="(" separator="," close=")">
             #{id}
         </foreach>
-        order  by   t.id  desc
+        order  by   t.produce_time  desc ,t.in_code,t.material_code,t.duty_code,t.machine_code
     </select>
 
     <select id="queryBillNoListByParam" resultType="java.lang.String">
