@@ -342,6 +342,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
             String pwd = DigestUtils.md5DigestAsHex(Constants.INITE_PWD.getBytes());
             entity.setPassword(pwd);
             entity.setLastPasswordDate(date);
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
             sysUserDao.updateById(entity);
         }catch (Exception e){
             log.info(e.getMessage());
