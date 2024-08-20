@@ -61,6 +61,10 @@ public class CustomerPayDetailEntity implements Serializable {
 	 */
 	private BigDecimal discountBalance;
 	/**
+	 * 来料/销售日期
+	 */
+	//private Date materialDate;
+	/**
 	 * 付款类型  入款 出款
 	 */
 	private String payType;

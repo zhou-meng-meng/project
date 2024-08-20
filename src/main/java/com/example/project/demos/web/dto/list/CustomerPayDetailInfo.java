@@ -47,6 +47,14 @@ public class CustomerPayDetailInfo {
     @ExcelProperty(value = "物料金额")
     @ApiModelProperty(value = "物料金额")
     private BigDecimal materialBalance;
+
+    /**
+     * 来料/销售日期
+     */
+    @ExcelProperty(value = "来料/销售日期")
+    @ApiModelProperty(value = "来料/销售日期")
+    private Date materialDate;
+
     /**
      * 打款金额
      */

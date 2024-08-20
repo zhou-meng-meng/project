@@ -214,6 +214,7 @@
     <select id="queryBillNoListByParam" resultType="java.lang.String">
         select t.bill_no from   production_material_income  t
         where   t.bill_no like concat( #{billNoPrefix}, '%')
+        order  by t.create_time desc
     </select>
 
 

@@ -11,6 +11,7 @@
         <result property="unitPrice" column="unit_price"/>
         <result property="materialCount" column="material_count"/>
         <result property="materialBalance" column="material_balance"/>
+        <!--<result property="materialDate" column="material_date"/>-->
         <result property="payBalance" column="pay_balance"/>
         <result property="returnBalance" column="return_balance"/>
         <result property="discountBalance" column="discount_balance"/>
@@ -33,6 +34,7 @@
         t.unit_price,
         t.material_count,
         t.material_balance,
+        /*t.material_date,*/
         t.pay_balance,
         t.discount_balance,
         t.pay_type,
@@ -94,6 +96,7 @@
             t.unit_price,
             t.material_count,
             t.material_balance,
+            /*t.material_date,*/
             t.pay_balance,
             t.discount_balance,
             t.pay_type,
