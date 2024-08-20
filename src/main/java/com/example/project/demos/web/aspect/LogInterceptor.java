@@ -50,7 +50,7 @@ public class LogInterceptor {
 
     static {
         ignorePaths.add("userLogin");
-        ignorePaths.add("resetPwd");
+        //ignorePaths.add("resetPwd");
     }
 
     /**
