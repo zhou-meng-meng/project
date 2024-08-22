@@ -10,6 +10,9 @@
         <result property="businessId" column="business_id"/>
         <result property="approveUser" column="approve_user"/>
         <result property="functionId" column="function_id"/>
+        <result property="customerCode" column="customer_code"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialCount" column="material_count"/>
         <result property="submitUser" column="submit_user"/>
         <result property="submitTime" column="submit_time"/>
         <result property="remark" column="remark"/>
@@ -23,6 +26,10 @@
         t.approve_user,
         u3.user_name AS approveUserName,
         t.function_id,
+        t.customer_code,
+        t.material_code,
+        m.name as materialName,
+        t.material_count,
         t.submit_user,
         u2.user_name AS submitUserName,
         t.submit_time,
@@ -30,6 +37,7 @@
         FROM	approve_operation_queue t
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
         LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+        left join material_info  m  on  m.code = t.material_code
         where  1=1  and t.approve_user = #{queue.approveUser}
         <if test="queue.beginDate != null and queue.beginDate != ''">
             and t.submit_time    <![CDATA[ >= ]]> #{queue.beginDate}
@@ -67,6 +75,10 @@
             t.approve_user,
             u3.user_name AS approveUserName,
             t.function_id,
+            t.customer_code,
+            t.material_code,
+            m.name as materialName,
+            t.material_count,
             t.submit_user,
             u2.user_name AS submitUserName,
             t.submit_time,
@@ -74,6 +86,7 @@
         FROM	approve_operation_queue t
                     LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
                     LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
+                    left join material_info  m  on  m.code = t.material_code
         where  t.id = #{id}
     </select>
 

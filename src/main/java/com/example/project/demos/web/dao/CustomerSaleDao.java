@@ -36,4 +36,6 @@ public interface CustomerSaleDao extends BaseMapper<CustomerSaleEntity> {
 
     List<CustomerSaleInfo> queryListForExport(@Param("customer") QueryByPageDTO queryByPageDTO);
 
+    List<CustomerSaleEntity> queryList();
+
 }

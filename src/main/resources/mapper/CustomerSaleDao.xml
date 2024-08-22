@@ -275,5 +275,10 @@
         order  by  t.id  desc
     </select>
 
+    <select id="queryList" resultMap="customerSaleMap">
+        select * from  customer_sale
+    </select>
+
+
 
 </mapper>

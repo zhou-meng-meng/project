@@ -2,8 +2,10 @@ package com.example.project.demos.web.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -31,6 +33,7 @@ public class ApproveOperationFlowEntity implements Serializable {
 	 * 业务类型编码
 	 */
 	private String functionId;
+
 	/**
 	 * 提交人编号
 	 */
@@ -92,8 +95,4 @@ public class ApproveOperationFlowEntity implements Serializable {
 		this.approveState = approveState;
 		this.remark = remark;
 	}
-
-
-
-
 }

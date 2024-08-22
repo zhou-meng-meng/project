@@ -164,12 +164,12 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 log.info("插入销售出库表");
                 int i = salesOutboundDao.insert(entity);
                 log.info("生成审核流水记录");
-                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.SALES_OUTBOUND.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),"system");
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.SALES_OUTBOUND.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
                 approveOperationFlowDao.insert(flowEntity);
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                 for(SysUserEntity userEntity : userList){
-                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALES_OUTBOUND.getCode(),userEntity.getUserLogin(),user.getUserLogin(),date,"system");
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALES_OUTBOUND.getCode(),userEntity.getUserLogin(),dto.getCustomerCode(),dto.getMaterialCode(),dto.getOutCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);

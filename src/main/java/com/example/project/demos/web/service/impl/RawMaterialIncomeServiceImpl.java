@@ -162,7 +162,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                 for(SysUserEntity userEntity : userList){
-                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),dto.getSupplyerCode(),dto.getMaterialCode(),dto.getCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);

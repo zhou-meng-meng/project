@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -51,6 +52,19 @@ public class ApproveOperationQueueInfo implements Serializable {
 	private String functionId;
 	@ApiModelProperty(value = "业务类型名称")
 	private String functionName;
+
+	@ApiModelProperty(value = "客户编号")
+	private String customerCode;
+	@ApiModelProperty(value = "客户名称")
+	private String customerName;
+	@ApiModelProperty(value = "物料编号")
+	private String materialCode;
+	@ApiModelProperty(value = "物料名称")
+	private String materialName;
+	@ApiModelProperty(value = "数量")
+	private BigDecimal materialCount;
+
+
 	/**
 	 * 提交人
 	 */

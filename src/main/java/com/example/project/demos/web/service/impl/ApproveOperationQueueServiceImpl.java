@@ -2,9 +2,11 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.approveOperationQueue.*;
+import com.example.project.demos.web.dto.list.ApproveOperationFlowInfo;
 import com.example.project.demos.web.dto.list.ApproveOperationQueueInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.*;
@@ -50,15 +52,17 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     private ConfirmOperationQueueDao confirmOperationQueueDao;
     @Resource
     private ConfirmOperationFlowDao confirmOperationFlowDao;
-    @Resource
-    private SysUserDao sysUserDao;
+
     @Autowired
     private CustomerSaleService customerSaleService;
     @Autowired
     private SalersOrderReturnService salersOrderReturnService;
 
     @Resource
-    private SalersOrderDao salersOrderDao;
+    private CustomerSupplyDao customerSupplyDao;
+
+    @Resource
+    private CustomerSaleDao customerSaleDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -100,10 +104,8 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                 Page<ApproveOperationQueueInfo> page = new PageImpl<>(this.approveOperationQueueDao.selectApproveOperationQueueInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<ApproveOperationQueueInfo> list = page.toList();
-                //转换业务类型
-                for(ApproveOperationQueueInfo info :list){
-                    info.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
-                }
+                //转换业务类型和赋值客户名称
+                list = setObjectName(list);
                 //出参赋值
                 outDTO.setApproveOperationQueueInfoList(list);
             }
@@ -275,4 +277,33 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
+
+    private List<ApproveOperationQueueInfo> setObjectName(List<ApproveOperationQueueInfo> list){
+        log.info("获取销售客户");
+        List<CustomerSaleEntity> saleEntities = customerSaleDao.queryList();
+        log.info("获取供应商客户");
+        List<CustomerSupplyEntity> supplyEntities = customerSupplyDao.queryList();
+        for(ApproveOperationQueueInfo info : list){
+            //赋值业务类型
+            info.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
+            //开始赋值客户名称 供应商客户
+            for(CustomerSupplyEntity entity : supplyEntities){
+                if(ObjectUtil.isNotNull(info.getCustomerCode())){
+                    if(info.getCustomerCode().equals(entity.getCode())){
+                        info.setCustomerName(entity.getName());
+                    }
+                }
+            }
+            //销售客户
+            for(CustomerSaleEntity entity : saleEntities){
+                if(ObjectUtil.isNotNull(info.getCustomerCode())){
+                    if(info.getCustomerCode().equals(entity.getCode())){
+                        info.setCustomerName(entity.getName());
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
 }

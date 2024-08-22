@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -39,6 +40,20 @@ public class ApproveOperationQueueEntity implements Serializable {
 	 * 业务类型编码
 	 */
 	private String functionId;
+
+	/**
+	 * 客户编号
+	 */
+	private String customerCode;
+	/**
+	 * 物料编号
+	 */
+	private String materialCode;
+	/**
+	 * 数量
+	 */
+	private BigDecimal materialCount;
+
 	/**
 	 * 提交人
 	 */
@@ -55,12 +70,15 @@ public class ApproveOperationQueueEntity implements Serializable {
 	/**
 	 * 新增使用
 	 */
-	public ApproveOperationQueueEntity(Long id,Long operationFlowId,Long businessId,String functionId,String approveUser,String submitUser,Date submitTime,String remark){
+	public ApproveOperationQueueEntity(Long id,Long operationFlowId,Long businessId,String functionId,String approveUser,String customerCode,String materialCode,BigDecimal materialCount,String submitUser,Date submitTime,String remark){
 		this.id = id;
 		this.operationFlowId = operationFlowId;
 		this.businessId = businessId;
 		this.functionId = functionId;
 		this.approveUser = approveUser;
+		this.customerCode = customerCode;
+		this.materialCode = materialCode;
+		this.materialCount = materialCount;
 		this.submitUser = submitUser;
 		this.submitTime = submitTime;
 		this.remark = remark;

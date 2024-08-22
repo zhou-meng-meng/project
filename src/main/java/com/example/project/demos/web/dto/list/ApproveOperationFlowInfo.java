@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -35,6 +36,7 @@ public class ApproveOperationFlowInfo implements Serializable {
 	private String functionId;
 	@ApiModelProperty(value = "业务类型名称")
 	private String functionName;
+
 	@ApiModelProperty(value = "提交人")
 	private String submitUser;
 	@ApiModelProperty(value = "提交人姓名")

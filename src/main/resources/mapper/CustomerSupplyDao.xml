@@ -167,4 +167,8 @@
         order  by  t.id  desc
     </select>
 
+    <select id="queryList" resultMap="customerSupplyMap">
+        select * from customer_supply
+    </select>
+
 </mapper>

@@ -152,7 +152,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                 for(SysUserEntity userEntity : userList){
-                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALERS_ORDER.getCode(),userEntity.getUserLogin(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALERS_ORDER.getCode(),userEntity.getUserLogin(),dto.getCustomerCode(),dto.getMaterialCode(),dto.getLoadNum(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);

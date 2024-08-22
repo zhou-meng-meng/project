@@ -2,6 +2,7 @@ package com.example.project.demos.web.dao;
 
 import com.example.project.demos.web.dto.list.CustomerSupplyInfo;
 import com.example.project.demos.web.dto.customerSupply.QueryByPageDTO;
+import com.example.project.demos.web.entity.CustomerSaleEntity;
 import com.example.project.demos.web.entity.CustomerSupplyEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -30,4 +31,6 @@ public interface CustomerSupplyDao extends BaseMapperPlus<CustomerSupplyDao,Cust
     CustomerSupplyInfo selectCustomerSupplyInfoById(Long id);
 
     List<CustomerSupplyInfo> queryListForExport(@Param("customer") CustomerSupplyEntity customerSupplyEntity);
+
+    List<CustomerSupplyEntity> queryList();
 }
