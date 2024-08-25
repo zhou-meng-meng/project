@@ -185,4 +185,8 @@
         order  by t.type, t.id  desc
     </select>
 
+    <select id="queryMaxCode" resultType="java.lang.String">
+        select max(t.code) from material_info  t
+    </select>
+
 </mapper>

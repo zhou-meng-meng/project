@@ -286,21 +286,25 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
         for(ApproveOperationQueueInfo info : list){
             //赋值业务类型
             info.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
-            //开始赋值客户名称 供应商客户
-            for(CustomerSupplyEntity entity : supplyEntities){
-                if(ObjectUtil.isNotNull(info.getCustomerCode())){
-                    if(info.getCustomerCode().equals(entity.getCode())){
-                        info.setCustomerName(entity.getName());
+            if(ObjectUtil.isNotNull(info.getCustomerCode())){
+                String prefix = info.getCustomerCode().substring(0,1);
+                if("P".equals(prefix)){
+                    //开始赋值客户名称 供应商客户
+                    for(CustomerSupplyEntity entity : supplyEntities){
+                        if(info.getCustomerCode().equals(entity.getCode())){
+                            info.setCustomerName(entity.getName());
+                        }
+                    }
+                }else{
+                    //销售客户
+                    for(CustomerSaleEntity entity : saleEntities){
+                        if(info.getCustomerCode().equals(entity.getCode())){
+                            info.setCustomerName(entity.getName());
+                        }
                     }
                 }
-            }
-            //销售客户
-            for(CustomerSaleEntity entity : saleEntities){
-                if(ObjectUtil.isNotNull(info.getCustomerCode())){
-                    if(info.getCustomerCode().equals(entity.getCode())){
-                        info.setCustomerName(entity.getName());
-                    }
-                }
+            }else{
+                log.info("info.getCustomerCode() is null");
             }
         }
         return list;

@@ -16,6 +16,7 @@ import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,15 +110,20 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String code ="";
         try{
             CustomerSupplyEntity entity = BeanCopyUtils.copy(dto,CustomerSupplyEntity.class);
+            //设置客户编号
+            String maxCode = customerSupplyDao.queryMaxCode();
+            code = DataUtils.formatCode(maxCode);
+            entity.setCode(code);
             entity.setCreateBy(user.getUserLogin());
             entity.setCreateTime(date);
             int i = customerSupplyDao.insert(entity);
             //添加账号对应关系
             customerAccountRelService.savaBatch(entity.getId(), dto.getList());
             log.info("添加一条默认往来账信息，金额都为0");
-            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,"默认往来账");
+            AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,dto.getCode(),new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,"默认往来账");
             customerPayDetailService.addPayBySystem(addDTO);
         }catch (Exception e){
             log.info(e.getMessage());
@@ -125,7 +131,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户编号:"+ dto.getCode() +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",传真:"+dto.getFaxNo();
+        String info = "客户编号:"+ code +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",传真:"+dto.getFaxNo();
         sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SUPPLY.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

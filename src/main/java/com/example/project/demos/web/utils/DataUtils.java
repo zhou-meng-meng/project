@@ -81,4 +81,13 @@ public class DataUtils {
         return md5;
     }
 
+    public static String formatCode(String code){
+        String prefix = code.substring(0,1);
+        String num = code.substring(1);
+        int codeInt = Integer.parseInt(num) +1;
+        StringBuffer sb = new StringBuffer();
+        sb.append(prefix).append(codeInt);
+        return sb.toString();
+    }
+
 }

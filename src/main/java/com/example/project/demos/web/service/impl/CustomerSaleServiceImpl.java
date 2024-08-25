@@ -16,6 +16,7 @@ import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,6 +193,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String code ="";
         try{
             /**
              * 总公司审核员提交的数据不需要审核，立即生效
@@ -201,6 +203,10 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("总公司人员且具有审核权限，提交立即生效");
                 CustomerSaleEntity entity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
+                //客户编号
+                String maxCode = customerSaleDao.queryMaxCode();
+                code = DataUtils.formatCode(maxCode);
+                entity.setCode(code);
                 entity.setApproveUser(user.getUserLogin());
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_PASSED.getCode());
                 entity.setApproveOpinion("审核员添加，立即生效");
@@ -209,7 +215,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                 entity.setCreateTime(date);
                 int i =customerSaleDao.insert(entity);
                 log.info("生成默认往来账");
-                AddPayBySystemDTO addDto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
+                AddPayBySystemDTO addDto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
                 i = customerPayDetailService.addPayBySystem(addDto);
                 //插入账号对应关系
                 customerAccountRelService.savaBatch(entity.getId(),dto.getList());
@@ -243,7 +249,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户编号:"+ dto.getCode() +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",销售员:"+dto.getSalerName();
+        String info = "客户编号:"+ code +",客户名称:"+dto.getName()+",联系人:"+dto.getLinkUser()+",联系电话:"+dto.getLinkPhoneNo()+",地址:"+dto.getAddress()+",销售员:"+dto.getSalerName();
         sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_SALE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -310,6 +316,10 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
     public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
         log.info("销售客户审核更新开始");
         CustomerSaleEntity entity = customerSaleDao.selectById(id);
+        //客户编号
+        String maxCode = customerSaleDao.queryMaxCode();
+        String code = DataUtils.formatCode(maxCode);
+        entity.setCode(code);
         entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
@@ -320,7 +330,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("审核同意，生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");

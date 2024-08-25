@@ -97,8 +97,14 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String code = "";
         try{
             MaterialInfoEntity materialInfo = BeanCopyUtils.copy(dto,MaterialInfoEntity.class);
+            //赋值物料编号
+            String maxCode = materialInfoDao.queryMaxCode();
+            int maxInt = Integer.parseInt(maxCode) +1;
+            code = String.valueOf(maxInt);
+            materialInfo.setCode(code);
             materialInfo.setCreateBy(user.getUserLogin());
             materialInfo.setCreateTime(date);
             int i = materialInfoDao.insert(materialInfo);
@@ -108,7 +114,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "物料编号:"+dto.getCode()+",物料名称:"+dto.getName()+",型号:"+dto.getModelName()+",单位:"+dto.getUnitName()+",物料类型:"+dto.getTypeName();
+        String info = "物料编号:"+code +",物料名称:"+dto.getName()+",型号:"+dto.getModelName()+",单位:"+dto.getUnitName()+",物料类型:"+dto.getTypeName();
         sysLogService.insertSysLog(FunctionTypeEnums.MATERIAL_INFO.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);

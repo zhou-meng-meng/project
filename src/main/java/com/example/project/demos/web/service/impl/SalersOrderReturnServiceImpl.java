@@ -276,7 +276,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getTollAmount(),date,FunctionTypeEnums.SALERS_ORDER_RETURN.getCode());
             salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),entity.getUnitPrice(),entity.getReturnCount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER_RETURN.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(),entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER_RETURN.getDesc());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");

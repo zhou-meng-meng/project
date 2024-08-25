@@ -34,7 +34,7 @@
         t.unit_price,
         t.material_count,
         t.material_balance,
-        /*t.material_date,*/
+        t.material_date,
         t.pay_balance,
         t.discount_balance,
         t.pay_type,

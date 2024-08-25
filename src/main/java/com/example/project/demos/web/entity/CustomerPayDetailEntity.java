@@ -63,7 +63,7 @@ public class CustomerPayDetailEntity implements Serializable {
 	/**
 	 * 来料/销售日期
 	 */
-	//private Date materialDate;
+	private Date materialDate;
 	/**
 	 * 付款类型  入款 出款
 	 */

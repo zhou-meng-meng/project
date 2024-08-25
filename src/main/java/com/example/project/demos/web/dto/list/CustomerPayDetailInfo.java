@@ -37,6 +37,15 @@ public class CustomerPayDetailInfo {
     @ExcelProperty(value = "数量")
     @ApiModelProperty(value = "数量")
     private BigDecimal materialCount;
+
+    /**
+     * 来料/销售日期
+     */
+    @ExcelProperty(value = "来料/销售日期")
+    @ApiModelProperty(value = "来料/销售日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date materialDate;
+
     /**
      * 账面余额
      */
@@ -48,12 +57,6 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "物料金额")
     private BigDecimal materialBalance;
 
-    /**
-     * 来料/销售日期
-     */
-    @ExcelProperty(value = "来料/销售日期")
-    @ApiModelProperty(value = "来料/销售日期")
-    private Date materialDate;
 
     /**
      * 打款金额

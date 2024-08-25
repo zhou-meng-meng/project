@@ -38,4 +38,6 @@ public interface CustomerSaleDao extends BaseMapper<CustomerSaleEntity> {
 
     List<CustomerSaleEntity> queryList();
 
+    String queryMaxCode();
+
 }

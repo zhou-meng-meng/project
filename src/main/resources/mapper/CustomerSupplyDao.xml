@@ -171,4 +171,8 @@
         select * from customer_supply
     </select>
 
+    <select id="queryMaxCode" resultType="java.lang.String">
+        select max(t.code) from  customer_supply  t
+    </select>
+
 </mapper>

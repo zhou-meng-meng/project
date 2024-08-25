@@ -33,4 +33,5 @@ public interface CustomerSupplyDao extends BaseMapperPlus<CustomerSupplyDao,Cust
     List<CustomerSupplyInfo> queryListForExport(@Param("customer") CustomerSupplyEntity customerSupplyEntity);
 
     List<CustomerSupplyEntity> queryList();
+    String queryMaxCode();
 }

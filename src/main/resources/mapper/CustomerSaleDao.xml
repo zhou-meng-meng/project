@@ -279,6 +279,8 @@
         select * from  customer_sale
     </select>
 
-
+    <select id="queryMaxCode" resultType="java.lang.String">
+        select max(t.code) from  customer_sale  t
+    </select>
 
 </mapper>
