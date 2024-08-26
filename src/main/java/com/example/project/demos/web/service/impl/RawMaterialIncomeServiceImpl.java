@@ -261,7 +261,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), unitPrice,entity.getCount(),tollAmount,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode());
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getSupplyerCode(),entity.getUnitPrice(),entity.getCount(),entity.getMaterialBuytime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getSupplyerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getCount(),entity.getMaterialBuytime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");

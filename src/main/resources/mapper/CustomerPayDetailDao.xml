@@ -7,16 +7,18 @@
     <resultMap type="com.example.project.demos.web.entity.CustomerPayDetailEntity" id="customerPayDetailMap">
         <result property="id" column="id"/>
         <result property="customerCode" column="customer_code"/>
+        <result property="materialCode" column="material_code"/>
         <result property="bookBalance" column="book_balance"/>
         <result property="unitPrice" column="unit_price"/>
         <result property="materialCount" column="material_count"/>
         <result property="materialBalance" column="material_balance"/>
-        <!--<result property="materialDate" column="material_date"/>-->
+        <result property="materialDate" column="material_date"/>
         <result property="payBalance" column="pay_balance"/>
         <result property="returnBalance" column="return_balance"/>
         <result property="discountBalance" column="discount_balance"/>
         <result property="operatorBy" column="operator_by"/>
         <result property="payType" column="pay_type"/>
+        <result property="payDate" column="pay_date"/>
         <result property="isDefault" column="is_default"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -30,6 +32,10 @@
         t.id,
         t.customer_code,
         #{customerName} as customerName,
+        t.material_code,
+        m.name as materialName,
+        d2.dict_value modelName,
+        d3.dict_value unitName,
         t.book_balance,
         t.unit_price,
         t.material_count,
@@ -38,6 +44,7 @@
         t.pay_balance,
         t.discount_balance,
         t.pay_type,
+        t.pay_date,
         t.return_balance,
         t.is_default,
         t.operator_by,
@@ -53,7 +60,25 @@
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
         LEFT JOIN sys_user u2 ON u2.user_login = t.operator_by
+        left join material_info  m  on  m.code = t.material_code
+        LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+        LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         where   t.customer_code = #{customerCode}
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="startDate != null and startDate != ''">
+            and t.material_date    <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.material_date    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="payStartDate != null and payStartDate != ''">
+            and t.pay_date    <![CDATA[ >= ]]> #{payStartDate}
+        </if>
+        <if test="payEndDate != null and payEndDate != ''">
+            and t.pay_date    <![CDATA[ <= ]]> #{payEndDate}
+        </if>
         order  by t.id asc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -92,14 +117,19 @@
             t.id,
             t.customer_code,
             #{customerName} as customerName,
+            t.material_code,
+            m.name as materialName,
+            d2.dict_value modelName,
+            d3.dict_value unitName,
             t.book_balance,
             t.unit_price,
             t.material_count,
             t.material_balance,
-            /*t.material_date,*/
+            t.material_date,
             t.pay_balance,
             t.discount_balance,
             t.pay_type,
+            t.pay_date,
             t.return_balance,
             t.is_default,
             t.operator_by,
@@ -115,7 +145,25 @@
                     LEFT JOIN sys_user u ON u.user_login = t.create_by
                     LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
                     LEFT JOIN sys_user u2 ON u2.user_login = t.operator_by
+                    left join material_info  m  on  m.code = t.material_code
+                    LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
+                    LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         where   t.customer_code = #{customerCode}
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="startDate != null and startDate != ''">
+            and t.material_date    <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.material_date    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="payStartDate != null and payStartDate != ''">
+            and t.pay_date    <![CDATA[ >= ]]> #{payStartDate}
+        </if>
+        <if test="payEndDate != null and payEndDate != ''">
+            and t.pay_date    <![CDATA[ <= ]]> #{payEndDate}
+        </if>
         order  by t.id asc
     </select>
 

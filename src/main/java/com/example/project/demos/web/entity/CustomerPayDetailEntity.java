@@ -32,6 +32,10 @@ public class CustomerPayDetailEntity implements Serializable {
 	 */
 	private String customerCode;
 	/**
+	 * 物料编号
+	 */
+	private String materialCode;
+	/**
 	 * 账面余额
 	 */
 	private BigDecimal bookBalance;
@@ -68,6 +72,10 @@ public class CustomerPayDetailEntity implements Serializable {
 	 * 付款类型  入款 出款
 	 */
 	private String payType;
+	/**
+	 * 打款日期
+	 */
+	private Date payDate;
 	private String operatorBy;
 	private String isDefault;
 	/**

@@ -51,6 +51,11 @@ public class QueryByIdOutDTO {
     private String payType;
     @ApiModelProperty(value = "付款类型")
     private String payTypeName;
+    @ApiModelProperty(value = "打款日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date payDate;
+
+
     @ApiModelProperty(value = "经办人英文名")
     private String operatorBy;
     @ApiModelProperty(value = "经办人名字")

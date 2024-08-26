@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -48,6 +49,10 @@ public class EditDTO {
      */
     @ApiModelProperty(value = "付款类型  0-入款 1-出款")
     private String payType;
+
+    @ApiModelProperty(value = "打款日期")
+    private Date payDate;
+
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;
 

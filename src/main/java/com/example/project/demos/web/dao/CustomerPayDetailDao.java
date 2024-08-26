@@ -21,6 +21,11 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
 
     List<CustomerPayDetailInfo> selectCustomerPayDetailInfoListByPage(@Param("customerCode") String customerCode,
                                                                       @Param("customerName") String customerName,
+                                                                      @Param("materialName") String materialName,
+                                                                      @Param("startDate") String startDate,
+                                                                      @Param("endDate") String endDate,
+                                                                      @Param("payStartDate") String payStartDate,
+                                                                      @Param("payEndDate") String payEndDate,
                                                                       @Param("pageable") Pageable pageable);
 
     /**
@@ -36,5 +41,11 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
     int reduceBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
     int addBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
 
-    List<CustomerPayDetailInfo> queryListForExport(@Param("customerCode") String customerCode,@Param("customerName") String customerName);
+    List<CustomerPayDetailInfo> queryListForExport(@Param("customerCode") String customerCode,
+                                                   @Param("customerName") String customerName,
+                                                   @Param("materialName") String materialName,
+                                                   @Param("startDate") String startDate,
+                                                   @Param("endDate") String endDate,
+                                                   @Param("payStartDate") String payStartDate,
+                                                   @Param("payEndDate") String payEndDate);
 }

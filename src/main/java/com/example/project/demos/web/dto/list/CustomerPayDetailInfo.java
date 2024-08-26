@@ -30,6 +30,24 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
+    @ExcelProperty(value = "物料编号")
+    @ApiModelProperty(value = "物料编号")
+    private String materialCode;
+
+    @ExcelProperty(value = "物料名称")
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
+
+    @ExcelProperty(value = "型号")
+    @ApiModelProperty(value = "型号")
+    private String modelName;
+    /**
+     * 单位
+     */
+    @ExcelProperty(value = "单位")
+    @ApiModelProperty(value = "单位")
+    private String unitName;
+
     @ExcelProperty(value = "单价")
     @ApiModelProperty(value = "单价")
     private BigDecimal unitPrice;
@@ -92,6 +110,9 @@ public class CustomerPayDetailInfo {
     @ExcelIgnore
     @ApiModelProperty(value = "付款类型")
     private String payTypeName;
+    @ApiModelProperty(value = "打款日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date payDate;
     @ExcelIgnore
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;

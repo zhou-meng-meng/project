@@ -215,7 +215,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                 entity.setCreateTime(date);
                 int i =customerSaleDao.insert(entity);
                 log.info("生成默认往来账");
-                AddPayBySystemDTO addDto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
+                AddPayBySystemDTO addDto = new AddPayBySystemDTO(null,entity.getCode(),null,new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
                 i = customerPayDetailService.addPayBySystem(addDto);
                 //插入账号对应关系
                 customerAccountRelService.savaBatch(entity.getId(),dto.getList());
@@ -330,7 +330,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("审核同意，生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCode(),null,new BigDecimal(0),new BigDecimal(0),null,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_YES_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.CUSTOMER_SALE.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");

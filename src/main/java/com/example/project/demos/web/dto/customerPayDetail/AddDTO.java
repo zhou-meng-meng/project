@@ -1,9 +1,11 @@
 package com.example.project.demos.web.dto.customerPayDetail;
 
 import com.example.project.demos.web.dto.list.UploadFileId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -16,6 +18,9 @@ public class AddDTO {
     private String customerCode;
     @ApiModelProperty(value = "客户名称")
     private String customerName;
+
+    @ApiModelProperty(value = "物料编号")
+    private String materialCode;
 
     /**
      * 物料总金额
@@ -51,6 +56,9 @@ public class AddDTO {
      */
     @ApiModelProperty(value = "付款类型  0-入款 1-出款")
     private String payType;
+    @ApiModelProperty(value = "打款日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date payDate;
 
     /**
      *

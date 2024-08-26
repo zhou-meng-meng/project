@@ -18,6 +18,21 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "客户名称",required = true)
     private String customerName;
 
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
+
+    @ApiModelProperty(value = "物料开始日期")
+    private String startDate;
+
+    @ApiModelProperty(value = "物料结束日期")
+    private String endDate;
+
+    @ApiModelProperty(value = "打款开始日期")
+    private String payStartDate;
+
+    @ApiModelProperty(value = "打款结束日期")
+    private String payEndDate;
+
     /**
      * 翻页数据起始位置:1
      */

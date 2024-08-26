@@ -57,7 +57,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 //分页信息
                 PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(dto.getCustomerCode(),dto.getCustomerName(), pageRequest), pageRequest, total);
+                Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate(),pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerPayDetailInfo> list = page.toList();
                 //出参赋值
@@ -305,7 +305,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         Date date = new Date();
         List<CustomerPayDetailInfo> list = new ArrayList<>();
         try {
-            list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName());
+            list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName(),dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
