@@ -34,7 +34,13 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
      * @param customerCode 查询条件
      * @return 总行数
      */
-    int count(@Param("customerCode") String customerCode);
+    int count(@Param("customerCode") String customerCode,
+              @Param("customerName") String customerName,
+              @Param("materialName") String materialName,
+              @Param("startDate") String startDate,
+              @Param("endDate") String endDate,
+              @Param("payStartDate") String payStartDate,
+              @Param("payEndDate") String payEndDate);
 
     CustomerPayDetailEntity selectLatestPayDetail(@Param("customerCode") String customerCode);
 

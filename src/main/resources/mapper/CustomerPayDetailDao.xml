@@ -85,11 +85,27 @@
 
     <select id="count" resultType="java.lang.Integer">
         SELECT   count(1)   FROM	customer_pay_detail t
+        left join material_info  m  on  m.code = t.material_code
         where   t.customer_code = #{customerCode}
+        <if test="materialName != null and materialName != ''">
+            and m.name    like concat('%', #{materialName}, '%')
+        </if>
+        <if test="startDate != null and startDate != ''">
+            and t.material_date    <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.material_date    <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test="payStartDate != null and payStartDate != ''">
+            and t.pay_date    <![CDATA[ >= ]]> #{payStartDate}
+        </if>
+        <if test="payEndDate != null and payEndDate != ''">
+            and t.pay_date    <![CDATA[ <= ]]> #{payEndDate}
+        </if>
     </select>
 
     <!--获取该客户的最新一笔的往来账-->
-    <select id="selectLatestPayDetail" resultType="java.lang.String" resultMap="customerPayDetailMap">
+    <select id="selectLatestPayDetail" parameterType="java.lang.String" resultMap="customerPayDetailMap">
         select t.id,
                t.customer_code,
                t.book_balance,
