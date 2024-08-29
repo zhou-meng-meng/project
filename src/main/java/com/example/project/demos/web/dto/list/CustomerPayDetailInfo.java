@@ -75,7 +75,6 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "物料金额")
     private BigDecimal materialBalance;
 
-
     /**
      * 打款金额
      */
@@ -92,6 +91,11 @@ public class CustomerPayDetailInfo {
     @ExcelProperty(value = "折扣金额")
     @ApiModelProperty(value = "折扣金额")
     private BigDecimal discountBalance;
+
+    @ExcelProperty(value = "打款日期")
+    @ApiModelProperty(value = "打款日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date payDate;
 
     @ExcelIgnore
     @ApiModelProperty(value = "经办人英文名")
@@ -110,9 +114,8 @@ public class CustomerPayDetailInfo {
     @ExcelIgnore
     @ApiModelProperty(value = "付款类型")
     private String payTypeName;
-    @ApiModelProperty(value = "打款日期")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date payDate;
+
+
     @ExcelIgnore
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;

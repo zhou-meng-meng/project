@@ -1,6 +1,7 @@
 package com.example.project.demos.web.dto.customerPayDetail;
 
 import com.example.project.demos.web.dto.list.UploadFileId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -51,6 +52,7 @@ public class EditDTO {
     private String payType;
 
     @ApiModelProperty(value = "打款日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date payDate;
 
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
