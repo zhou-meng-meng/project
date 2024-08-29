@@ -14,20 +14,16 @@ public class LocalDateConverter implements Converter<Date> {
     @Override
     public Class supportJavaTypeKey() {
         return LocalDateTime.class;
-
     }
 
     @Override
-
     public CellDataTypeEnum supportExcelTypeKey() {
         return null;
-
     }
 
     @Override
-    public WriteCellData<?> convertToExcelData(Date value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
+    public WriteCellData<?> convertToExcelData(Date value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration)  {
         SimpleDateFormat sdf = new SimpleDateFormat(Constants.YYYY_MM_DD);
         return new WriteCellData<>(sdf.format(value));
-
     }
 }
