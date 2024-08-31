@@ -149,6 +149,12 @@ public class QueryByIdOutDTO {
     private String remark;
 
     /**
+     * 订货地址
+     */
+    @ApiModelProperty(value = "订货地址")
+    private String orderAddress;
+
+    /**
      * 操作结果编码:null
      */
     @ApiModelProperty(value = "操作结果编码")

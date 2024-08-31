@@ -173,6 +173,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                log.info("处理减少库存操作");
+                i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);
                 //开始处理附件信息
                 uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }else{
@@ -200,10 +202,30 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SalesOutboundEntity entity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
-            entity.setUpdateBy(user.getUserLogin());
-            entity.setUpdateTime(date);
-            int i = salesOutboundDao.updateById(entity);
+            //原数据
+            SalesOutboundEntity entity = salesOutboundDao.selectById(dto.getId());
+            SalesOutboundEntity newEntity = BeanCopyUtils.copy(dto,SalesOutboundEntity.class);
+            newEntity.setUpdateBy(user.getUserLogin());
+            newEntity.setUpdateTime(date);
+            int i = salesOutboundDao.updateById(newEntity);
+            log.info("处理库存操作");
+            //修改了数量  要更新库存
+            BigDecimal count = entity.getOutCount();
+            log.info("原数量:"+count.toString());
+            BigDecimal updateCount = dto.getOutCount();
+            log.info("修改后数量:"+updateCount.toString());
+            BigDecimal num = updateCount.subtract(count);
+            log.info("修改后数量-原数量:"+num);
+            if(num.compareTo(new BigDecimal(0)) > 0){
+                log.info("修改数量大于原数量，需要减少:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"reduce",date);
+            }else if(num.compareTo(new BigDecimal(0)) < 0){
+                num  = num.multiply(new BigDecimal(-1));
+                log.info("修改数量小于原数量，需要增加:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"add",date);
+            }else{
+                log.info("修改数量等于原数量，不需要增加库存");
+            }
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
@@ -224,11 +246,16 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
         try{
+            //原数据
+            SalesOutboundEntity entity = salesOutboundDao.selectById(dto.getId());
             int i = salesOutboundDao.deleteById(dto.getId());
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            log.info("删除销售出库的待审核数据，需要恢复库存:"+entity.getOutCount());
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"add",date);
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
@@ -237,7 +264,6 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             errortMsg = e.getMessage();
         }
         UserLoginOutDTO user = RequestHolder.getUserInfo();
-        Date date = new Date();
         //记录操作日志
         String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getOutCount().toString()+",购货方:"+dto.getCustomerName()+",出库方:"+dto.getOutName()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight().toString()+",单据号:"+dto.getBillNo();
         sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
@@ -261,8 +287,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         int i =salesOutboundDao.updateById(entity);
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
-            log.info("审核同意，开始更新库存");
-            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);
+            /*log.info("审核同意，开始更新库存");  在新增和修改提交时   更新库存
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);*/
             log.info("生成该客户销售记录");
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getOutCount(),tollAmount,entity.getSaleTime(),FunctionTypeEnums.SALES_OUTBOUND.getCode());
             i = salesCustomerPayDao.insert(payEntity);
@@ -429,6 +455,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                     for(SysFactoryInfo fInfo : factoryInfoList){
                         if(outCode.equals(fInfo.getCode())){
                             info.setOutName(fInfo.getName());
+                            //销售出库的订货地址为 出库方地址
+                            info.setOrderAddress(fInfo.getAddress());
                         }
                     }
                 }else{
@@ -436,6 +464,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                     for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                         if(outCode.equals(sInfo.getCode())){
                             info.setOutName(sInfo.getName());
+                            //销售出库的订货地址为 出库方地址
+                            info.setOrderAddress(sInfo.getAddress());
                         }
                     }
                 }

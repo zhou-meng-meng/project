@@ -251,4 +251,10 @@ public class SalesOutboundInfo implements Serializable {
 	@ApiModelProperty(value = "备注")
 	private String remark;
 
+	/**
+	 * 订货地址
+	 */
+	@ApiModelProperty(value = "订货地址")
+	private String orderAddress;
+
 }

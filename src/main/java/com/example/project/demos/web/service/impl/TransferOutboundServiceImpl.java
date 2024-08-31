@@ -342,6 +342,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                     for(SysFactoryInfo fInfo : factoryInfoList){
                         if(outCode.equals(fInfo.getCode())){
                             info.setOutName(fInfo.getName());
+                            //调拨出库的订货地址为调出方的地址
+                            info.setOrderAddress(fInfo.getAddress());
                         }
                     }
                 }else{
@@ -349,6 +351,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                     for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                         if(outCode.equals(sInfo.getCode())){
                             info.setOutName(sInfo.getName());
+                            //调拨出库的订货地址为调出方的地址
+                            info.setOrderAddress(sInfo.getAddress());
                         }
                     }
                 }

@@ -427,6 +427,8 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                         for(SysFactoryInfo fInfo : factoryInfoList){
                             if(outCode.equals(fInfo.getCode())){
                                 info.setOutName(fInfo.getName());
+                                //业务员下单打印单据的订货地址为出库方地址
+                                info.setOrderAddress(fInfo.getAddress());
                             }
                         }
                     }else{
@@ -434,6 +436,8 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                         for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                             if(outCode.equals(sInfo.getCode())){
                                 info.setOutName(sInfo.getName());
+                                //业务员下单打印单据的订货地址为出库方地址
+                                info.setOrderAddress(sInfo.getAddress());
                             }
                         }
                     }

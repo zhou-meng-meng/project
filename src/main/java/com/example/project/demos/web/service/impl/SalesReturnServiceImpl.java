@@ -155,6 +155,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                     ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),userEntity.getUserLogin(),dto.getCustomerCode(),dto.getMaterialCode(),dto.getReturnCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
                     queueEntityList.add(queueEntity);
                 }
+                log.info("处理增加库存操作");
+                i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);
                 approveOperationQueueDao.insertBatch(queueEntityList);
                 //开始处理附件信息
                 uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
@@ -180,12 +182,32 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SalesReturnEntity entity = BeanCopyUtils.copy(dto,SalesReturnEntity.class);
-            entity.setUpdateBy(user.getUserLogin());
-            entity.setUpdateTime(date);
-            int i = salesReturnDao.updateById(entity);
+            //原数据
+            SalesReturnEntity entity = salesReturnDao.selectById(dto.getId());
+            SalesReturnEntity newEntity = BeanCopyUtils.copy(dto,SalesReturnEntity.class);
+            newEntity.setUpdateBy(user.getUserLogin());
+            newEntity.setUpdateTime(date);
+            int i = salesReturnDao.updateById(newEntity);
+            log.info("处理库存操作");
+            //修改了数量  要更新库存
+            BigDecimal count = entity.getReturnCount();
+            log.info("原数量:"+count.toString());
+            BigDecimal updateCount = dto.getReturnCount();
+            log.info("修改后数量:"+updateCount.toString());
+            BigDecimal num = updateCount.subtract(count);
+            log.info("修改后数量-原数量:"+num);
+            if(num.compareTo(new BigDecimal(0)) > 0){
+                log.info("修改数量大于原数量，需要增加:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"add",date);
+            }else if(num.compareTo(new BigDecimal(0)) < 0){
+                num  = num.multiply(new BigDecimal(-1));
+                log.info("修改数量小于原数量，需要减少:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"reduce",date);
+            }else{
+                log.info("修改数量等于原数量，不需要更新库存");
+            }
             //开始处理附件信息
-            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
+            uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -207,10 +229,14 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
+            //原数据
+            SalesReturnEntity entity = salesReturnDao.selectById(dto.getId());
             int i = salesReturnDao.deleteById(dto.getId());
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            log.info("删除销售退回的待审核数据，需要减少库存:"+entity.getReturnCount());
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"reduce",date);
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
@@ -252,8 +278,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         int i = 0;
         //厂区退回  判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
-            log.info("审核同意，开始更新库存");
-            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);
+            /*log.info("审核同意，开始更新库存");  销售退回提交和修改时更新库存
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);*/
             log.info("生成该客户销售退回记录");
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getTollAmount(),date,FunctionTypeEnums.SALES_RETURN.getCode());
             salesCustomerPayDao.insert(payEntity);
@@ -321,6 +347,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                         for(SysFactoryInfo fInfo : factoryInfoList){
                             if(inCode.equals(fInfo.getCode())){
                                 info.setInName(fInfo.getName());
+                                //销售客户退回打印单据订货地址为退回入库方地址
+                                info.setOrderAddress(fInfo.getAddress());
                             }
                         }
                     }else{
@@ -328,6 +356,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                         for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                             if(inCode.equals(sInfo.getCode())){
                                 info.setInName(sInfo.getName());
+                                //销售客户退回打印单据订货地址为退回入库方地址
+                                info.setOrderAddress(sInfo.getAddress());
                             }
                         }
                     }

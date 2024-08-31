@@ -2,7 +2,6 @@ package com.example.project.demos.web.controller;
 
 import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
-import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -11,9 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**

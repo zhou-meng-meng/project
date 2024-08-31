@@ -172,6 +172,8 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                log.info("供应商退回提交时，减少库存");
+                i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getReturnCount(),"reduce",date);
                 //开始处理附件信息
                 uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }else{
@@ -199,12 +201,31 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            SupplyReturnEntity entity = BeanCopyUtils.copy(dto,SupplyReturnEntity.class);
-            entity.setUpdateBy(user.getUserLogin());
-            entity.setUpdateTime(date);
-            int i = supplyReturnDao.updateById(entity);
+            //原数据
+            SupplyReturnEntity entity = supplyReturnDao.selectById(dto.getId());
+            SupplyReturnEntity newEntity = BeanCopyUtils.copy(dto,SupplyReturnEntity.class);
+            newEntity.setUpdateBy(user.getUserLogin());
+            newEntity.setUpdateTime(date);
+            int i = supplyReturnDao.updateById(newEntity);
+            //修改了数量  要更新库存
+            BigDecimal count = entity.getReturnCount();
+            log.info("原数量:"+count.toString());
+            BigDecimal updateCount = dto.getReturnCount();
+            log.info("修改后数量:"+updateCount.toString());
+            BigDecimal num = updateCount.subtract(count);
+            log.info("修改后数量-原数量:"+num);
+            if(num.compareTo(new BigDecimal(0)) > 0){
+                log.info("修改数量大于原数量，需要减少:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"reduce",date);
+            }else if(num.compareTo(new BigDecimal(0)) < 0){
+                num  = num.multiply(new BigDecimal(-1));
+                log.info("修改数量小于原数量，需要增加:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), num,"add",date);
+            }else{
+                log.info("修改数量等于原数量，不需要更新库存");
+            }
             //开始处理附件信息
-            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
+            uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -223,11 +244,16 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
         try{
+            //原数据
+            SupplyReturnEntity entity = supplyReturnDao.selectById(dto.getId());
             int i = supplyReturnDao.deleteById(dto.getId());
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            log.info("供应商退回删除，需要增加原删除的库存");
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), dto.getReturnCount(),"add",date);
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
@@ -236,7 +262,6 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         UserLoginOutDTO user = RequestHolder.getUserInfo();
-        Date date = new Date();
         //记录操作日志
         String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getReturnCount()+",供货商:"+dto.getCustomerName()+",退回方:"+dto.getOutName()+",退回人:"+dto.getReturnUserName();
         sysLogService.insertSysLog(FunctionTypeEnums.SUPPLY_RETURN.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
@@ -260,8 +285,8 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         int i =supplyReturnDao.updateById(entity);
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
-            log.info("审核同意，开始更新库存");
-            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getReturnCount(),"reduce",date);
+            /*log.info("审核同意，开始更新库存");  新增、修改、删除时更新库存
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getReturnCount(),"reduce",date);*/
             log.info("生成该客户供货方退回记录");
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getReturnCount(),tollAmount,date,FunctionTypeEnums.SUPPLY_RETURN.getCode());
             i = supplyCustomerPayDao.insert(payEntity);
@@ -322,13 +347,15 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
             List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
             for(SupplyReturnInfo info : list){
-                //退货方
+                //退货入库方
                 String outCode = info.getOutCode();
                 if(Constants.FACTORY_CODE_PREFIX.equals(outCode.substring(0,1))){
                     //工厂
                     for(SysFactoryInfo fInfo : factoryInfoList){
                         if(outCode.equals(fInfo.getCode())){
                             info.setOutName(fInfo.getName());
+                            //供应商退回打印单据的订货地址为 退回方地址
+                            info.setOrderAddress(fInfo.getAddress());
                         }
                     }
                 }else{
@@ -336,6 +363,8 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                     for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                         if(outCode.equals(sInfo.getCode())){
                             info.setOutName(sInfo.getName());
+                            //供应商退回打印单据的订货地址为 退回方地址
+                            info.setOrderAddress(sInfo.getAddress());
                         }
                     }
                 }

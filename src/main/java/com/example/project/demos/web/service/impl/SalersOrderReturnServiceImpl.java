@@ -337,6 +337,8 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                         for(SysFactoryInfo fInfo : factoryInfoList){
                             if(inCode.equals(fInfo.getCode())){
                                 info.setInName(fInfo.getName());
+                                //业务员下单退回打印单据的订货地址为 入库方地址
+                                info.setOrderAddress(fInfo.getAddress());
                             }
                         }
                     }else{
@@ -344,6 +346,8 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                         for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                             if(inCode.equals(sInfo.getCode())){
                                 info.setInName(sInfo.getName());
+                                //业务员下单退回打印单据的订货地址为 入库方地址
+                                info.setOrderAddress(sInfo.getAddress());
                             }
                         }
                     }

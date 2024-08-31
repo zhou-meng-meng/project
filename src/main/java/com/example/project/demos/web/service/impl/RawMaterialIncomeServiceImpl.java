@@ -8,7 +8,6 @@ import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
 import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
-import com.example.project.demos.web.dto.list.SysUserInfo;
 import com.example.project.demos.web.dto.rawMaterialIncome.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.*;
@@ -166,6 +165,9 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
+                //来料入库提交时  增加库存
+                log.info("开始增加库存");
+                i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);
                 //开始处理附件信息
                 uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
             }else{
@@ -194,12 +196,31 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            RawMaterialIncomeEntity entity = BeanCopyUtils.copy(dto,RawMaterialIncomeEntity.class);
-            entity.setUpdateBy(user.getUserLogin());
-            entity.setUpdateTime(date);
-            int i = rawMaterialIncomeDao.updateById(entity);
+            //原数据
+            RawMaterialIncomeEntity entity = rawMaterialIncomeDao.selectById(dto.getId());
+            RawMaterialIncomeEntity newEntity = BeanCopyUtils.copy(dto,RawMaterialIncomeEntity.class);
+            newEntity.setUpdateBy(user.getUserLogin());
+            newEntity.setUpdateTime(date);
+            int i = rawMaterialIncomeDao.updateById(newEntity);
+            //修改了数量  要更新库存
+            BigDecimal count = entity.getCount();
+            log.info("原数量:"+count.toString());
+            BigDecimal updateCount = dto.getCount();
+            log.info("修改后数量:"+updateCount.toString());
+            BigDecimal num = updateCount.subtract(count);
+            log.info("修改后数量-原数量:"+num);
+            if(num.compareTo(new BigDecimal(0)) > 0){
+                log.info("修改数量大于原数量，需要增加:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"add",date);
+            }else if(num.compareTo(new BigDecimal(0)) < 0){
+                num  = num.multiply(new BigDecimal(-1));
+                log.info("修改数量小于原数量，需要减少:"+num+"的库存");
+                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"reduce",date);
+            }else{
+                log.info("修改数量等于原数量，不需要更新库存");
+            }
             //开始处理附件信息
-            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
+            uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.info(e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
@@ -218,11 +239,16 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
         try{
+            //原数据
+            RawMaterialIncomeEntity entity = rawMaterialIncomeDao.selectById(dto.getId());
             int i = rawMaterialIncomeDao.deleteById(dto.getId());
             log.info("删除提交的待审核记录");
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
+            //删除待审核记录，需要减少对用库存
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"reduce",date);
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
@@ -231,7 +257,6 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         UserLoginOutDTO user = RequestHolder.getUserInfo();
-        Date date = new Date();
         //记录操作日志
         String info = "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",数量:"+dto.getCount().toString()+",供货商:"+dto.getSupplyerName()+",入库方:"+dto.getInName();
         sysLogService.insertSysLog(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
@@ -255,8 +280,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         int i =rawMaterialIncomeDao.updateById(entity);
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
-            log.info("审核同意，开始更新库存");
-            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);
+            /*log.info("审核同意，开始更新库存");  在新增和修改、删除时   更新库存
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);*/
             log.info("生成该客户供货记录");
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), unitPrice,entity.getCount(),tollAmount,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode());
             i = supplyCustomerPayDao.insert(payEntity);
@@ -325,6 +350,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                     for(SysFactoryInfo fInfo : factoryInfoList){
                         if(inCode.equals(fInfo.getCode())){
                             info.setInName(fInfo.getName());
+                            //来料入库的单据打印订货地址为入库方地址
+                            info.setOrderAddress(fInfo.getAddress());
                         }
                     }
                 }else{
@@ -332,6 +359,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                     for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
                         if(inCode.equals(sInfo.getCode())){
                             info.setInName(sInfo.getName());
+                            //来料入库的单据打印订货地址为入库方地址
+                            info.setOrderAddress(sInfo.getAddress());
                         }
                     }
                 }
