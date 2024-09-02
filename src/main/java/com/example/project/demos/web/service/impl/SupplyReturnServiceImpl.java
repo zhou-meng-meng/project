@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SupplyReturnInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -291,7 +292,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getReturnCount(),tollAmount,date,FunctionTypeEnums.SUPPLY_RETURN.getCode());
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝");

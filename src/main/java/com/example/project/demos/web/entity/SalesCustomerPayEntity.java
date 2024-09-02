@@ -90,4 +90,6 @@ public class SalesCustomerPayEntity implements Serializable {
 		this.functionType = functionType;
 	}
 
+	public SalesCustomerPayEntity(){}
+
 }

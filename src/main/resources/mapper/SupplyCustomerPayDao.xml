@@ -170,6 +170,26 @@
         order  by  t.id  desc
     </select>
 
+    <select id="selectByIncomeId" resultMap="supplyCustomerPayMap">
+        select
+        t.id,
+        t.income_id,
+        t.customer_code,
+        t.material_code,
+        t.unit_price,
+        t.income_date,
+        t.income_count,
+        t.toll_amount,
+        t.function_type,
+        t.create_by,
+        t.create_time,
+        t.update_by,
+        t.update_time,
+        t.remark
+        FROM	supply_customer_pay t
+        where income_id =#{incomeId}
+    </select>
+
 
 
 </mapper>

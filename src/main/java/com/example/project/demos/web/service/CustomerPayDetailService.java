@@ -61,5 +61,8 @@ public interface CustomerPayDetailService  {
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
     List<CustomerPayDetailInfo> queryListForExport(QueryByPageDTO dto);
+
+    UpdateUnitPriceOutDTO updateUnitPrice(UpdateUnitPriceDTO dto);
+
 }
 

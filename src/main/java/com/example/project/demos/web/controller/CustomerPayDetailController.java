@@ -91,6 +91,18 @@ public class CustomerPayDetailController {
         ExcelUtil.exportExcel(list, "往来账明细列表", CustomerPayDetailInfo.class);
     }
 
+    /**
+     * 编辑数据
+     *
+     * @param dto 实体
+     * @return 编辑结果
+     */
+    @PostMapping("/updateUnitPrice")
+    @ApiOperation("修改审核后单价")
+    public UpdateUnitPriceOutDTO edit(@RequestBody UpdateUnitPriceDTO dto) {
+        UpdateUnitPriceOutDTO outDTO = customerPayDetailService.updateUnitPrice(dto);
+        return outDTO;
+    }
 
 
 }

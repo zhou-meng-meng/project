@@ -6,6 +6,7 @@
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.project.demos.web.entity.CustomerPayDetailEntity" id="customerPayDetailMap">
         <result property="id" column="id"/>
+        <result property="businessId" column="business_id"/>
         <result property="customerCode" column="customer_code"/>
         <result property="materialCode" column="material_code"/>
         <result property="bookBalance" column="book_balance"/>
@@ -30,6 +31,7 @@
     <select id="selectCustomerPayDetailInfoListByPage" resultType="com.example.project.demos.web.dto.list.CustomerPayDetailInfo">
         SELECT
         t.id,
+        t.business_id,
         t.customer_code,
         #{customerName} as customerName,
         t.material_code,
@@ -128,9 +130,22 @@
         where  id > #{id}
     </update>
 
+
+    <update id="reduceBookBalanceByUnitPrice">
+        update customer_pay_detail set  book_balance = book_balance - #{amount}
+        where  id >= #{id}
+    </update>
+
+    <update id="addBookBalanceByUnitPrice">
+        update customer_pay_detail set  book_balance = book_balance + #{amount}
+        where  id >= #{id}
+    </update>
+
+
     <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.CustomerPayDetailInfo">
         SELECT
             t.id,
+            t.business_id,
             t.customer_code,
             #{customerName} as customerName,
             t.material_code,
@@ -181,6 +196,10 @@
             and t.pay_date    <![CDATA[ <= ]]> #{payEndDate}
         </if>
         order  by t.id asc
+    </select>
+
+    <select id="selectIdByBusinessId" resultType="java.lang.Long">
+        select id  from customer_pay_detail where  business_id = #{businessId}
     </select>
 
 

@@ -1,9 +1,12 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import com.example.project.demos.web.dto.salesCustomerPay.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +34,8 @@ public interface SalesCustomerPayService {
     QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     List<SalesCustomerPayInfo> queryListForExport(QueryByPageDTO dto);
+
+    int updateUnitPrice(UpdateUnitPriceDTO dto, Date date, UserLoginOutDTO user);
 
 }
 

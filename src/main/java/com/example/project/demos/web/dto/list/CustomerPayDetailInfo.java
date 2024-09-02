@@ -20,6 +20,11 @@ public class CustomerPayDetailInfo {
     @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "自增主键")
     private Long id;
+
+    @ExcelIgnore
+    @JsonSerialize(using = ToStringSerializer.class)
+    @ApiModelProperty(value = "各业务主键")
+    private Long businessId;
     /**
      * 客户编号
      */

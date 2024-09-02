@@ -169,5 +169,25 @@
         order  by  t.id desc
     </select>
 
+    <select id="selectBySaleId" resultMap="salesCustomerPayMap">
+        select
+            t.id,
+            t.sale_id,
+            t.customer_code,
+            t.material_code,
+            t.unit_price,
+            t.sale_date,
+            t.sale_count,
+            t.toll_amount,
+            t.function_type,
+            t.create_by,
+            t.create_time,
+            t.update_by,
+            t.update_time,
+            t.remark
+        FROM	sales_customer_pay t
+        where sale_id =#{saleId}
+    </select>
+
 
 </mapper>

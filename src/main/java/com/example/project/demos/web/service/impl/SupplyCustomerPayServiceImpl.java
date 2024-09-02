@@ -3,9 +3,11 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SupplyCustomerPayDao;
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
 import com.example.project.demos.web.dto.supplyCustomerPay.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
+import com.example.project.demos.web.entity.SupplyCustomerPayEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
@@ -118,6 +120,17 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         sysLogService.insertSysLog(FunctionTypeEnums.SUPPLY_COUSTOMER_PAY.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         log.info("供货方往来账queryListForExport结束");
         return list;
+    }
+
+    @Override
+    public int updateUnitPrice(UpdateUnitPriceDTO dto, Date date, UserLoginOutDTO user) {
+        SupplyCustomerPayEntity entity = supplyCustomerPayDao.selectByIncomeId(dto.getBusinessId());
+        entity.setUnitPrice(dto.getUnitPrice());
+        entity.setTollAmount(dto.getTollAmount());
+        entity.setUpdateBy(user.getUserLogin());
+        entity.setUpdateTime(date);
+        entity.setRemark(dto.getRemark());
+        return supplyCustomerPayDao.updateById(entity);
     }
 
 }

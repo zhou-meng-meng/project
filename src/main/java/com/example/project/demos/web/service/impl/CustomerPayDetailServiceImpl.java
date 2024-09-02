@@ -2,22 +2,20 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.CustomerPayDetailDao;
-import com.example.project.demos.web.dao.UploadFileInfoDao;
+import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
-import com.example.project.demos.web.entity.CustomerPayDetailEntity;
+import com.example.project.demos.web.entity.*;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.handler.RequestHolder;
-import com.example.project.demos.web.service.CustomerPayDetailService;
-import com.example.project.demos.web.service.SysLogService;
-import com.example.project.demos.web.service.UploadFileInfoService;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
+import com.graphbuilder.math.func.EFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,12 +33,28 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     @Resource
     private CustomerPayDetailDao customerPayDetailDao;
+    @Resource
+    private RawMaterialIncomeDao rawMaterialIncomeDao;
+    @Resource
+    private SalesOutboundDao salesOutboundDao;
+    @Resource
+    private SupplyReturnDao supplyReturnDao;
+    @Resource
+    private SalesReturnDao salesReturnDao;
+    @Resource
+    private SalersOrderDao salersOrderDao;
+    @Resource
+    private SalersOrderReturnDao salersOrderReturnDao;
 
     @Autowired
     private SysLogService sysLogService;
-
     @Autowired
     private UploadFileInfoService uploadFileInfoService;
+    @Autowired
+    private SupplyCustomerPayService supplyCustomerPayService;
+    @Autowired
+    private SalesCustomerPayService salesCustomerPayService;
+
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
@@ -317,5 +331,167 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
         log.info("客户往来账明细queryListForExport结束");
         return list;
+    }
+
+    /**
+     * 对于审核通过的数据，可以修改单价，总金额也会变化，要更新往来账信息
+     * 1、对于来料入库、销售出库、业务员下单业务，要更新往来账明细表里的物料金额，
+     *    修改后的金额大于原金额的，当前往来账数据及后面的数据要减去多出来的金额
+     *    修改后的金额小于原金额的，当前往来账数据及后面的数据要加上减少的金额
+     * 2、对于供货方退回、销售客户退回、业务员下单退回，要更新往来账明细表里的退回金额
+     *    修改后的金额大于原金额的，当前往来账数据及后面的数据要加上多出来的金额
+     *    修改后的金额小于原金额的，当前往来账数据及后面的数据要减去减少的金额
+     * @param dto
+     * @return
+     */
+    @Override
+    public UpdateUnitPriceOutDTO updateUnitPrice(UpdateUnitPriceDTO dto) {
+        UpdateUnitPriceOutDTO outDTO  = new UpdateUnitPriceOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        boolean edit = true;
+        String fuctionId = dto.getFunctionId();
+        try{
+            log.info("通过businessId获取该笔数据的往来账id");
+            Long id = customerPayDetailDao.selectIdByBusinessId(dto.getBusinessId());
+
+            log.info("判断修改后的金额和原金额");
+            BigDecimal preTollAmount = dto.getPreTollAmount();
+            BigDecimal tollAmount = dto.getTollAmount();
+            log.info("修改前总金额:"+preTollAmount);
+            log.info("修改后总金额:"+tollAmount);
+            BigDecimal substract = tollAmount.subtract(preTollAmount);
+            log.info("修改后金额-修改前金额:"+tollAmount +" - " + preTollAmount +" = " + substract);
+
+            CustomerPayDetailEntity entity = customerPayDetailDao.selectById(id);
+            entity.setUnitPrice(dto.getUnitPrice());
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            entity.setRemark(dto.getRemark());
+            if(fuctionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode()) || fuctionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode()) || fuctionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode()) ){
+                log.info("来料入库、销售出库、业务员下单，更新物料金额");
+                entity.setMaterialBalance(dto.getTollAmount());
+                if(substract.compareTo(new BigDecimal("0")) > 0){
+                    log.info("更新当前往来账记录的单价和物料金额");
+                    customerPayDetailDao.updateById(entity);
+                    log.info("修改后金额大于原金额，更新当前记录及以后得往来账，账面余额减去大于的金额");
+                    customerPayDetailDao.reduceBookBalanceByUnitPrice(id,substract);
+                }else if (substract.compareTo(new BigDecimal("0")) < 0){
+                    log.info("更新当前往来账记录的单价和物料金额");
+                    customerPayDetailDao.updateById(entity);
+                    log.info("修改后金额小于原金额，更新当前记录的物料金额，更新当前记录及以后得往来账，账面余额加上大于的金额");
+                    substract  = substract.multiply(new BigDecimal(-1));
+                    customerPayDetailDao.addBookBalanceByUnitPrice(id,substract);
+                }else{
+                    log.info("修改后金额等于原金额，不操作");
+                    edit = false;
+                }
+            }else if (fuctionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode()) || fuctionId.equals(FunctionTypeEnums.SALES_RETURN.getCode()) || fuctionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())){
+                log.info("供货方退回、销售客户退回、业务员下单退回，更新退回金额");
+                entity.setReturnBalance(dto.getTollAmount());
+                if(substract.compareTo(new BigDecimal("0")) > 0){
+                    log.info("更新当前往来账记录的单价和退回金额");
+                    customerPayDetailDao.updateById(entity);
+                    log.info("修改后金额大于原金额，更新当前记录及以后得往来账，账面余额加上多余的金额");
+                    customerPayDetailDao.addBookBalanceByUnitPrice(id,substract);
+                }else if (substract.compareTo(new BigDecimal("0")) < 0){
+                    log.info("更新当前往来账记录的单价和退回金额");
+                    customerPayDetailDao.updateById(entity);
+                    log.info("修改后金额小于原金额，更新当前记录及以后得往来账，账面余额减多余的金额");
+                    substract  = substract.multiply(new BigDecimal(-1));
+                    customerPayDetailDao.reduceBookBalanceByUnitPrice(id,substract);
+                }else{
+                    log.info("修改后金额等于原金额，不操作");
+                    edit = false;
+                }
+            }
+
+            if(edit){
+                log.info("修改各业务数据单价开始");
+                if(fuctionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode())){
+                    log.info("来料入库修改单价和总金额");
+                    RawMaterialIncomeEntity updateEntity = new RawMaterialIncomeEntity();
+                    updateEntity.setId(dto.getBusinessId());
+                    updateEntity.setUnitPrice(dto.getUnitPrice());
+                    updateEntity.setTollAmount(dto.getTollAmount());
+                    updateEntity.setUpdateBy(user.getUserLogin());
+                    updateEntity.setUpdateTime(date);
+                    updateEntity.setRemark(dto.getRemark());
+                    rawMaterialIncomeDao.updateById(updateEntity);
+                    log.info("往来账来料记录修改单价和总金额");
+                    supplyCustomerPayService.updateUnitPrice(dto,date,user);
+                }else if(fuctionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode())){
+                    log.info("销售出库修改单价和总金额");
+                    SalesOutboundEntity updateEntity = new SalesOutboundEntity();
+                    updateEntity.setId(dto.getBusinessId());
+                    updateEntity.setUnitPrice(dto.getUnitPrice());
+                    updateEntity.setTollAmount(dto.getTollAmount());
+                    updateEntity.setUpdateBy(user.getUserLogin());
+                    updateEntity.setUpdateTime(date);
+                    updateEntity.setRemark(dto.getRemark());
+                    salesOutboundDao.updateById(updateEntity);
+                    log.info("往来账销售记录修改单价和总金额");
+                    salesCustomerPayService.updateUnitPrice(dto,date,user);
+                }else if(fuctionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
+                    log.info("供货方退回修改单价和总金额");
+                    SupplyReturnEntity updateEntity = new SupplyReturnEntity();
+                    updateEntity.setId(dto.getBusinessId());
+                    updateEntity.setUnitPrice(dto.getUnitPrice());
+                    updateEntity.setTollAmount(dto.getTollAmount());
+                    updateEntity.setUpdateBy(user.getUserLogin());
+                    updateEntity.setUpdateTime(date);
+                    updateEntity.setRemark(dto.getRemark());
+                    supplyReturnDao.updateById(updateEntity);
+                    log.info("往来账来料记录修改单价和总金额");
+                    supplyCustomerPayService.updateUnitPrice(dto,date,user);
+                }else if(fuctionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())){
+                    log.info("销售客户退回修改单价和总金额");
+                    SalesReturnEntity updateEntity = new SalesReturnEntity();
+                    updateEntity.setId(dto.getBusinessId());
+                    updateEntity.setUnitPrice(dto.getUnitPrice());
+                    updateEntity.setTollAmount(dto.getTollAmount());
+                    updateEntity.setUpdateBy(user.getUserLogin());
+                    updateEntity.setUpdateTime(date);
+                    updateEntity.setRemark(dto.getRemark());
+                    salesReturnDao.updateById(updateEntity);
+                    log.info("往来账销售记录修改单价和总金额");
+                    salesCustomerPayService.updateUnitPrice(dto,date,user);
+                }else if(fuctionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())){
+                    log.info("业务员下单修改单价和总金额");
+                    SalersOrderEntity updateEntity = new SalersOrderEntity();
+                    updateEntity.setId(dto.getBusinessId());
+                    updateEntity.setUnitPrice(dto.getUnitPrice());
+                    updateEntity.setTollAmount(dto.getTollAmount());
+                    updateEntity.setUpdateBy(user.getUserLogin());
+                    updateEntity.setUpdateTime(date);
+                    updateEntity.setRemark(dto.getRemark());
+                    salersOrderDao.updateById(updateEntity);
+                    log.info("往来账销售记录修改单价和总金额");
+                    salesCustomerPayService.updateUnitPrice(dto,date,user);
+                }else if(fuctionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())){
+                    log.info("业务员下单退回修改单价和总金额");
+                    SalersOrderReturnEntity updateEntity = new SalersOrderReturnEntity();
+                    updateEntity.setId(dto.getBusinessId());
+                    updateEntity.setUnitPrice(dto.getUnitPrice());
+                    updateEntity.setTollAmount(dto.getTollAmount());
+                    updateEntity.setUpdateBy(user.getUserLogin());
+                    updateEntity.setUpdateTime(date);
+                    updateEntity.setRemark(dto.getRemark());
+                    salersOrderReturnDao.updateById(updateEntity);
+                    log.info("往来账销售记录修改单价和总金额");
+                    salesCustomerPayService.updateUnitPrice(dto,date,user);
+                }
+            }
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info("异常:"+e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        return outDTO;
     }
 }

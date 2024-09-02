@@ -27,6 +27,12 @@ public class CustomerPayDetailEntity implements Serializable {
 	@TableId
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
+
+	/**
+	 * 各业务主键
+	 */
+	@JsonSerialize(using = ToStringSerializer.class)
+	private Long businessId;
 	/**
 	 * 客户编号
 	 */

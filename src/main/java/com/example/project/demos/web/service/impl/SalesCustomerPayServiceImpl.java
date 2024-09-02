@@ -3,9 +3,12 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SalesCustomerPayDao;
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import com.example.project.demos.web.dto.salesCustomerPay.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
+import com.example.project.demos.web.entity.SalesCustomerPayEntity;
+import com.example.project.demos.web.entity.SupplyCustomerPayEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
@@ -119,6 +122,15 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
         return list;
     }
 
-    
+    @Override
+    public int updateUnitPrice(UpdateUnitPriceDTO dto, Date date, UserLoginOutDTO user) {
+        SalesCustomerPayEntity entity = salesCustomerPayDao.selectBySaleId(dto.getBusinessId());
+        entity.setUnitPrice(dto.getUnitPrice());
+        entity.setTollAmount(dto.getTollAmount());
+        entity.setUpdateBy(user.getUserLogin());
+        entity.setUpdateTime(date);
+        entity.setRemark(dto.getRemark());
+        return salesCustomerPayDao.updateById(entity);
+    }
 
 }

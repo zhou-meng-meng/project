@@ -1,7 +1,9 @@
 package com.example.project.demos.web.service;
 
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.rawMaterialIncome.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
@@ -60,6 +62,7 @@ public interface RawMaterialIncomeService  {
     int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
 
     List<RawMaterialIncomeInfo> queryListForExport(QueryByPageDTO dto);
+
 
 }
 

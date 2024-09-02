@@ -44,8 +44,24 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
 
     CustomerPayDetailEntity selectLatestPayDetail(@Param("customerCode") String customerCode);
 
+    /**
+     * 财务修改打款金额使用
+     * @param id
+     * @param amount
+     * @return
+     */
     int reduceBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
     int addBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
+
+    /**
+     * 审核员修改单价  同步修改往来账使用
+     * @param id
+     * @param amount
+     * @return
+     */
+    int reduceBookBalanceByUnitPrice(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
+    int addBookBalanceByUnitPrice(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
+
 
     List<CustomerPayDetailInfo> queryListForExport(@Param("customerCode") String customerCode,
                                                    @Param("customerName") String customerName,
@@ -54,4 +70,7 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
                                                    @Param("endDate") String endDate,
                                                    @Param("payStartDate") String payStartDate,
                                                    @Param("payEndDate") String payEndDate);
+
+    Long selectIdByBusinessId(Long businessId);
+
 }

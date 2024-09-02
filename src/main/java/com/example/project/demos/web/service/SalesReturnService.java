@@ -1,8 +1,10 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesReturnInfo;
 import com.example.project.demos.web.dto.salesReturn.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -29,7 +31,7 @@ public interface SalesReturnService  {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
     QueryByPageOutDTO queryByPage(QueryByPageDTO dto);

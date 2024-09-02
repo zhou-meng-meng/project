@@ -1,8 +1,10 @@
 package com.example.project.demos.web.service;
 
 
+import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import com.example.project.demos.web.dto.salesOutbound.*;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -69,7 +71,6 @@ public interface SalesOutboundService  {
     int chargeOffConfirm(Long id, String result, String opinion, String userLogin,  Date date);
 
     List<SalesOutboundInfo> queryListForExport(QueryByPageDTO dto);
-
 
 }
 
