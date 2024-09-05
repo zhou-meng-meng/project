@@ -1,11 +1,7 @@
 package com.example.project.demos.web.service;
 
-
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import com.example.project.demos.web.dto.salesOutbound.*;
-import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +55,7 @@ public interface SalesOutboundService  {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
-    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,BigDecimal freight) ;
 
 
     ChargeOffOutDTO chargeOffSubmit(ChargeOffDTO dto);

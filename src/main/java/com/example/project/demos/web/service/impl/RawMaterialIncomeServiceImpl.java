@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -74,8 +73,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             RawMaterialIncomeInfo rawMaterialIncomeInfo = rawMaterialIncomeDao.selectRawMaterialIncomeInfoById(id);
             List<RawMaterialIncomeInfo> list = new ArrayList<>();
             list.add(rawMaterialIncomeInfo);
-            list = setRawMaterialIncomeObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setRawMaterialIncomeObject(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -95,6 +93,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
+        outDTO.setSumAmt(new BigDecimal("0"));
         try {
             //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -118,10 +118,9 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 //获取分页数据
                 List<RawMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
-                list = setRawMaterialIncomeObject(list);
-                list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+                list = setRawMaterialIncomeObject(list,RequestHolder.getUserInfo());
                 //出参赋值
-                outDTO.setRawMaterialIncomeInfoList(list);
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -317,8 +316,9 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             log.info("开始查询数据");
             list = rawMaterialIncomeDao.queryListForExport(dto);
             //处理入库方名称
-            list = setRawMaterialIncomeObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setRawMaterialIncomeObject(list,RequestHolder.getUserInfo());
+            //添加合计列
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -337,8 +337,15 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
      * @param list
      * @return
      */
-    private List<RawMaterialIncomeInfo> setRawMaterialIncomeObject(List<RawMaterialIncomeInfo> list){
+    private List<RawMaterialIncomeInfo> setRawMaterialIncomeObject(List<RawMaterialIncomeInfo> list,UserLoginOutDTO userInfo){
         log.info("赋值来料入库方名称");
+        boolean isPrice = false;
+        List<String> typeList = userInfo.getAuthorityType();
+        if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
+            isPrice = true;
+        }else{
+            isPrice = false;
+        }
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             //获取厂区和仓库集合
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
@@ -365,28 +372,11 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                         }
                     }
                 }
-            }
-        }else{
-            log.info("list is null");
-        }
-        return list;
-    }
-
-    /**
-     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
-     * @param list
-     * @param userInfo
-     * @return
-     */
-    private List<RawMaterialIncomeInfo> formatPriceByRoleType(List<RawMaterialIncomeInfo> list,UserLoginOutDTO userInfo){
-        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
-        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
-            List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
-                log.info("具有单价权限,不处理");
-            }else{
-                log.info("没有单价权限，将单价和总金额置为0");
-                for(RawMaterialIncomeInfo info : list){
+                //处理单价和总金额权限
+                if(isPrice){
+                    log.info("有单价权限，不处理");
+                }else{
+                    log.info("没有单价权限，将单价和总金额置为0");
                     info.setUnitPrice("0");
                     info.setTollAmount(new BigDecimal(0));
                 }
@@ -416,5 +406,47 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         return billNo;
     }
 
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<RawMaterialIncomeInfo> list,QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(RawMaterialIncomeInfo info: list){
+            BigDecimal count = info.getCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setRawMaterialIncomeInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<RawMaterialIncomeInfo> formatSumObjectForExport(List<RawMaterialIncomeInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(RawMaterialIncomeInfo info: list){
+            BigDecimal count = info.getCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        RawMaterialIncomeInfo info = new RawMaterialIncomeInfo();
+        info.setUnitName("合计:");
+        info.setCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
+    }
 
 }

@@ -25,7 +25,7 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "开始日期")
     private String beginDate;
 
-    @ApiModelProperty(value = "结束")
+    @ApiModelProperty(value = "结束日期")
     private String endDate;
 
     /**

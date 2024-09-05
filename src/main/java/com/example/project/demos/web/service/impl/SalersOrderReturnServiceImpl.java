@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalersOrderReturnInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -16,6 +15,7 @@ import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -66,8 +66,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             //处理入库方
             List<SalersOrderReturnInfo> list = new ArrayList<>();
             list.add(info);
-            list = setSalersOrderReturnObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setSalersOrderReturnObject(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -87,6 +86,8 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
+        outDTO.setSumAmt(new BigDecimal("0"));
         try {
             //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -108,9 +109,9 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                 Page<SalersOrderReturnInfo> page = new PageImpl<>(this.salersOrderReturnDao.selectSalersOrderReturnInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalersOrderReturnInfo> list = page.toList();
-                list = setSalersOrderReturnObject(list);
-                //出参赋值
-                outDTO.setSalersOrderReturnInfoList(list);
+                list = setSalersOrderReturnObject(list,user);
+                //出参赋值 集合和合计字段
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -305,7 +306,8 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                 dto.setReturnUser(user.getUserLogin());
             }
             list = salersOrderReturnDao.queryListForExport(dto);
-            list = setSalersOrderReturnObject(list);
+            list = setSalersOrderReturnObject(list,user);
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -324,7 +326,8 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
      * @param list
      * @return
      */
-    private List<SalersOrderReturnInfo> setSalersOrderReturnObject(List<SalersOrderReturnInfo> list){
+    private List<SalersOrderReturnInfo> setSalersOrderReturnObject(List<SalersOrderReturnInfo> list,UserLoginOutDTO user){
+        boolean isPrice = DataUtils.getIsPrice(user);
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             //获取厂区和仓库集合
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
@@ -355,28 +358,9 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                 }else {
                     log.info("inCode is null");
                 }
-            }
-        }else{
-            log.info("list is null");
-        }
-        return list;
-    }
-
-    /**
-     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
-     * @param list
-     * @param userInfo
-     * @return
-     */
-    private List<SalersOrderReturnInfo> formatPriceByRoleType(List<SalersOrderReturnInfo> list, UserLoginOutDTO userInfo){
-        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
-        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
-            List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
-                log.info("具有单价权限,不处理");
-            }else{
-                log.info("没有单价权限，将单价和总金额置为0");
-                for(SalersOrderReturnInfo info : list){
+                //处理单价字段
+                if(!isPrice){
+                    //不具有单价权限   将单价和总金额置为0
                     info.setUnitPrice(new BigDecimal(0));
                     info.setTollAmount(new BigDecimal(0));
                 }
@@ -386,4 +370,49 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
         }
         return list;
     }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<SalersOrderReturnInfo> list, QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalersOrderReturnInfo info: list){
+            BigDecimal count = info.getReturnCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setSalersOrderReturnInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<SalersOrderReturnInfo> formatSumObjectForExport(List<SalersOrderReturnInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalersOrderReturnInfo info: list){
+            BigDecimal count = info.getReturnCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        SalersOrderReturnInfo info = new SalersOrderReturnInfo();
+        info.setUnitName("合计:");
+        info.setReturnCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
+    }
+
+
 }

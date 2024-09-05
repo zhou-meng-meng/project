@@ -5,11 +5,13 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dao.CustomerPayDetailDao;
 import com.example.project.demos.web.dao.UploadFileInfoDao;
 import com.example.project.demos.web.dto.list.UploadFileEditInfo;
 import com.example.project.demos.web.dto.list.UploadFileId;
 import com.example.project.demos.web.dto.list.UploadFileInfo;
 import com.example.project.demos.web.dto.uploadFileInfo.*;
+import com.example.project.demos.web.entity.CustomerPayDetailEntity;
 import com.example.project.demos.web.entity.UploadFileInfoEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.service.UploadFileInfoService;
@@ -35,6 +37,9 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
 
     @Autowired
     private UploadFileInfoDao uploadFileInfoDao;
+
+    @Autowired
+    private CustomerPayDetailDao customerPayDetailDao;
 
     @Value("${upload.filePath}")
     public String filePath;
@@ -144,13 +149,32 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryFileInfoListOutDTO outDTO = new QueryFileInfoListOutDTO();
         try {
+            List<Long> busiIdList = new ArrayList<>();
+            //页面传参的各业务主键   区分从往来账页面和从其他业务页面  往来账页面需要展示对应业务的附件
+            busiIdList.add(dto.getBusinessId());
+            if(ObjectUtil.isNotNull(dto.getPageType()) && "1".equals(dto.getPageType())){
+                log.info("往来账页面查询附件列表");
+                //dto的busineeId是往来账记录的主键，需要根据这个主键获取对应的业务主键:business_id
+                CustomerPayDetailEntity entity =customerPayDetailDao.selectById(dto.getBusinessId());
+                if(ObjectUtil.isNotNull(entity)){
+                    //这是往来账表对应的业务主键  比如 来料 销售等
+                    Long busiId = entity.getBusinessId();
+                    if(ObjectUtil.isNotNull(busiId)){
+                        busiIdList.add(busiId);
+                    }else{
+                        busiIdList.add(999999L);
+                    }
+                }
+            }else{
+                log.info("非往来账页面查询附件列表");
+            }
             //先用查询条件查询总条数
-            List<UploadFileInfoEntity> entityList = uploadFileInfoDao.queryByParam(dto.getBusinessId());
-            if(CollectionUtil.isNotEmpty(entityList) && entityList.size() >0 ){
-                outDTO.setTurnPageTotalNum(entityList.size());
+            int count = uploadFileInfoDao.countUploadFileInfoList(busiIdList);
+            if(count >0 ){
+                outDTO.setTurnPageTotalNum(count);
                 PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<UploadFileInfo> page = new PageImpl<>(this.uploadFileInfoDao.selectUploadFileInfoListByPage(dto.getBusinessId(), pageRequest), pageRequest, Long.valueOf(entityList.size()));
+                Page<UploadFileInfo> page = new PageImpl<>(this.uploadFileInfoDao.selectUploadFileInfoListByPage(busiIdList, pageRequest), pageRequest, Long.valueOf(count));
                 //获取分页数据
                 List<UploadFileInfo> list = page.toList();
                 //出参赋值

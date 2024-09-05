@@ -6,7 +6,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.approveOperationQueue.*;
-import com.example.project.demos.web.dto.list.ApproveOperationFlowInfo;
 import com.example.project.demos.web.dto.list.ApproveOperationQueueInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.*;
@@ -140,7 +139,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                 rawMaterialIncomeService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
             }else if(functionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode())){
                 log.info("销售出库操作");
-                salesOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+                salesOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getFreight());
             }else if(functionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
                 log.info("供应商退回操作");
                 supplyReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);

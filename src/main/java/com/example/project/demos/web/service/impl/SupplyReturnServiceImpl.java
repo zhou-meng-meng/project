@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SupplyReturnInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -66,23 +65,12 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
-            //添加权限  总公司人员查看所有数据   厂区或者仓库人员查看所属厂区或者仓库提交数据
-            boolean isPrice = false;
             UserLoginOutDTO user = RequestHolder.getUserInfo();
-            String userType = user.getUserType();
-            log.info("userType:"+userType);
-            if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
-                log.info("当前登录人属于总公司，可以查看所有数据");
-                isPrice = true;
-            }else{
-                log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                isPrice = false;
-            }
             SupplyReturnInfo info = supplyReturnDao.selectSupplyReturnInfoById(id);
             //处理入库方
             List<SupplyReturnInfo> list = new ArrayList<>();
             list.add(info);
-            list = setSupplyReturnObject(list,isPrice);
+            list = setSupplyReturnObject(list, user);
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -102,19 +90,18 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
+        outDTO.setSumAmt(new BigDecimal("0"));
         try {
             //添加权限  总公司人员查看所有数据   厂区或者仓库人员查看所属厂区或者仓库提交数据
-            boolean isPrice = false;
             UserLoginOutDTO user = RequestHolder.getUserInfo();
             String userType = user.getUserType();
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
                 log.info("当前登录人属于总公司，可以查看所有数据");
-                isPrice = true;
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
                 dto.setOutCode(user.getDeptId());
-                isPrice = false;
             }
             //先用查询条件查询总条数
             long total = this.supplyReturnDao.count(dto);
@@ -127,9 +114,9 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 Page<SupplyReturnInfo> page = new PageImpl<>(this.supplyReturnDao.selectSupplyReturnInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SupplyReturnInfo> list = page.toList();
-                list = setSupplyReturnObject(list,isPrice);
-                //出参赋值
-                outDTO.setSupplyReturnInfoList(list);
+                list = setSupplyReturnObject(list,user);
+                //出参赋值 集合和合计字段
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -307,7 +294,6 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         List<SupplyReturnInfo> list = new ArrayList<>();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
-        boolean isPrice = false;
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         Date date = new Date();
         try {
@@ -316,14 +302,13 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
                 log.info("当前登录人属于总公司，可以查看所有数据");
-                isPrice = true;
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
                 dto.setOutCode(user.getDeptId());
-                isPrice = false;
             }
             list = supplyReturnDao.queryListForExport(dto);
-            list = setSupplyReturnObject(list,isPrice);
+            list = setSupplyReturnObject(list,user);
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -342,7 +327,8 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
      * @param list
      * @return
      */
-    private List<SupplyReturnInfo> setSupplyReturnObject(List<SupplyReturnInfo> list,boolean isPrice){
+    private List<SupplyReturnInfo> setSupplyReturnObject(List<SupplyReturnInfo> list,UserLoginOutDTO user){
+        boolean isPrice = DataUtils.getIsPrice(user);
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             //获取厂区和仓库集合
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
@@ -399,6 +385,49 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             billNo = sb.toString();
         }
         return billNo;
+    }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<SupplyReturnInfo> list, QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SupplyReturnInfo info: list){
+            BigDecimal count = info.getReturnCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setSupplyReturnInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<SupplyReturnInfo> formatSumObjectForExport(List<SupplyReturnInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SupplyReturnInfo info: list){
+            BigDecimal count = info.getReturnCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        SupplyReturnInfo info = new SupplyReturnInfo();
+        info.setUnitName("合计:");
+        info.setReturnCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
     }
 
 }

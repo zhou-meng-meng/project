@@ -3,6 +3,8 @@ package com.example.project.demos.web.dto.salersOrder;
 import com.example.project.demos.web.dto.list.SalersOrderInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -12,6 +14,11 @@ public class QueryByPageOutDTO {
      */
     @ApiModelProperty(value = "总数 ")
     private Integer turnPageTotalNum;
+
+    @ApiModelProperty(value = "合计数量")
+    private BigDecimal sumCount;
+    @ApiModelProperty(value = "合计金额")
+    private BigDecimal sumAmt;
 
     private List<SalersOrderInfo> salersOrderInfoList;
 

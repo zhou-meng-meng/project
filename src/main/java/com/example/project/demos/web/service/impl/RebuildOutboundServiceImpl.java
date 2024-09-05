@@ -6,6 +6,7 @@ import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.RebuildOutboundDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dao.SysStorehouseDao;
+import com.example.project.demos.web.dto.list.RebuildInboundInfo;
 import com.example.project.demos.web.dto.list.RebuildOutboundInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -106,8 +107,9 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
                 //获取分页数据
                 List<RebuildOutboundInfo> list = page.toList();
                 list = setRebuildOutboundObject(list);
-                //出参赋值
+                //出参赋值  集合和数量合计
                 outDTO.setRebuildOutboundInfoList(list);
+                outDTO.setSumCount(formatSumCount(list));
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -235,6 +237,11 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
             }
             list = rebuildOutboundDao.queryListForExport(dto);
             list = setRebuildOutboundObject(list);
+            log.info("循环结束，增加合计列");
+            RebuildOutboundInfo sumInfo = new RebuildOutboundInfo();
+            sumInfo.setUnitName("合计:");
+            sumInfo.setRebuildCount(formatSumCount(list));
+            list.add(sumInfo);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -281,6 +288,20 @@ public class RebuildOutboundServiceImpl  implements RebuildOutboundService {
             log.info("list is null");
         }
         return list;
+    }
+
+    /**
+     * 赋值数量合计
+     * @param list
+     * @return
+     */
+    private BigDecimal formatSumCount(List<RebuildOutboundInfo> list){
+        BigDecimal sumCount = new BigDecimal("0");
+        for(RebuildOutboundInfo info: list){
+            BigDecimal count = info.getRebuildCount();
+            sumCount = sumCount.add(count);
+        }
+        return sumCount;
     }
 
 }

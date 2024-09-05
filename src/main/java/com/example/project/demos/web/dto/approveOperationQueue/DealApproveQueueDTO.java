@@ -20,6 +20,9 @@ public class DealApproveQueueDTO {
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
 
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freight;
+
     @ApiModelProperty(value = "入库方编号")
     private String inCode;
     @ApiModelProperty(value = "入库方名称")
@@ -34,6 +37,8 @@ public class DealApproveQueueDTO {
 
     @ApiModelProperty(value = "审核意见")
     private String opinion;
+
+
 
 
 

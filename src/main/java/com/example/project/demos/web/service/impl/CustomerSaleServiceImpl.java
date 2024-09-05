@@ -194,18 +194,20 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         String code ="";
+
         try{
             /**
              * 总公司审核员提交的数据不需要审核，立即生效
              */
+            String maxCode = customerSaleDao.queryMaxCode();
+            code = DataUtils.formatCode(maxCode);
+            log.info("code:"+code);
             log.info("判断当前登录人角色和权限");
             List<String> listType = user.getAuthorityType();
             if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
                 log.info("总公司人员且具有审核权限，提交立即生效");
                 CustomerSaleEntity entity = BeanCopyUtils.copy(dto,CustomerSaleEntity.class);
                 //客户编号
-                String maxCode = customerSaleDao.queryMaxCode();
-                code = DataUtils.formatCode(maxCode);
                 entity.setCode(code);
                 entity.setApproveUser(user.getUserLogin());
                 entity.setApproveState(ApproveStateEnums.APPROVE_STATE_PASSED.getCode());
@@ -228,6 +230,8 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                     entity.setCreateTime(date);
                     //添加待审状态
                     entity.setApproveState(ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode());
+                    //客户编号
+                    entity.setCode(code);
                     int i = customerSaleDao.insert(entity);
                     //添加账号对应关系
                     customerAccountRelService.savaBatch(entity.getId(), dto.getList());
@@ -237,7 +241,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                     log.info("生成审核队列记录");
                     List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                     for (SysUserEntity userEntity : userList) {
-                        ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null, flowEntity.getId(), entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), userEntity.getUserLogin(),dto.getCode(),null,null, user.getUserLogin(), date, Constants.SYSTEM_CODE);
+                        ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null, flowEntity.getId(), entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), userEntity.getUserLogin(),code,null,null, user.getUserLogin(), date, Constants.SYSTEM_CODE);
                         queueEntityList.add(queueEntity);
                     }
                     approveOperationQueueDao.insertBatch(queueEntityList);
@@ -316,10 +320,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
     public int updateApprove(Long id, String result, String opinion, String userLogin,  Date date)  {
         log.info("销售客户审核更新开始");
         CustomerSaleEntity entity = customerSaleDao.selectById(id);
-        //客户编号
-        String maxCode = customerSaleDao.queryMaxCode();
-        String code = DataUtils.formatCode(maxCode);
-        entity.setCode(code);
+
         entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);

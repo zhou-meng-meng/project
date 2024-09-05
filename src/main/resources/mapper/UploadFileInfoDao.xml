@@ -44,13 +44,22 @@
         select t.id,t.business_id,t.file_original_name,t.file_full_name,t.file_type,t.file_path,t.function_id ,
         u.user_name AS createByName ,t.create_time  from  upload_file_info  t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
-        where 1=1
-        <if test="businessId != null ">
-            and t.business_id    =#{businessId}
-        </if>
+        where 1=1 and business_id in
+        <foreach item="busiId" collection="busiIdList" open="(" separator="," close=")">
+            #{busiId}
+        </foreach>
         order  by  t.create_time  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
+
+    <select id="countUploadFileInfoList" resultType="java.lang.Integer">
+        select count(1) from  upload_file_info  t
+        where 1=1 and business_id in
+        <foreach item="busiId" collection="busiIdList" open="(" separator="," close=")">
+            #{busiId}
+        </foreach>
+    </select>
+
 
 
 </mapper>

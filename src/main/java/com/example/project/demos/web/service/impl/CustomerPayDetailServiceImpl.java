@@ -15,7 +15,6 @@ import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
-import com.graphbuilder.math.func.EFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -74,8 +73,8 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate(),pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerPayDetailInfo> list = page.toList();
-                //出参赋值
-                outDTO.setCustomerPayDetailInfoList(list);
+                //出参赋值 集合和合计字段
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -320,6 +319,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         List<CustomerPayDetailInfo> list = new ArrayList<>();
         try {
             list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName(),dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -494,4 +494,112 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
     }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<CustomerPayDetailInfo> list, QueryByPageOutDTO outDTO){
+        //合计物料数量
+        BigDecimal sumCount = new BigDecimal("0");
+        //合计物料金额
+        BigDecimal sumMaterialAmt = new BigDecimal("0");
+        //合计打款金额
+        BigDecimal sumPayAmt = new BigDecimal("0");
+        //合计退回金额
+        BigDecimal sumReturnAmt = new BigDecimal("0");
+        //合计折扣金额
+        BigDecimal sumDiscountAmt = new BigDecimal("0");
+        for(CustomerPayDetailInfo info: list){
+            BigDecimal count = info.getMaterialCount();
+            if(count == null){
+                count = new BigDecimal("0");
+            }
+            BigDecimal materialAmt = info.getMaterialBalance();
+            if(materialAmt == null){
+                materialAmt = new BigDecimal("0");
+            }
+            BigDecimal payAmt = info.getPayBalance();
+            if(payAmt == null){
+                payAmt = new BigDecimal("0");
+            }
+            BigDecimal returnAmt = info.getReturnBalance();
+            if(returnAmt == null){
+                returnAmt = new BigDecimal("0");
+            }
+            BigDecimal discountAmt = info.getDiscountBalance();
+            if(discountAmt == null){
+                discountAmt = new BigDecimal("0");
+            }
+            sumCount = sumCount.add(count);
+            sumMaterialAmt = sumMaterialAmt.add(materialAmt);
+            sumPayAmt = sumPayAmt.add(payAmt);
+            sumReturnAmt = sumReturnAmt.add(returnAmt);
+            sumDiscountAmt = sumDiscountAmt.add(discountAmt);
+        }
+        outDTO.setCustomerPayDetailInfoList(list);
+        outDTO.setSumCount(sumCount);
+        outDTO.setSumMaterialAmt(sumMaterialAmt);
+        outDTO.setSumPayAmt(sumPayAmt);
+        outDTO.setSumReturnAmt(sumReturnAmt);
+        outDTO.setSumDiscountAmt(sumDiscountAmt);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<CustomerPayDetailInfo> formatSumObjectForExport(List<CustomerPayDetailInfo> list){
+        //合计物料数量
+        BigDecimal sumCount = new BigDecimal("0");
+        //合计物料金额
+        BigDecimal sumMaterialAmt = new BigDecimal("0");
+        //合计打款金额
+        BigDecimal sumPayAmt = new BigDecimal("0");
+        //合计退回金额
+        BigDecimal sumReturnAmt = new BigDecimal("0");
+        //合计折扣金额
+        BigDecimal sumDiscountAmt = new BigDecimal("0");
+        for(CustomerPayDetailInfo info: list){
+            BigDecimal count = info.getMaterialCount();
+            if(count == null){
+                count = new BigDecimal("0");
+            }
+            BigDecimal materialAmt = info.getMaterialBalance();
+            if(materialAmt == null){
+                materialAmt = new BigDecimal("0");
+            }
+            BigDecimal payAmt = info.getPayBalance();
+            if(payAmt == null){
+                payAmt = new BigDecimal("0");
+            }
+            BigDecimal returnAmt = info.getReturnBalance();
+            if(returnAmt == null){
+                returnAmt = new BigDecimal("0");
+            }
+            BigDecimal discountAmt = info.getDiscountBalance();
+            if(discountAmt == null){
+                discountAmt = new BigDecimal("0");
+            }
+            sumCount = sumCount.add(count);
+            sumMaterialAmt = sumMaterialAmt.add(materialAmt);
+            sumPayAmt = sumPayAmt.add(payAmt);
+            sumReturnAmt = sumReturnAmt.add(returnAmt);
+            sumDiscountAmt = sumDiscountAmt.add(discountAmt);
+        }
+        CustomerPayDetailInfo info = new CustomerPayDetailInfo();
+        info.setUnitName("合计:");
+        info.setMaterialCount(sumCount);
+        info.setMaterialBalance(sumMaterialAmt);
+        info.setPayBalance(sumPayAmt);
+        info.setReturnBalance(sumReturnAmt);
+        info.setDiscountBalance(sumDiscountAmt);
+        list.add(info);
+        return list;
+    }
+
 }

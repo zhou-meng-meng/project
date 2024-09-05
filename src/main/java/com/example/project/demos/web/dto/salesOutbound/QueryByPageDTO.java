@@ -23,6 +23,12 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "销售员姓名")
     private String salerName;
 
+    @ApiModelProperty(value = "开始日期")
+    private String beginDate;
+
+    @ApiModelProperty(value = "结束日期")
+    private String endDate;
+
 
     /**
      * 翻页数据起始位置:1

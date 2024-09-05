@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesReturnInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -67,11 +66,12 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
         try{
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
             SalesReturnInfo info = salesReturnDao.selectSalesReturnInfoById(id);
             //处理入库方
             List<SalesReturnInfo> list = new ArrayList<>();
             list.add(info);
-            list = setSalesReturnObject(list);
+            list = setSalesReturnObject(list,user);
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -91,6 +91,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
+        outDTO.setSumAmt(new BigDecimal("0"));
         try {
             //添加权限  总公司审核权限的  查看所有  只有总公司单价权限的 查看自己提交的数据  厂区/仓库人员查看所属厂区/仓库数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -113,9 +115,9 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 Page<SalesReturnInfo> page = new PageImpl<>(this.salesReturnDao.selectSalesReturnInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalesReturnInfo> list = page.toList();
-                list = setSalesReturnObject(list);
-                //出参赋值
-                outDTO.setSalesReturnInfoList(list);
+                list = setSalesReturnObject(list,user);
+                //出参赋值  集合和合计字段
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -314,7 +316,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 dto.setInCode(user.getDeptId());
             }
             list = salesReturnDao.queryListForExport(dto);
-            list = setSalesReturnObject(list);
+            list = setSalesReturnObject(list,user);
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -333,7 +336,8 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
      * @param list
      * @return
      */
-    private List<SalesReturnInfo> setSalesReturnObject(List<SalesReturnInfo> list){
+    private List<SalesReturnInfo> setSalesReturnObject(List<SalesReturnInfo> list,UserLoginOutDTO user){
+        boolean isPrice = DataUtils.getIsPrice(user);
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             //获取厂区和仓库集合
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
@@ -364,6 +368,12 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 }else {
                     log.info("inCode is null");
                 }
+                //处理单价和总金额字段
+                if(!isPrice){
+                    //不具有单价权限   将单价和总金额置为0
+                    info.setUnitPrice(new BigDecimal(0));
+                    info.setTollAmount(new BigDecimal(0));
+                }
             }
         }else{
             log.info("list is null");
@@ -388,5 +398,48 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             billNo = sb.toString();
         }
         return billNo;
+    }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<SalesReturnInfo> list, QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalesReturnInfo info: list){
+            BigDecimal count = info.getReturnCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setSalesReturnInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<SalesReturnInfo> formatSumObjectForExport(List<SalesReturnInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalesReturnInfo info: list){
+            BigDecimal count = info.getReturnCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        SalesReturnInfo info = new SalesReturnInfo();
+        info.setUnitName("合计:");
+        info.setReturnCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
     }
 }

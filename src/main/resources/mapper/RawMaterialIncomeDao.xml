@@ -89,6 +89,12 @@
         <if test="raw.inCode != null and raw.inCode != ''">
             and t.in_code    = #{raw.inCode}
         </if>
+        <if test="raw.beginDate != null and raw.beginDate != ''">
+            and t.material_buytime    <![CDATA[ >= ]]> #{raw.beginDate}
+        </if>
+        <if test="raw.endDate != null and raw.endDate != ''">
+            and t.material_buytime    <![CDATA[ <= ]]> #{raw.endDate}
+        </if>
         order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -115,6 +121,12 @@
         </if>
         <if test="inCode != null and inCode != ''">
             and t.in_code    = #{inCode}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.material_buytime    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.material_buytime    <![CDATA[ <= ]]> #{endDate}
         </if>
     </select>
 
@@ -232,6 +244,12 @@
         </if>
         <if test="raw.inCode != null and raw.inCode != ''">
             and t.in_code    = #{raw.inCode}
+        </if>
+        <if test="raw.beginDate != null and raw.beginDate != ''">
+            and t.material_buytime    <![CDATA[ >= ]]> #{raw.beginDate}
+        </if>
+        <if test="raw.endDate != null and raw.endDate != ''">
+            and t.material_buytime    <![CDATA[ <= ]]> #{raw.endDate}
         </if>
         order  by  t.id  desc
     </select>

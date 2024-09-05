@@ -22,6 +22,11 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "入库方编码")
     private String inCode;
 
+    @ApiModelProperty(value = "开始日期")
+    private String beginDate;
+
+    @ApiModelProperty(value = "结束日期")
+    private String endDate;
 
     /**
      * 翻页数据起始位置:1

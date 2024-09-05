@@ -4,10 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
-import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
-import com.example.project.demos.web.dto.list.SysStorehouseInfo;
-import com.example.project.demos.web.dto.list.TransferOutboundInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.dto.transferOutbound.*;
 import com.example.project.demos.web.entity.*;
@@ -22,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Resource;
 
 @Slf4j
@@ -89,6 +86,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
         try {
             //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -115,6 +113,8 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 list = setTransferObject(list);
                 //出参赋值
                 outDTO.setTransferOutboundInfoList(list);
+                //赋值数量合计
+                outDTO.setSumCount(formatSumCount(list));
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -293,6 +293,11 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             list = transferOutboundDao.queryListForExport(dto);
             //赋值调出方和调入方
             list = setTransferObject(list);
+            //增加合计列
+            TransferOutboundInfo info = new TransferOutboundInfo();
+            info.setUnitName("合计:");
+            info.setTransferCount(formatSumCount(list));
+            list.add(info);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -380,6 +385,20 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             billNo = sb.toString();
         }
         return billNo;
+    }
+
+    /**
+     * 获取数量合计
+     * @param list
+     * @return
+     */
+    private BigDecimal formatSumCount(List<TransferOutboundInfo> list){
+        BigDecimal sumCount = new BigDecimal("0");
+        for(TransferOutboundInfo info: list){
+            BigDecimal count = info.getTransferCount();
+            sumCount = sumCount.add(count);
+        }
+        return sumCount;
     }
 
 }

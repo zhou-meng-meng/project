@@ -6,9 +6,7 @@ import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.RebuildInboundDao;
 import com.example.project.demos.web.dao.SysFactoryDao;
 import com.example.project.demos.web.dao.SysStorehouseDao;
-import com.example.project.demos.web.dto.list.RebuildInboundInfo;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
-import com.example.project.demos.web.dto.list.SysStorehouseInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.rebuildInbound.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.RebuildInboundEntity;
@@ -106,8 +104,9 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
                 //获取分页数据
                 List<RebuildInboundInfo> list = page.toList();
                 list = setRebuildInboundObject(list);
-                //出参赋值
+                //出参赋值  集合和数量合计
                 outDTO.setRebuildInboundInfoList(list);
+                outDTO.setSumCount(formatSumCount(list));
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -241,6 +240,11 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             }
             list = rebuildInboundDao.queryListForExport(dto);
             list = setRebuildInboundObject(list);
+            log.info("循环结束，增加合计列");
+            RebuildInboundInfo sumInfo = new RebuildInboundInfo();
+            sumInfo.setUnitName("合计:");
+            sumInfo.setRebuildCount(formatSumCount(list));
+            list.add(sumInfo);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -287,6 +291,20 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             log.info("list is null");
         }
         return list;
+    }
+
+    /**
+     * 获取总数量
+     * @param list
+     * @return
+     */
+    private BigDecimal formatSumCount(List<RebuildInboundInfo> list){
+        BigDecimal sumCount = new BigDecimal("0");
+        for(RebuildInboundInfo info: list){
+            BigDecimal count = info.getRebuildCount();
+            sumCount = sumCount.add(count);
+        }
+        return sumCount;
     }
 
 }

@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalesOutboundInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -78,8 +77,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             SalesOutboundInfo SalesOutboundInfo = salesOutboundDao.selectSalesOutboundInfoById(id);
             List<SalesOutboundInfo> list = new ArrayList<>();
             list.add(SalesOutboundInfo);
-            list = setSalesOutboundObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setSalesOutboundObject(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -99,6 +97,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumAmt(new BigDecimal("0"));
+        outDTO.setSumCount(new BigDecimal("0"));
         try {
             //添加权限  总公司审核权限的  查看所有  厂区和仓库的 查看所属厂区或者仓库数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -122,10 +122,9 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                 //获取分页数据
                 List<SalesOutboundInfo> list = page.toList();
                 //赋值出库方名称
-                list = setSalesOutboundObject(list);
-                list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+                list = setSalesOutboundObject(list,RequestHolder.getUserInfo());
                 //出参赋值
-                outDTO.setSalesOutboundInfoList(list);
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -274,11 +273,12 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
     }
 
     @Override
-    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice,BigDecimal tollAmount, Date date)  {
+    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice,BigDecimal tollAmount, Date date,BigDecimal freight)  {
         log.info("销售出库审核更新开始");
         SalesOutboundEntity  entity = salesOutboundDao.selectById(id);
         entity.setUnitPrice(unitPrice);
         entity.setTollAmount(tollAmount);
+        entity.setFreight(freight);
         entity.setApproveUser(userLogin);
         entity.setApproveState(result);
         entity.setApproveOpinion(opinion);
@@ -421,8 +421,9 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             }
             list = salesOutboundDao.queryListForExport(dto);
             //赋值出库方名称
-            list = setSalesOutboundObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setSalesOutboundObject(list,RequestHolder.getUserInfo());
+            //添加合计列
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -441,7 +442,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
      * @param list
      * @return
      */
-    private List<SalesOutboundInfo> setSalesOutboundObject(List<SalesOutboundInfo> list){
+    private List<SalesOutboundInfo> setSalesOutboundObject(List<SalesOutboundInfo> list,UserLoginOutDTO userLoginOutDTO){
+        boolean isPrice = DataUtils.getIsPrice(userLoginOutDTO);
         log.info("赋值销售出库方名称");
         if(CollectionUtil.isNotEmpty(list) && list.size()>0){
             //获取厂区和仓库集合
@@ -469,6 +471,13 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
                         }
                     }
                 }
+                //权限判断  单价和金额
+                if(isPrice){
+                    //log.info("具有单价权限,不处理");
+                }else{
+                    info.setUnitPrice(new BigDecimal(0));
+                    info.setTollAmount(new BigDecimal(0));
+                }
             }
         }else{
             log.info("list is not null");
@@ -476,30 +485,6 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         return list;
     }
 
-    /**
-     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
-     * @param list
-     * @param userInfo
-     * @return
-     */
-    private List<SalesOutboundInfo> formatPriceByRoleType(List<SalesOutboundInfo> list, UserLoginOutDTO userInfo){
-        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
-        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
-            List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
-                log.info("具有单价权限,不处理");
-            }else{
-                log.info("没有单价权限，将单价和总金额置为0");
-                for(SalesOutboundInfo info : list){
-                    info.setUnitPrice(new BigDecimal(0));
-                    info.setTollAmount(new BigDecimal(0));
-                }
-            }
-        }else{
-            log.info("list is null");
-        }
-        return list;
-    }
 
     /**
      * 格式化单据号
@@ -518,5 +503,48 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             billNo = sb.toString();
         }
         return billNo;
+    }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<SalesOutboundInfo> list, QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalesOutboundInfo info: list){
+            BigDecimal count = info.getOutCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setSalesOutboundInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 新增合计列
+     * @param list
+     * @return
+     */
+    private List<SalesOutboundInfo> formatSumObjectForExport (List<SalesOutboundInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalesOutboundInfo info: list){
+            BigDecimal count = info.getOutCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        SalesOutboundInfo info = new SalesOutboundInfo();
+        info.setUnitName("合计:");
+        info.setOutCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
     }
 }

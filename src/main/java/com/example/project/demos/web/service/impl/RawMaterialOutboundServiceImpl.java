@@ -28,7 +28,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,8 +66,7 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             RawMaterialOutboundInfo rawMaterialOutboundInfo = rawMaterialOutboundDao.selectRawMaterialOutboundInfoById(id);
             List<RawMaterialOutboundInfo> list = new ArrayList<>();
             list.add(rawMaterialOutboundInfo);
-            list = setRawMaterialOutboundObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setRawMaterialOutboundObject(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -88,6 +86,8 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumAmt(new BigDecimal("0"));
+        outDTO.setSumCount(new BigDecimal("0"));
         try {
             //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -111,10 +111,9 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
                 //获取分页数据
                 List<RawMaterialOutboundInfo> list = page.toList();
                 //赋值出库方名称
-                list = setRawMaterialOutboundObject(list);
-                list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+                list = setRawMaterialOutboundObject(list,RequestHolder.getUserInfo());
                 //出参赋值
-                outDTO.setRawMaterialOutboundInfoList(list);
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -262,8 +261,9 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             }
             list = rawMaterialOutboundDao.queryListForExport(dto);
             //赋值出库方名称
-            list = setRawMaterialOutboundObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setRawMaterialOutboundObject(list,RequestHolder.getUserInfo());
+            //添加合计列
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -282,7 +282,8 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
      * @param list
      * @return
      */
-    private List<RawMaterialOutboundInfo> setRawMaterialOutboundObject(List<RawMaterialOutboundInfo> list){
+    private List<RawMaterialOutboundInfo> setRawMaterialOutboundObject(List<RawMaterialOutboundInfo> list,UserLoginOutDTO userLoginOutDTO){
+        boolean isPrice = DataUtils.getIsPrice(userLoginOutDTO);
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             //获取厂区和仓库集合
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
@@ -305,27 +306,10 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
                         }
                     }
                 }
-            }
-        }else{
-            log.info("list is null");
-        }
-        return list;
-    }
-
-    /**
-     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
-     * @param list
-     * @param userInfo
-     * @return
-     */
-    private List<RawMaterialOutboundInfo> formatPriceByRoleType(List<RawMaterialOutboundInfo> list,UserLoginOutDTO userInfo){
-        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
-            List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
-                log.info("具有单价权限,不处理");
-            }else{
-                log.info("没有单价权限，将单价和总金额置为0");
-                for(RawMaterialOutboundInfo info : list){
+                //权限判断  单价和金额
+                if(isPrice){
+                    //log.info("具有单价权限,不处理");
+                }else{
                     info.setUnitPrice(new BigDecimal(0));
                     info.setTollAmount(new BigDecimal(0));
                 }
@@ -335,6 +319,7 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         }
         return list;
     }
+
 
     /**
      * 格式化单据号
@@ -354,4 +339,49 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         }
         return billNo;
     }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<RawMaterialOutboundInfo> list, QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(RawMaterialOutboundInfo info: list){
+            BigDecimal count = info.getCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setRawMaterialOutboundInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 新增合计列
+     * @param list
+     * @return
+     */
+    private List<RawMaterialOutboundInfo> formatSumObjectForExport (List<RawMaterialOutboundInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(RawMaterialOutboundInfo info: list){
+            BigDecimal count = info.getCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        RawMaterialOutboundInfo info = new RawMaterialOutboundInfo();
+        info.setUnitName("合计:");
+        info.setCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
+    }
+
+
 }

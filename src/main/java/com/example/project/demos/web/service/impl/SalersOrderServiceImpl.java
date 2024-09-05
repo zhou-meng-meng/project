@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.AddPayBySystemDTO;
-import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
 import com.example.project.demos.web.dto.list.SalersOrderInfo;
 import com.example.project.demos.web.dto.list.SysFactoryInfo;
 import com.example.project.demos.web.dto.list.SysStorehouseInfo;
@@ -16,6 +15,7 @@ import com.example.project.demos.web.enums.*;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.DateUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
-        log.info("销售员下单queryById开始");
+        log.info("业务员下单queryById开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryByIdOutDTO outDTO = new QueryByIdOutDTO();
@@ -71,8 +71,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             //处理出库方
             List<SalersOrderInfo> list = new ArrayList<>();
             list.add(info);
-            list = setSalersOrderObject(list);
-            list = formatPriceByRoleType(list,RequestHolder.getUserInfo());
+            list = setSalersOrderObject(list,RequestHolder.getUserInfo());
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
@@ -82,18 +81,20 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("销售员下单queryById结束");
+        log.info("业务员下单queryById结束");
         return outDTO;
     }
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
-        log.info("销售员下单queryByPage开始");
+        log.info("业务员下单queryByPage开始");
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
+        outDTO.setSumAmt(new BigDecimal("0"));
         try {
-            //添加权限  总公司审核权限的  查看所有  销售员只能查看自己的数据
+            //添加权限  总公司审核权限的  查看所有  业务员只能查看自己的数据
             UserLoginOutDTO user = RequestHolder.getUserInfo();
             List<String> listType = user.getAuthorityType();
             if(listType.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode())){
@@ -113,9 +114,9 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 Page<SalersOrderInfo> page = new PageImpl<>(this.salersOrderDao.selectSalersOrderInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SalersOrderInfo> list = page.toList();
-                list = setSalersOrderObject(list);
-                //出参赋值
-                outDTO.setSalersOrderInfoList(list);
+                list = setSalersOrderObject(list,user);
+                //出参赋值  集合和合计字段
+                outDTO = formatSumObject(list,outDTO);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -125,7 +126,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         }
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
-        log.info("销售员下单queryByPage结束");
+        log.info("业务员下单queryByPage结束");
         return outDTO;
     }
 
@@ -145,7 +146,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 entity.setBillState(BillStateEnums.BILL_STATE_NORMAL.getCode());
                 entity.setCreateBy(user.getUserLogin());
                 entity.setCreateTime(date);
-                log.info("插入销售员下单表");
+                log.info("插入业务员下单表");
                 int i = salersOrderDao.insert(entity);
                 log.info("生成审核流水记录");
                 ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALERS_ORDER.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
@@ -167,7 +168,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",销售员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",业务员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
         sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -192,7 +193,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",销售员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",业务员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
         sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -217,7 +218,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",销售员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车日期:"+ DateUtils.parseDateToStr(Constants.YYYY_MM_DD,dto.getLoadDate())+",装车数量:"+dto.getLoadNum()+",单价"+dto.getUnitPrice()+",总金额:"+dto.getTollAmount()+",装车方式:"+dto.getLoadTypeName()+",业务员:"+dto.getSalerName()+",汇款:"+dto.getRemit();
         sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_DELETE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -236,6 +237,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         //对于审核同意的  确认状态改为待确认
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             entity.setConfirmState(ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode());
+            //获取单据号
         }
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
@@ -332,7 +334,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车数量:"+dto.getLoadNum()+",销售员:"+dto.getSalerName();
+        String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车数量:"+dto.getLoadNum()+",业务员:"+dto.getSalerName();
         sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_CHARGE_OFF.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -378,14 +380,14 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
 
     @Override
     public List<SalersOrderInfo> queryListForExport(QueryByPageDTO dto) {
-        log.info("销售员下单queryListForExport开始");
+        log.info("业务员下单queryListForExport开始");
         List<SalersOrderInfo> list = new ArrayList<>();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try {
-            //添加权限  总公司审核权限的  查看所有  销售员只能查看自己的数据
+            //添加权限  总公司审核权限的  查看所有  业务员只能查看自己的数据
             String userType = user.getUserType();
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
@@ -395,7 +397,8 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                 dto.setSaler(user.getUserLogin());
             }
             list = salersOrderDao.queryListForExport(dto);
-            list = setSalersOrderObject(list);
+            list = setSalersOrderObject(list,user);
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -405,16 +408,17 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         //记录操作日志
         String info =  "导出Excel操作";
         sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
-        log.info("销售员下单queryListForExport结束");
+        log.info("业务员下单queryListForExport结束");
         return list;
     }
 
     /**
-     * 赋值销售员下单  出库方名称
+     * 赋值业务员下单  出库方名称
      * @param list
      * @return
      */
-    private List<SalersOrderInfo> setSalersOrderObject(List<SalersOrderInfo> list){
+    private List<SalersOrderInfo> setSalersOrderObject(List<SalersOrderInfo> list, UserLoginOutDTO user){
+        boolean isPrice = DataUtils.getIsPrice(user);
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0 ){
             //获取厂区和仓库集合
             List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
@@ -443,28 +447,9 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
                         }
                     }
                 }
-            }
-        }else{
-            log.info("list is null");
-        }
-        return list;
-    }
-
-    /**
-     * 处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看
-     * @param list
-     * @param userInfo
-     * @return
-     */
-    private List<SalersOrderInfo> formatPriceByRoleType(List<SalersOrderInfo> list, UserLoginOutDTO userInfo){
-        log.info("处理单价和总金额字段  有单价权限的可以查看，没有单价权限的不能查看");
-        if(CollectionUtil.isNotEmpty(list) && list.size()>0){
-            List<String> typeList = userInfo.getAuthorityType();
-            if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
-                log.info("具有单价权限,不处理");
-            }else{
-                log.info("没有单价权限，将单价和总金额置为0");
-                for(SalersOrderInfo info : list){
+                //处理单价字段
+                if(!isPrice){
+                    //不具有单价权限   将单价和总金额置为0
                     info.setUnitPrice(new BigDecimal(0));
                     info.setTollAmount(new BigDecimal(0));
                 }
@@ -474,5 +459,50 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         }
         return list;
     }
+
+    /**
+     * 菜单列表获取数量合计和金额合计
+     * @param list
+     * @param outDTO
+     * @return
+     */
+    private QueryByPageOutDTO formatSumObject(List<SalersOrderInfo> list, QueryByPageOutDTO outDTO){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalersOrderInfo info: list){
+            BigDecimal count = info.getLoadNum();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setSalersOrderInfoList(list);
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<SalersOrderInfo> formatSumObjectForExport(List<SalersOrderInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SalersOrderInfo info: list){
+            BigDecimal count = info.getLoadNum();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        SalersOrderInfo info = new SalersOrderInfo();
+        info.setUnitName("合计:");
+        info.setLoadNum(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
+    }
+
+
 
 }

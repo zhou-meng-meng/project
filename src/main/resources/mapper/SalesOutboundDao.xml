@@ -112,6 +112,12 @@
         <if test="sale.outCode != null and sale.outCode != ''">
             and t.out_code = #{sale.outCode}
         </if>
+        <if test="sale.beginDate != null and sale.beginDate != ''">
+            and t.sale_time    <![CDATA[ >= ]]> #{sale.beginDate}
+        </if>
+        <if test="sale.endDate != null and sale.endDate != ''">
+            and t.sale_time    <![CDATA[ <= ]]> #{sale.endDate}
+        </if>
         order  by  t.id desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -139,9 +145,15 @@
         </if>
         <if test="salerName != null and salerName != ''">
             and u2.user_name    like concat('%', #{salerName}, '%')
+        </if>
         <if test="outCode != null and outCode != ''">
             and t.out_code = #{outCode}
         </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.sale_time    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.sale_time    <![CDATA[ <= ]]> #{endDate}
         </if>
     </select>
 
@@ -282,6 +294,12 @@
         </if>
         <if test="sale.outCode != null and sale.outCode != ''">
             and t.out_code = #{sale.outCode}
+        </if>
+        <if test="sale.beginDate != null and sale.beginDate != ''">
+            and t.sale_time    <![CDATA[ >= ]]> #{sale.beginDate}
+        </if>
+        <if test="sale.endDate != null and sale.endDate != ''">
+            and t.sale_time    <![CDATA[ <= ]]> #{sale.endDate}
         </if>
         order  by  t.id desc
     </select>

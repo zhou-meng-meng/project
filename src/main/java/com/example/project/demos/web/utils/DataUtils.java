@@ -2,6 +2,7 @@ package com.example.project.demos.web.utils;
 
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
+import com.example.project.demos.web.enums.RoleAuthorityTypeEnums;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -88,6 +89,19 @@ public class DataUtils {
         StringBuffer sb = new StringBuffer();
         sb.append(prefix).append(codeInt);
         return sb.toString();
+    }
+
+    public static boolean getIsPrice(UserLoginOutDTO userLoginOutDTO){
+        boolean isPrice = false;
+        List<String> typeList = userLoginOutDTO.getAuthorityType();
+        if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
+            log.info("具有单价权限,不处理");
+            isPrice = true;
+        }else{
+            log.info("没有单价权限，将单价和总金额置为0");
+            isPrice = false;
+        }
+        return isPrice;
     }
 
 }

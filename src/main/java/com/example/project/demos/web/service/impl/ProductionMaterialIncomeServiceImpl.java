@@ -91,6 +91,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         QueryByPageOutDTO outDTO = new QueryByPageOutDTO();
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        outDTO.setSumCount(new BigDecimal("0"));
         try {
             //权限判断  总公司人员可查看所有厂区   厂区人员只能查看所属厂区
             UserLoginOutDTO user = RequestHolder.getUserInfo();
@@ -116,12 +117,20 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 List<ProductionMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
                 list = setProductionMaterialIncomeObject(list);
+                //计算入库产量合计
+                outDTO.setSumCount(formatSumIncomeCount(list));
+                //员工产量合计
+                BigDecimal sumProducerCount = new BigDecimal("0");
                 //循环获取生产者集合信息
                 for(ProductionMaterialIncomeInfo info : list){
                     List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
                     info.setProducerInfoList(producerInfoList);
+                    for(ProductProducerInfo userInfo : producerInfoList){
+                        BigDecimal producerNum = userInfo.getProducerNum();
+                        sumProducerCount = sumProducerCount.add(producerNum);
+                    }
                 }
-                //出参赋值
+                outDTO.setSumProducerCount(sumProducerCount);
                 outDTO.setProductionMaterialIncomeInfoList(list);
             }else{
                 outDTO.setTurnPageTotalNum(0);
@@ -293,6 +302,10 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 List<ProductionMaterialIncomeInfo> list = productionMaterialIncomeDao.queryListForExport(idList);
                 //处理入库方名称
                 list = setProductionMaterialIncomeObject(list);
+                //计算入库产量合计
+                BigDecimal sumIncomeCount = formatSumIncomeCount(list);
+                //员工产量合计
+                BigDecimal sumProducerCount = new BigDecimal("0");
                 //循环获取生产者集合信息
                 for(ProductionMaterialIncomeInfo info : list){
                     List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
@@ -301,8 +314,15 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                         newInfo.setProducerName(producerInfo.getProducerName());
                         newInfo.setProducerNum(producerInfo.getProducerNum());
                         exportList.add(newInfo);
+                        sumProducerCount = sumProducerCount.add(newInfo.getProducerNum());
                     }
                 }
+                //增加最后一行合计列
+                ProductionMaterialIncomeInfo sumInfo = new ProductionMaterialIncomeInfo();
+                sumInfo.setUnitName("合计:");
+                sumInfo.setIncomeNum(sumIncomeCount);
+                sumInfo.setProducerNum(sumProducerCount);
+                exportList.add(sumInfo);
             }else{
                 log.info("idList  is null");
             }
@@ -373,5 +393,20 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
         }
         return billNo;
     }
+
+    /**
+     * 计算入库产量合计
+     * @param list
+     * @return
+     */
+    private BigDecimal formatSumIncomeCount(List<ProductionMaterialIncomeInfo> list){
+        BigDecimal sumCount = new BigDecimal("0");
+        for(ProductionMaterialIncomeInfo info: list){
+            BigDecimal count = info.getIncomeNum();
+            sumCount = sumCount.add(count);
+        }
+        return sumCount;
+    }
+
 
 }

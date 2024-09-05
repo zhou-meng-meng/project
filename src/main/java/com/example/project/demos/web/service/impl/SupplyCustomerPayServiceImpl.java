@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.SupplyCustomerPayDao;
 import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
+import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
 import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
 import com.example.project.demos.web.dto.supplyCustomerPay.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
@@ -11,9 +12,11 @@ import com.example.project.demos.web.entity.SupplyCustomerPayEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.enums.RoleAuthorityTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SupplyCustomerPayService;
 import com.example.project.demos.web.service.SysLogService;
+import com.example.project.demos.web.utils.DataUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +52,13 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
             outDTO = BeanUtil.copyProperties(info, QueryByIdOutDTO.class);
             //赋值业务类型
             outDTO.setFunctionTypeName(FunctionTypeEnums.getDescByCode(outDTO.getFunctionType()));
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
+            boolean isPrice = DataUtils.getIsPrice(user);
+            if(!isPrice){
+                log.info("没有单价权限");
+                outDTO.setUnitPrice(new BigDecimal("0"));
+                outDTO.setTollAmount(new BigDecimal("0"));
+            }
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -67,6 +78,7 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
+            UserLoginOutDTO user = RequestHolder.getUserInfo();
             //先用查询条件查询总条数
             long total = this.supplyCustomerPayDao.count(dto);
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
@@ -78,11 +90,8 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
                 Page<SupplyCustomerPayInfo> page = new PageImpl<>(this.supplyCustomerPayDao.selectSupplyCustomerPayInfoListByPage(dto, pageRequest), pageRequest, total);
                 //获取分页数据
                 List<SupplyCustomerPayInfo> list = page.toList();
-                for(SupplyCustomerPayInfo info: list){
-                    info.setFunctionTypeName(FunctionTypeEnums.getDescByCode(info.getFunctionType()));
-                }
-                //出参赋值
-                outDTO.setSupplyCustomerPayInfoList(list);
+                //出参赋值  集合和合计字段
+                outDTO = formatObject(outDTO,user,list);
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -106,9 +115,7 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         List<SupplyCustomerPayInfo> list = new ArrayList<>();
         try {
             list = supplyCustomerPayDao.queryListForExport(dto);
-            for(SupplyCustomerPayInfo info: list){
-                info.setFunctionTypeName(FunctionTypeEnums.getDescByCode(info.getFunctionType()));
-            }
+            list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.info(e.getMessage());
@@ -131,6 +138,50 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         entity.setUpdateTime(date);
         entity.setRemark(dto.getRemark());
         return supplyCustomerPayDao.updateById(entity);
+    }
+
+    private QueryByPageOutDTO formatObject(QueryByPageOutDTO outDTO,UserLoginOutDTO user, List<SupplyCustomerPayInfo> list){
+        boolean isPrice = DataUtils.getIsPrice(user);
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SupplyCustomerPayInfo info: list){
+            info.setFunctionTypeName(FunctionTypeEnums.getDescByCode(info.getFunctionType()));
+            if(!isPrice){
+                info.setUnitPrice(new BigDecimal("0"));
+                info.setTollAmount(new BigDecimal("0"));
+            }
+            BigDecimal count = info.getIncomeCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+        }
+        outDTO.setSumAmt(sumAmt);
+        outDTO.setSumCount(sumCount);
+        outDTO.setSupplyCustomerPayInfoList(list);
+        return outDTO;
+    }
+
+    /**
+     * 导出最后一行增加合计列
+     * @param list
+     * @return
+     */
+    private List<SupplyCustomerPayInfo> formatSumObjectForExport(List<SupplyCustomerPayInfo> list){
+        BigDecimal sumAmt = new BigDecimal("0");
+        BigDecimal sumCount = new BigDecimal("0");
+        for(SupplyCustomerPayInfo info: list){
+            BigDecimal count = info.getIncomeCount();
+            BigDecimal tollAmount = info.getTollAmount();
+            sumAmt = sumAmt.add(tollAmount);
+            sumCount = sumCount.add(count);
+            info.setFunctionTypeName(FunctionTypeEnums.getDescByCode(info.getFunctionType()));
+        }
+        SupplyCustomerPayInfo info = new SupplyCustomerPayInfo();
+        info.setUnitName("合计:");
+        info.setIncomeCount(sumCount);
+        info.setTollAmount(sumAmt);
+        list.add(info);
+        return list;
     }
 
 }
