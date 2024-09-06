@@ -284,6 +284,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);*/
             log.info("生成该客户供货记录");
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), unitPrice,entity.getCount(),tollAmount,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode());
+            payEntity.setCreateTime(date);
+            payEntity.setCreateBy(userLogin);
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getCount(),entity.getMaterialBuytime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getDesc());

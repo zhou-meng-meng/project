@@ -292,6 +292,8 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);*/
             log.info("生成该客户销售记录");
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getOutCount(),tollAmount,entity.getSaleTime(),FunctionTypeEnums.SALES_OUTBOUND.getCode());
+            payEntity.setCreateTime(date);
+            payEntity.setCreateBy(userLogin);
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getSaleTime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
