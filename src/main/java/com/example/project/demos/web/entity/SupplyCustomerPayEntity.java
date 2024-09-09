@@ -74,6 +74,10 @@ public class SupplyCustomerPayEntity implements Serializable {
 	 * 备注
 	 */
 	private String remark;
+	/**
+	 * 显示标识 0-显示 1-不显示
+	 */
+	private String showFlag;
 
 	public SupplyCustomerPayEntity(Long incomeId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal incomeCount,BigDecimal tollAmount,Date incomeDate,String functionType){
 		this.incomeId = incomeId;

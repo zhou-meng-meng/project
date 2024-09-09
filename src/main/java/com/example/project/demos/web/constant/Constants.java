@@ -131,5 +131,4 @@ public interface Constants {
 
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
-    public String filePath = "/home/wms/app/uploadFiles/";
 }

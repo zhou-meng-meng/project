@@ -34,5 +34,9 @@ public interface SalesCustomerPayDao extends BaseMapper<SalesCustomerPayEntity> 
     List<SalesCustomerPayInfo> queryListForExport(@Param("pay") QueryByPageDTO dto);
 
     SalesCustomerPayEntity selectBySaleId(Long saleId);
+
+    int updateShowFlagByCustomerCode(@Param("showFlag") String showFlag,
+                                     @Param("updateBy") String updateBy,
+                                     @Param("customerCode") String customerCode);
 	
 }

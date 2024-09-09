@@ -275,14 +275,20 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             /*log.info("审核同意，开始更新库存");  新增、修改、删除时更新库存
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getReturnCount(),"reduce",date);*/
-            log.info("生成该客户供货方退回记录");
+            log.info("隐藏该客户原记录");
+            supplyCustomerPayDao.updateShowFlagByCustomerCode("1",userLogin,entity.getCustomerCode());
+            log.info("生成该客户新记录");
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getReturnCount(),tollAmount,date,FunctionTypeEnums.SUPPLY_RETURN.getCode());
+            payEntity.setShowFlag("0");
+            payEntity.setCreateTime(date);
+            payEntity.setCreateBy(userLogin);
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
-            log.info("审核拒绝");
+            log.info("审核拒绝,恢复增加库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getReturnCount(),"add",date);
         }
         log.info("供应商退回审核更新结束");
         return i;

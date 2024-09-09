@@ -20,6 +20,7 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <result property="showFlag" column="show_flag"/>
     </resultMap>
 
     <select id="selectSupplyCustomerPayInfoListByPage" resultType="com.example.project.demos.web.dto.list.SupplyCustomerPayInfo">
@@ -45,7 +46,8 @@
         t.update_by,
         u1.user_name AS updateByName,
         t.update_time,
-        t.remark
+        t.remark,
+        t.show_flag
         FROM	supply_customer_pay t
         LEFT JOIN sys_user u ON u.user_login = t.create_by
         LEFT JOIN sys_user u1 ON u1.user_login = t.update_by
@@ -53,7 +55,7 @@
         LEFT JOIN sys_dict_data d2 ON d2.dict_code = m.model and  d2.dict_type = 'material_model'
         LEFT JOIN sys_dict_data d3 ON d3.dict_code = m.unit and  d3.dict_type = 'material_unit'
         left join customer_supply  c on  c.code = t.customer_code
-        where  1=1
+        where  1=1 and  t.show_flag = '0'
         <if test="pay.materialName != null and pay.materialName != ''">
             and m.name    like concat('%', #{pay.materialName}, '%')
         </if>
@@ -74,7 +76,7 @@
         SELECT  count(1)    FROM	supply_customer_pay t
         LEFT JOIN material_info m ON m.CODE = t.material_code
         left join customer_supply  c on  c.code = t.customer_code
-        where  1=1
+        where  1=1 and t.show_flag = '0'
         <if test="materialName != null and materialName != ''">
             and m.name    like concat('%', #{materialName}, '%')
         </if>
@@ -190,6 +192,10 @@
         where income_id =#{incomeId}
     </select>
 
-
+    <update id="updateShowFlagByCustomerCode">
+        update  sales_customer_pay
+        set show_flag = #{showFlag} , update_by = #{updateBy}, update_time = SYSDATE()
+        where customer_code = #{customerCode}
+    </update>
 
 </mapper>

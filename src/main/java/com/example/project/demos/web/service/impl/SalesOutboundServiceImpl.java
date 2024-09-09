@@ -290,16 +290,20 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             /*log.info("审核同意，开始更新库存");  在新增和修改提交时   更新库存
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"reduce",date);*/
-            log.info("生成该客户销售记录");
+            log.info("先隐藏该客户原记录");
+            i = salesCustomerPayDao.updateShowFlagByCustomerCode("1",userLogin,entity.getCustomerCode());
+            log.info("生成该客户新记录");
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), unitPrice,entity.getOutCount(),tollAmount,entity.getSaleTime(),FunctionTypeEnums.SALES_OUTBOUND.getCode());
+            payEntity.setShowFlag("0");
             payEntity.setCreateTime(date);
             payEntity.setCreateBy(userLogin);
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getSaleTime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getSaleTime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
-            log.info("审核拒绝");
+            log.info("审核拒绝,恢复增加库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"add",date);
         }
         log.info("销售出库审核更新结束");
         return i;

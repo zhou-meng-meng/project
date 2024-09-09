@@ -77,6 +77,10 @@ public class SalesCustomerPayEntity implements Serializable {
 	 * 备注
 	 */
 	private String remark;
+	/**
+	 * 显示标识 0-显示 1-不显示
+	 */
+	private String showFlag;
 
 	public SalesCustomerPayEntity(Long id,Long saleId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal saleCount,BigDecimal tollAmount,Date saleDate,String functionType){
 		this.id = id;

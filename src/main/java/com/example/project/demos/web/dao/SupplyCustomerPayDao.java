@@ -33,5 +33,9 @@ public interface SupplyCustomerPayDao extends BaseMapper<SupplyCustomerPayEntity
     List<SupplyCustomerPayInfo> queryListForExport(@Param("pay") QueryByPageDTO dto);
 
     SupplyCustomerPayEntity selectByIncomeId(Long incomeId);
+
+    int updateShowFlagByCustomerCode(@Param("showFlag") String showFlag,
+                                     @Param("updateBy") String updateBy,
+                                     @Param("customerCode") String customerCode);
 	
 }

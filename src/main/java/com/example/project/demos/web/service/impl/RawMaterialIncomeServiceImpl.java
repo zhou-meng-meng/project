@@ -282,16 +282,20 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             /*log.info("审核同意，开始更新库存");  在新增和修改、删除时   更新库存
             i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"add",date);*/
-            log.info("生成该客户供货记录");
+            log.info("先隐藏该客户原记录");
+            i = supplyCustomerPayDao.updateShowFlagByCustomerCode("1",userLogin,entity.getSupplyerCode());
+            log.info("生成该客户新记录");
             SupplyCustomerPayEntity payEntity = new SupplyCustomerPayEntity(entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), unitPrice,entity.getCount(),tollAmount,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode());
+            payEntity.setShowFlag("0");
             payEntity.setCreateTime(date);
             payEntity.setCreateBy(userLogin);
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getCount(),entity.getMaterialBuytime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getCount(),entity.getMaterialBuytime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getDesc());
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
-            log.info("审核拒绝");
+            log.info("审核拒绝，恢复减少库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getCount(),"reduce",date);
         }
         log.info("来料入库审核更新结束");
         return i;

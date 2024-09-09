@@ -261,11 +261,16 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             log.info("确认同意，开始更新库存");
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getLoadNum(),"reduce",date);
-            log.info("生成该客户业务员下单记录");
+            log.info("隐藏该客户原记录");
+            salesCustomerPayDao.updateShowFlagByCustomerCode("1",userLogin,entity.getCustomerCode());
+            log.info("生成该客户新记录");
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getLoadNum(),entity.getTollAmount(),date,FunctionTypeEnums.SALERS_ORDER.getCode());
+            payEntity.setShowFlag("0");
+            payEntity.setCreateTime(date);
+            payEntity.setCreateBy(userLogin);
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(),entity.getMaterialCode(),entity.getUnitPrice(),entity.getLoadNum(),entity.getLoadDate(),entity.getTollAmount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(),entity.getMaterialCode(),entity.getUnitPrice(),entity.getLoadNum(),entity.getLoadDate(),entity.getTollAmount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SALERS_ORDER.getDesc());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");

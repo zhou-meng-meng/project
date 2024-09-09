@@ -121,26 +121,24 @@
     </select>
 
     <update id="reduceBookBalance">
-        update customer_pay_detail set  book_balance = book_balance - #{amount}
-        where  id > #{id}
+        update customer_pay_detail  t set  book_balance = book_balance - #{amount}
+        where  id > #{id}  and t.customer_code = #{customerCode}
     </update>
 
     <update id="addBookBalance">
-        update customer_pay_detail set  book_balance = book_balance + #{amount}
-        where  id > #{id}
+        update customer_pay_detail t set  book_balance = book_balance + #{amount}
+        where  id > #{id}  and t.customer_code = #{customerCode}
     </update>
 
-
     <update id="reduceBookBalanceByUnitPrice">
-        update customer_pay_detail set  book_balance = book_balance - #{amount}
-        where  id >= #{id}
+        update customer_pay_detail t set  book_balance = book_balance - #{amount}
+        where  id >= #{id}  and t.customer_code = #{customerCode}
     </update>
 
     <update id="addBookBalanceByUnitPrice">
-        update customer_pay_detail set  book_balance = book_balance + #{amount}
-        where  id >= #{id}
+        update customer_pay_detail t set  book_balance = book_balance + #{amount}
+        where  id >= #{id}  and t.customer_code = #{customerCode}
     </update>
-
 
     <select id="queryListForExport" resultType="com.example.project.demos.web.dto.list.CustomerPayDetailInfo">
         SELECT

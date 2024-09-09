@@ -131,12 +131,18 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
     @Override
     public int updateUnitPrice(UpdateUnitPriceDTO dto, Date date, UserLoginOutDTO user) {
         SalesCustomerPayEntity entity = salesCustomerPayDao.selectBySaleId(dto.getBusinessId());
-        entity.setUnitPrice(dto.getUnitPrice());
-        entity.setTollAmount(dto.getTollAmount());
-        entity.setUpdateBy(user.getUserLogin());
-        entity.setUpdateTime(date);
-        entity.setRemark(dto.getRemark());
-        return salesCustomerPayDao.updateById(entity);
+        int i = 0;
+        if(null != entity){
+            entity.setUnitPrice(dto.getUnitPrice());
+            entity.setTollAmount(dto.getTollAmount());
+            entity.setUpdateBy(user.getUserLogin());
+            entity.setUpdateTime(date);
+            entity.setRemark(dto.getRemark());
+            i = salesCustomerPayDao.updateById(entity);
+        }else{
+            log.info("当前销售记录已不存在，不需要修改");
+        }
+        return i;
     }
 
     private QueryByPageOutDTO formatObject(QueryByPageOutDTO outDTO, UserLoginOutDTO user, List<SalesCustomerPayInfo> list){

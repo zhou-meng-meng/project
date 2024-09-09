@@ -139,7 +139,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance;
+        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance+",折扣金额:"+discountBalance;
         sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -232,11 +232,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 amount = amount.multiply(new BigDecimal("-1"));
                 log.info("原金额比修改后的金额小，需要加上差值");
                 bookBalance = bookBalance.add(amount);
-                customerPayDetailDao.addBookBalance(dto.getId(),amount);
+                customerPayDetailDao.addBookBalance(dto.getId(),amount,dto.getCustomerCode());
             }else{
                 log.info("原金额比修改后的金额大，需要减去差值");
                 bookBalance = bookBalance.subtract(amount);
-                customerPayDetailDao.reduceBookBalance(dto.getId(),amount);
+                customerPayDetailDao.reduceBookBalance(dto.getId(),amount,dto.getCustomerCode());
             }
             CustomerPayDetailEntity entity1 = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
             //修改h后的账面余额
@@ -292,7 +292,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             }
             amount = amount.add(discountBalance);
             //删除往来账  需要将当前记录以后的账面余额全部减去被删除的金额+折扣金额
-            customerPayDetailDao.reduceBookBalance(dto.getId(),amount);
+            customerPayDetailDao.reduceBookBalance(dto.getId(),amount,entity.getCustomerCode());
             int i = customerPayDetailDao.deleteById(dto.getId());
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
@@ -377,13 +377,13 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                     log.info("更新当前往来账记录的单价和物料金额");
                     customerPayDetailDao.updateById(entity);
                     log.info("修改后金额大于原金额，更新当前记录及以后得往来账，账面余额减去大于的金额");
-                    customerPayDetailDao.reduceBookBalanceByUnitPrice(id,substract);
+                    customerPayDetailDao.reduceBookBalanceByUnitPrice(id,substract,entity.getCustomerCode());
                 }else if (substract.compareTo(new BigDecimal("0")) < 0){
                     log.info("更新当前往来账记录的单价和物料金额");
                     customerPayDetailDao.updateById(entity);
                     log.info("修改后金额小于原金额，更新当前记录的物料金额，更新当前记录及以后得往来账，账面余额加上大于的金额");
                     substract  = substract.multiply(new BigDecimal(-1));
-                    customerPayDetailDao.addBookBalanceByUnitPrice(id,substract);
+                    customerPayDetailDao.addBookBalanceByUnitPrice(id,substract,entity.getCustomerCode());
                 }else{
                     log.info("修改后金额等于原金额，不操作");
                     edit = false;
@@ -395,13 +395,13 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                     log.info("更新当前往来账记录的单价和退回金额");
                     customerPayDetailDao.updateById(entity);
                     log.info("修改后金额大于原金额，更新当前记录及以后得往来账，账面余额加上多余的金额");
-                    customerPayDetailDao.addBookBalanceByUnitPrice(id,substract);
+                    customerPayDetailDao.addBookBalanceByUnitPrice(id,substract,entity.getCustomerCode());
                 }else if (substract.compareTo(new BigDecimal("0")) < 0){
                     log.info("更新当前往来账记录的单价和退回金额");
                     customerPayDetailDao.updateById(entity);
                     log.info("修改后金额小于原金额，更新当前记录及以后得往来账，账面余额减多余的金额");
                     substract  = substract.multiply(new BigDecimal(-1));
-                    customerPayDetailDao.reduceBookBalanceByUnitPrice(id,substract);
+                    customerPayDetailDao.reduceBookBalanceByUnitPrice(id,substract,entity.getCustomerCode());
                 }else{
                     log.info("修改后金额等于原金额，不操作");
                     edit = false;

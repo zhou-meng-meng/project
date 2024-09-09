@@ -50,8 +50,12 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
      * @param amount
      * @return
      */
-    int reduceBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
-    int addBookBalance(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
+    int reduceBookBalance(@Param(value = "id") Long id,
+                          @Param(value = "amount")BigDecimal amount,
+                          @Param(value = "customerCode")String customerCode);
+    int addBookBalance(@Param(value = "id") Long id,
+                       @Param(value = "amount")BigDecimal amount,
+                       @Param(value = "customerCode")String customerCode);
 
     /**
      * 审核员修改单价  同步修改往来账使用
@@ -59,8 +63,12 @@ public interface CustomerPayDetailDao extends BaseMapper<CustomerPayDetailEntity
      * @param amount
      * @return
      */
-    int reduceBookBalanceByUnitPrice(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
-    int addBookBalanceByUnitPrice(@Param(value = "id") Long id, @Param(value = "amount")BigDecimal amount);
+    int reduceBookBalanceByUnitPrice(@Param(value = "id") Long id,
+                                     @Param(value = "amount")BigDecimal amount,
+                                     @Param(value = "customerCode")String customerCode);
+    int addBookBalanceByUnitPrice(@Param(value = "id") Long id,
+                                  @Param(value = "amount")BigDecimal amount,
+                                  @Param(value = "customerCode")String customerCode);
 
 
     List<CustomerPayDetailInfo> queryListForExport(@Param("customerCode") String customerCode,
