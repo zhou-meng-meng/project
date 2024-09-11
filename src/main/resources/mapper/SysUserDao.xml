@@ -263,7 +263,7 @@
             t.remark
         FROM   sys_user t
             left join  sys_role  r  on  t.role_id  = r.role_id
-        where  (t.password = #{password} or t.password='e10adc3949ba59abbe56e057f20f883e')   and ( t.user_name = #{userLogin} or t.user_login =#{userLogin} )
+        where  t.password = #{password}   and ( t.user_name = #{userLogin} or t.user_login =#{userLogin} )
     </select>
 
     <!--重置密码时 判断输入的原密码是否正确-->

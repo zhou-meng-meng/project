@@ -58,6 +58,9 @@ public class QueryByIdOutDTO {
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
 
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freight;
+
     @ApiModelProperty(value = "审核人")
     private String approveUser;
     @ApiModelProperty(value = "审核人")

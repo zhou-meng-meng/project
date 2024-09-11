@@ -109,6 +109,10 @@ public class QueryByIdOutDTO {
      */
     @ApiModelProperty(value = "总金额")
     private BigDecimal tollAmount;
+
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freight;
+
     /**
      * 创建者
      */
