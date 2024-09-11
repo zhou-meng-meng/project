@@ -13,7 +13,7 @@
         <result property="incomeDate" column="income_date"/>
         <result property="incomeCount" column="income_count"/>
         <result property="tollAmount" column="toll_amount"/>
-        <result property="tollAmount" column="toll_amount"/>
+        <result property="freight" column="freight"/>
         <result property="functionType" column="function_type"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -39,6 +39,7 @@
         t.income_date,
         t.income_count,
         t.toll_amount,
+        t.freight,
         t.function_type,
         t.create_by,
         u.user_name AS createByName,
@@ -107,6 +108,7 @@
             t.income_date,
             t.income_count,
             t.toll_amount,
+            t.freight,
             t.function_type,
             t.create_by,
             u.user_name AS createByName,
@@ -141,6 +143,7 @@
         t.income_date,
         t.income_count,
         t.toll_amount,
+        t.freight,
         t.function_type,
         t.create_by,
         u.user_name AS createByName,
@@ -193,7 +196,7 @@
     </select>
 
     <update id="updateShowFlagByCustomerCode">
-        update  sales_customer_pay
+        update  supply_customer_pay
         set show_flag = #{showFlag} , update_by = #{updateBy}, update_time = SYSDATE()
         where customer_code = #{customerCode}
     </update>

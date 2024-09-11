@@ -117,19 +117,23 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 List<ProductionMaterialIncomeInfo> list = page.toList();
                 //处理入库方名称
                 list = setProductionMaterialIncomeObject(list);
-                //计算入库产量合计
+                log.info("计算入库产量合计");
                 outDTO.setSumCount(formatSumIncomeCount(list));
-                //员工产量合计
+                log.info("员工产量合计");
                 BigDecimal sumProducerCount = new BigDecimal("0");
-                //循环获取生产者集合信息
+                log.info("循环获取生产者集合信息");
                 for(ProductionMaterialIncomeInfo info : list){
                     List<ProductProducerInfo> producerInfoList = productionMaterialIncomeDetailDao.selectProductProducerInfoList(info.getId(),dto.getProducerName());
                     info.setProducerInfoList(producerInfoList);
                     for(ProductProducerInfo userInfo : producerInfoList){
                         BigDecimal producerNum = userInfo.getProducerNum();
+                        if(producerNum == null){
+                                producerNum = new BigDecimal("0");
+                        }
                         sumProducerCount = sumProducerCount.add(producerNum);
                     }
                 }
+                log.info("赋值总数量和集合");
                 outDTO.setSumProducerCount(sumProducerCount);
                 outDTO.setProductionMaterialIncomeInfoList(list);
             }else{

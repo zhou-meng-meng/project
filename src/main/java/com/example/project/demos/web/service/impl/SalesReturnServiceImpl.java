@@ -267,7 +267,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
      * @return
      */
     @Override
-    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,String inCode)  {
+    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,String inCode,BigDecimal freight)  {
         log.info("销售退回审核更新开始");
         SalesReturnEntity entity = salesReturnDao.selectById(id);
         entity.setUpdateBy(userLogin);
@@ -278,6 +278,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         entity.setApproveTime(date);
         entity.setUnitPrice(unitPrice);
         entity.setTollAmount(tollAmount);
+        entity.setFreight(freight);
         int i = 0;
         //厂区退回  判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
@@ -293,10 +294,11 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SALES_RETURN.getDesc());
+            dto.setFreight(freight);
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
-            log.info("审核拒绝，恢复增加库存");
-            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);
+            log.info("审核拒绝，恢复减少库存");
+            i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"reduce",date);
         }
         salesReturnDao.updateById(entity);
         log.info("销售退回审核更新结束");

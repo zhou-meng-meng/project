@@ -59,7 +59,7 @@ public interface SalesReturnService  {
      * @return 是否成功
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
-    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,String inCode) ;
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,String inCode,BigDecimal freight) ;
 
     List<SalesReturnInfo> queryListForExport(QueryByPageDTO dto);
 

@@ -48,6 +48,12 @@ public class SupplyReturnEntity implements Serializable {
 	 * 总金额
 	 */
 	private BigDecimal tollAmount;
+
+	/**
+	 * 运费
+	 */
+	private BigDecimal freight;
+
 	private String approveUser;
 	/**
 	 * 审核状态

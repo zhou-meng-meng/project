@@ -266,7 +266,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
     }
 
     @Override
-    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice,BigDecimal tollAmount, Date date)  {
+    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice,BigDecimal tollAmount, Date date,BigDecimal freight)  {
         log.info("来料入库审核更新开始");
         RawMaterialIncomeEntity  entity = rawMaterialIncomeDao.selectById(id);
         entity.setUnitPrice(unitPrice);
@@ -277,7 +277,8 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         entity.setApproveTime(date);
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
-        int i =rawMaterialIncomeDao.updateById(entity);
+        entity.setFreight(freight);
+        int i = rawMaterialIncomeDao.updateById(entity);
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
             /*log.info("审核同意，开始更新库存");  在新增和修改、删除时   更新库存
@@ -292,6 +293,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getSupplyerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getCount(),entity.getMaterialBuytime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.RAW_MATERIAL_INCOME.getDesc());
+            dto.setFreight(freight);
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝，恢复减少库存");

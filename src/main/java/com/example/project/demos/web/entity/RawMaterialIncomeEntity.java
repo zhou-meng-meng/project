@@ -77,6 +77,10 @@ public class RawMaterialIncomeEntity implements Serializable {
 	 */
 	private BigDecimal tollAmount;
 	/**
+	 * 运费
+	 */
+	private BigDecimal freight;
+	/**
 	 * 创建人
 	 */
 	private String createBy;

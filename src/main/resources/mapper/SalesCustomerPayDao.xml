@@ -13,6 +13,7 @@
         <result property="saleDate" column="sale_date"/>
         <result property="saleCount" column="sale_count"/>
         <result property="tollAmount" column="toll_amount"/>
+        <result property="freight" column="freight"/>
         <result property="functionType" column="function_type"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -38,6 +39,7 @@
         t.sale_date,
         t.sale_count,
         t.toll_amount,
+        t.freight,
         t.function_type,
         t.create_by,
         u.user_name AS createByName,
@@ -106,6 +108,7 @@
             t.sale_date,
             t.sale_count,
             t.toll_amount,
+            t.freight,
             t.function_type,
             t.create_by,
             u.user_name AS createByName,
@@ -140,6 +143,7 @@
         t.sale_date,
         t.sale_count,
         t.toll_amount,
+        t.freight,
         t.function_type,
         t.create_by,
         u.user_name AS createByName,

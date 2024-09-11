@@ -52,6 +52,10 @@ public class SupplyCustomerPayEntity implements Serializable {
 	 * 总金额
 	 */
 	private BigDecimal tollAmount;
+	/**
+	 * 运费
+	 */
+	private BigDecimal freight;
 	private String functionType;
 
 	/**

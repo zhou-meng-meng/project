@@ -57,6 +57,10 @@ public class CustomerPayDetailEntity implements Serializable {
 	 * 物料余额
 	 */
 	private BigDecimal materialBalance;
+	/**
+	 * 运费
+	 */
+	private BigDecimal freight;
 
 	/**
 	 * 打款金额

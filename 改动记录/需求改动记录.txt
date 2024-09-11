@@ -1,17 +1,24 @@
 5、2024-09-09 微信群提出改动
  5.1 往来账首页添加导出按钮；
+     已完成
  5.2 来料入库、供应商退回、销售客户退回，在审核页面添加运费字段，默认为0，四位小数，必输；
-     表 customer_pay_detail 添加运费字段 freight
+     表 customer_pay_detail、raw_material_income、sales_outbound、supply_return、sales_return
+      supply_customer_pay、sales_customer_pay 添加运费字段 freight
+     已完成
  5.3 往来账明细列表在来料日期字段后面添加运费字段
+     已完成
  5.4 原材料出库新增页面选物料时，前端去掉物料类型的上送查询条件
+     已完成
 
-
-4、2024/09/06 微信群提出改动
+4、2024-09-06 微信群提出改动
  4.1 供应商往来账和销售客户往来账的首页，只需要展示每一个客户的最新的一笔交易记录
-      已完成   supply_customer_pay和sales_customer_pay表新增字段:show_flag
+     已完成   supply_customer_pay和sales_customer_pay表新增字段:show_flag
  4.2 所有单据的公司名称改为：莒县益铭塑料制品加工厂
-      已完成
+     已完成
  4.3 在审核通过生成来料或者销售记录时，往来账的经办人员为当前录入员
+     已完成
+ 4.4 销售出库和销售退回提交、供来料入库和供应商退回，审核拒绝后，需要恢复原库存
+     已完成
 
 3、2024-09-03 微信群提出改动
  3.1 来料入库和销售出库列表添加开始日期和结束日期的查询条件，来料入库列表添加来料日期字段，

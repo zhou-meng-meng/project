@@ -11,6 +11,7 @@
         <result property="unitPrice" column="unit_price"/>
         <result property="returnCount" column="return_count"/>
         <result property="tollAmount" column="toll_amount"/>
+        <result property="freight" column="freight"/>
         <result property="approveState" column="approve_state"/>
         <result property="approveOpinion" column="approve_opinion"/>
         <result property="approveTime" column="approve_time"/>
@@ -41,6 +42,7 @@
         t.unit_price,
         t.return_count,
         t.toll_amount,
+        t.freight,
         t.approve_user,
         u3.user_name AS approveUserName,
         t.approve_state,
@@ -150,6 +152,7 @@
             t.unit_price,
             t.return_count,
             t.toll_amount,
+            t.freight,
             t.approve_user,
             u3.user_name AS approveUserName,
             t.approve_state,
@@ -196,6 +199,7 @@
         t.unit_price,
         t.return_count,
         t.toll_amount,
+        t.freight,
         t.approve_user,
         u3.user_name AS approveUserName,
         t.approve_state,

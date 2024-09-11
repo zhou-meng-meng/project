@@ -259,7 +259,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
     }
 
     @Override
-    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date)  {
+    public int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,BigDecimal freight)  {
         log.info("供应商退回审核更新开始");
         SupplyReturnEntity  entity = supplyReturnDao.selectById(id);
         entity.setUnitPrice(unitPrice);
@@ -270,6 +270,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
         entity.setApproveTime(date);
         entity.setUpdateBy(userLogin);
         entity.setUpdateTime(date);
+        entity.setFreight(freight);
         int i =supplyReturnDao.updateById(entity);
         //判断审核结果
         if(result.equals(ApproveConfirmResultEnums.APPROVE_CONFIRM_RESULT_AGREE.getCode())){
@@ -285,6 +286,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
+            dto.setFreight(freight);
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝,恢复增加库存");

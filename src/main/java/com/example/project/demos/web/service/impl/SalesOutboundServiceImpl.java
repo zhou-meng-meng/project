@@ -300,6 +300,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getSaleTime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
+            dto.setFreight(freight);
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("审核拒绝,恢复增加库存");

@@ -33,6 +33,9 @@ public class AddPayBySystemDTO {
     @ApiModelProperty(value = "物料总金额")
     private BigDecimal materialBalance;
 
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freight;
+
     /**
      * 账面余额
      */
@@ -98,6 +101,7 @@ public class AddPayBySystemDTO {
         this.payDate = payDate;
         this.isDefault = isDefault;
         this.createBy = operatorBy;
+        this.operatorBy = operatorBy;
         this.remark = remark;
     }
 

@@ -58,7 +58,7 @@ public interface SupplyReturnService  {
      */
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto);
 
-    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,BigDecimal freight) ;
 
     List<SupplyReturnInfo> queryListForExport(QueryByPageDTO dto);
 

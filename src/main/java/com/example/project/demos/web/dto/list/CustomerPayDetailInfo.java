@@ -70,16 +70,13 @@ public class CustomerPayDetailInfo {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date materialDate;
 
-    /**
-     * 账面余额
-     */
-    @ExcelProperty(value = "账面余额")
-    @ApiModelProperty(value = "账面余额")
-    private BigDecimal bookBalance;
-
     @ExcelProperty(value = "物料金额")
     @ApiModelProperty(value = "物料金额")
     private BigDecimal materialBalance;
+
+    @ExcelProperty(value = "运费")
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freight;
 
     /**
      * 打款金额
@@ -102,6 +99,13 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "打款日期")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date payDate;
+
+    /**
+     * 账面余额
+     */
+    @ExcelProperty(value = "账面余额")
+    @ApiModelProperty(value = "账面余额")
+    private BigDecimal bookBalance;
 
     @ExcelIgnore
     @ApiModelProperty(value = "经办人英文名")

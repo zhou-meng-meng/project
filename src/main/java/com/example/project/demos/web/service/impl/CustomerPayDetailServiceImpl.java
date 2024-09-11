@@ -154,7 +154,6 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         if(dto.getIsDefault().equals(SysEnums.SYS_YES_FLAG.getCode())){
             //默认往来账  直接添加
             CustomerPayDetailEntity entity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
-            entity.setOperatorBy(RequestHolder.getUserInfo().getUserLogin());
             entity.setCreateTime(date);
             entity.setOperatorBy(Constants.SYSTEM_CODE);
             entity.setUpdateBy(Constants.SYSTEM_CODE);
@@ -186,10 +185,10 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             newEntity.setMaterialCount(dto.getMaterialCount());
             newEntity.setMaterialBalance(materialBalance);
             newEntity.setBookBalance(bookBalance );
-            newEntity.setCreateBy(Constants.SYSTEM_CODE);
-            newEntity.setOperatorBy(Constants.SYSTEM_CODE);
+            newEntity.setCreateBy(dto.getOperatorBy());
+            newEntity.setOperatorBy(dto.getOperatorBy());
             newEntity.setCreateTime(date);
-            newEntity.setUpdateBy(Constants.SYSTEM_CODE);
+            newEntity.setUpdateBy(dto.getOperatorBy());
             newEntity.setUpdateTime(date);
             newEntity.setRemark(dto.getRemark());
             i = customerPayDetailDao.insert(newEntity);
@@ -239,7 +238,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 customerPayDetailDao.reduceBookBalance(dto.getId(),amount,dto.getCustomerCode());
             }
             CustomerPayDetailEntity entity1 = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
-            //修改h后的账面余额
+            //修改后的账面余额
             entity1.setBookBalance(bookBalance);
             entity1.setOperatorBy(user.getUserLogin());
             entity1.setUpdateBy(user.getUserLogin());

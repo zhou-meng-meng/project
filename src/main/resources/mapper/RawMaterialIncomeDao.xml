@@ -20,6 +20,7 @@
         <result property="billState" column="bill_state"/>
         <result property="count" column="count"/>
         <result property="tollAmount" column="toll_amount"/>
+        <result property="freight" column="freight"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -53,6 +54,7 @@
             t.bill_state,
             t.count,
             t.toll_amount ,
+            t.freight,
             t.create_by,
             u.user_name AS createByName,
             t.create_time,
@@ -156,6 +158,7 @@
             t.bill_state,
             t.count,
             t.toll_amount ,
+            t.freight,
             t.create_by,
             u.user_name AS createByName,
             t.create_time,
@@ -209,6 +212,7 @@
         t.bill_state,
         t.count,
         t.toll_amount ,
+        t.freight,
         t.create_by,
         u.user_name AS createByName,
         t.create_time,

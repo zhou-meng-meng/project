@@ -136,19 +136,19 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             String result = dto.getResult();
             if(functionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode())){
                 log.info("来料入库操作");
-                rawMaterialIncomeService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+                rawMaterialIncomeService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getFreight());
             }else if(functionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode())){
                 log.info("销售出库操作");
                 salesOutboundService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getFreight());
             }else if(functionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
                 log.info("供应商退回操作");
-                supplyReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date);
+                supplyReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getFreight());
             } else if (functionId.equals(FunctionTypeEnums.CUSTOMER_SALE.getCode())) {
                 log.info("销售客户维护操作");
                 customerSaleService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
             } else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())) {
                 log.info("仓库/厂区退回的，审核通过后结束");
-                salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getInCode());
+                salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getInCode(),dto.getFreight());
             } else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())) {
                 log.info("业务员下单，更新业务员下单表");
                 String outCode = dto.getOutCode();

@@ -100,6 +100,10 @@ public class SupplyCustomerPayInfo implements Serializable {
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
 
+	@ExcelProperty(value = "运费")
+	@ApiModelProperty(value = "运费")
+	private BigDecimal freight;
+
 	@ExcelIgnore
 	@ApiModelProperty(value = "业务类型编码")
 	private String functionType;

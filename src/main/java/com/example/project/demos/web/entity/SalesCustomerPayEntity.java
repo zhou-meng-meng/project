@@ -53,6 +53,10 @@ public class SalesCustomerPayEntity implements Serializable {
 	 */
 	private BigDecimal tollAmount;
 	/**
+	 * 运费
+	 */
+	private BigDecimal freight;
+	/**
 	 * 业务类型
 	 */
 	private String functionType;

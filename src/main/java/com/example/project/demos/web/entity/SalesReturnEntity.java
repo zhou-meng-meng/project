@@ -47,6 +47,10 @@ public class SalesReturnEntity implements Serializable {
 	 * 退回总金额
 	 */
 	private BigDecimal tollAmount;
+	/**
+	 * 运费
+	 */
+	private BigDecimal freight;
 	private String approveUser;
 	private String approveState;
 	private Date approveTime;

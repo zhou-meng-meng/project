@@ -59,7 +59,7 @@ public interface RawMaterialIncomeService  {
     DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) ;
 
 
-    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date) ;
+    int updateApprove(Long id, String result, String opinion, String userLogin, BigDecimal unitPrice, BigDecimal tollAmount, Date date,BigDecimal freight) ;
 
     List<RawMaterialIncomeInfo> queryListForExport(QueryByPageDTO dto);
 

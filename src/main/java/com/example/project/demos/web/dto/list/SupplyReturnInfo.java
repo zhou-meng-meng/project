@@ -80,6 +80,10 @@ public class SupplyReturnInfo implements Serializable {
 	@ApiModelProperty(value = "总金额")
 	private BigDecimal tollAmount;
 
+	@ExcelProperty(value = "运费")
+	@ApiModelProperty(value = "运费")
+	private BigDecimal freight;
+
 	/**
 	 * 单据号
 	 */
