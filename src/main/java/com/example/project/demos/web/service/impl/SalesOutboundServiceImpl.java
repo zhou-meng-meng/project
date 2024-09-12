@@ -299,7 +299,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             payEntity.setCreateBy(userLogin);
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getSaleTime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SALES_OUTBOUND.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getSaleTime(),tollAmount,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"0",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date, entity.getRemark());
             dto.setFreight(freight);
             i = customerPayDetailService.addPayBySystem(dto);
         }else{
@@ -397,7 +397,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getTollAmount(),date,FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode());
             salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getChargeoffTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getChargeoffTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,entity.getRemark());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");

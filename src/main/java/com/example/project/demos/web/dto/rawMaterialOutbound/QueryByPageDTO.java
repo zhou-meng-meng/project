@@ -19,6 +19,12 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "出库方编码")
     private String outCode;
 
+    @ApiModelProperty(value = "开始日期")
+    private String beginDate;
+
+    @ApiModelProperty(value = "结束日期")
+    private String endDate;
+
 
     /**
      * 翻页数据起始位置:1

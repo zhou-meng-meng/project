@@ -25,6 +25,15 @@ public class CustomerPayDetailInfo {
     @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "各业务主键")
     private Long businessId;
+
+    /**
+     * 来料/销售日期
+     */
+    @ExcelProperty(value = "来料/销售日期",converter = LocalDateConverter.class)
+    @ApiModelProperty(value = "来料/销售日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date materialDate;
+
     /**
      * 客户编号
      */
@@ -62,21 +71,9 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "数量")
     private BigDecimal materialCount;
 
-    /**
-     * 来料/销售日期
-     */
-    @ExcelProperty(value = "来料/销售日期",converter = LocalDateConverter.class)
-    @ApiModelProperty(value = "来料/销售日期")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date materialDate;
-
     @ExcelProperty(value = "物料金额")
     @ApiModelProperty(value = "物料金额")
     private BigDecimal materialBalance;
-
-    @ExcelProperty(value = "运费")
-    @ApiModelProperty(value = "运费")
-    private BigDecimal freight;
 
     /**
      * 打款金额
@@ -95,17 +92,22 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "折扣金额")
     private BigDecimal discountBalance;
 
-    @ExcelProperty(value = "打款日期",converter = LocalDateConverter.class)
-    @ApiModelProperty(value = "打款日期")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date payDate;
-
     /**
      * 账面余额
      */
     @ExcelProperty(value = "账面余额")
     @ApiModelProperty(value = "账面余额")
     private BigDecimal bookBalance;
+
+    @ExcelProperty(value = "打款日期",converter = LocalDateConverter.class)
+    @ApiModelProperty(value = "打款日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date payDate;
+
+    @ExcelProperty(value = "运费")
+    @ApiModelProperty(value = "运费")
+    private BigDecimal freight;
+
 
     @ExcelIgnore
     @ApiModelProperty(value = "经办人英文名")
@@ -114,6 +116,13 @@ public class CustomerPayDetailInfo {
     @ExcelProperty(value = "经办人")
     @ApiModelProperty(value = "经办人名字")
     private String operatorByName;
+
+    /**
+     * 备注
+     */
+    @ExcelProperty(value = "备注")
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
     /**
      * 付款类型  0-入款 1-出款
@@ -161,10 +170,5 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
-    /**
-     * 备注
-     */
-    @ExcelProperty(value = "备注")
-    @ApiModelProperty(value = "备注")
-    private String remark;
+
 }

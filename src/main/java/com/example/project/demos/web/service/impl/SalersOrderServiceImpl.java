@@ -270,7 +270,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             payEntity.setCreateBy(userLogin);
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(),entity.getMaterialCode(),entity.getUnitPrice(),entity.getLoadNum(),entity.getLoadDate(),entity.getTollAmount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SALERS_ORDER.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(),entity.getMaterialCode(),entity.getUnitPrice(),entity.getLoadNum(),entity.getLoadDate(),entity.getTollAmount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,entity.getRemark());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");

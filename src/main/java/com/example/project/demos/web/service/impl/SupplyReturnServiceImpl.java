@@ -285,7 +285,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             payEntity.setCreateBy(userLogin);
             i = supplyCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,FunctionTypeEnums.SUPPLY_RETURN.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getReturnCount(),entity.getReturnTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),tollAmount,new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date, entity.getRemark());
             dto.setFreight(freight);
             i = customerPayDetailService.addPayBySystem(dto);
         }else{

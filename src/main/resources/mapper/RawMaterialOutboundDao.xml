@@ -73,6 +73,12 @@
         <if test="raw.outCode != null and raw.outCode != ''">
             and t.out_code   = #{raw.outCode}
         </if>
+        <if test="raw.beginDate != null and raw.beginDate != ''">
+            and t.receive_time    <![CDATA[ >= ]]> #{raw.beginDate}
+        </if>
+        <if test="raw.endDate != null and raw.endDate != ''">
+            and t.receive_time    <![CDATA[ <= ]]> #{raw.endDate}
+        </if>
         order  by   t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -96,6 +102,12 @@
         </if>
         <if test="outCode != null and outCode != ''">
             and t.out_code   = #{outCode}
+        </if>
+        <if test="beginDate != null and beginDate != ''">
+            and t.receive_time    <![CDATA[ >= ]]> #{beginDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and t.receive_time    <![CDATA[ <= ]]> #{endDate}
         </if>
     </select>
 
