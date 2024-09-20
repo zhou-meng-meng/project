@@ -223,9 +223,9 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
             RawMaterialOutboundEntity entity = rawMaterialOutboundDao.selectById(dto.getId());
-            //删除数据要更新库存
-            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getCount(),"reduce",date);
             int i = rawMaterialOutboundDao.deleteById(dto.getId());
+            log.info("开始恢复库存:"+entity.getCount());
+            materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getCount(),"add",date);
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){

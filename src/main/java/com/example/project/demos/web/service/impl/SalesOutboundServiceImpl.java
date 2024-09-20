@@ -362,7 +362,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         }
         //记录操作日志
         String info =  "物料编号:"+dto.getMaterialCode()+",物料名称:"+dto.getMaterialName()+",客户:"+dto.getCustomerName()+",单据号:"+dto.getBillCode()+",装车数量:"+dto.getLoadNum()+",运输方式:"+dto.getTransportTypeName()+",运费:"+dto.getFreight();
-        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_CHARGE_OFF.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode(), OperationTypeEnums.OPERATION_TYPE_CHARGE_OFF.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
@@ -393,8 +393,13 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
             entity.setBillState(BillStateEnums.BILL_STATE_CHARGE_OFF.getCode());
             log.info("确认同意，开始更新库存");
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getOutCount(),"add",date);
+            log.info("先隐藏该客户原记录");
+            int i = salesCustomerPayDao.updateShowFlagByCustomerCode("1",userLogin,entity.getCustomerCode());
             log.info("生成该客户销售出库-冲销记录");
             SalesCustomerPayEntity payEntity = new SalesCustomerPayEntity(null,entity.getId(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getTollAmount(),date,FunctionTypeEnums.SALES_OUTBOUND_CHARGE_OFF.getCode());
+            payEntity.setShowFlag("0");
+            payEntity.setCreateTime(date);
+            payEntity.setCreateBy(userLogin);
             salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
             AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getOutCount(),entity.getChargeoffTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,entity.getRemark());
