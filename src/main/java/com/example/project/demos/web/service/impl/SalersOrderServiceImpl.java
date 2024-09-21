@@ -270,7 +270,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             payEntity.setCreateBy(userLogin);
             i = salesCustomerPayDao.insert(payEntity);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(),entity.getMaterialCode(),entity.getUnitPrice(),entity.getLoadNum(),entity.getLoadDate(),entity.getTollAmount(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,entity.getRemark());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getOutCode(),entity.getBillCode(),entity.getCustomerCode(),entity.getMaterialCode(),entity.getLoadDate(), entity.getUnitPrice(),entity.getLoadNum(),entity.getTollAmount(),SysEnums.SYS_NO_FLAG.getCode(),entity.getCreateBy(),date,entity.getRemark());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");
@@ -372,7 +372,7 @@ public class SalersOrderServiceImpl  implements SalersOrderService {
             log.info("确认同意，开始更新库存");
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getOutCode(), entity.getLoadNum(),"add",date);
             log.info("生成往来账信息");
-            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getCustomerCode(), entity.getMaterialCode(), entity.getUnitPrice(),entity.getLoadNum(),entity.getChargeoffTime(),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),entity.getTollAmount(),new BigDecimal(0),"1",null,SysEnums.SYS_NO_FLAG.getCode(),Constants.SYSTEM_CODE,date,FunctionTypeEnums.SALERS_ORDER_CHARGE_OFF.getDesc());
+            AddPayBySystemDTO dto = new AddPayBySystemDTO(null, entity.getId(), entity.getOutCode(),entity.getBillCode(),entity.getCustomerCode(), entity.getMaterialCode(), entity.getChargeoffTime(),SysEnums.SYS_NO_FLAG.getCode(),entity.getChargeoffUser(),date,entity.getRemark(), entity.getUnitPrice(),entity.getLoadNum(),entity.getTollAmount());
             customerPayDetailService.addPayBySystem(dto);
         }else{
             log.info("确认拒绝");

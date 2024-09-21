@@ -46,11 +46,7 @@ public class AddPayBySystemDTO {
      */
     @ApiModelProperty(value = "打款金额")
     private BigDecimal payBalance;
-    /**
-     * 退回金额
-     */
-    @ApiModelProperty(value = "退回金额")
-    private BigDecimal returnBalance;
+
 
     @ApiModelProperty(value = "折扣金额")
     private BigDecimal discountBalance;
@@ -66,6 +62,41 @@ public class AddPayBySystemDTO {
     private String isDefault;
     @ApiModelProperty(value = "经办人英文名")
     private String operatorBy;
+
+    @ApiModelProperty(value = "厂区编号")
+    private String factoryCode;
+
+    @ApiModelProperty(value = "单据号")
+    private String billNo;
+
+    /**
+     * 退回数量
+     */
+    @ApiModelProperty(value = "退回数量")
+    private BigDecimal returnCount;
+
+    /**
+     * 退回单价
+     */
+    @ApiModelProperty(value = "退回单价")
+    private BigDecimal returnUnitPrice;
+    /**
+     * 退回金额
+     */
+    @ApiModelProperty(value = "退回金额")
+    private BigDecimal returnBalance;
+
+    /**
+     * 税金
+     */
+    @ApiModelProperty(value = "税金")
+    private BigDecimal taxBalance;
+
+    /**
+     * 其他金额
+     */
+    @ApiModelProperty(value = "其他金额")
+    private BigDecimal otherBalance;
 
     /**
      *
@@ -84,21 +115,68 @@ public class AddPayBySystemDTO {
     private String remark;
 
 
-    public AddPayBySystemDTO(Long id,Long businessId,String customerCode,String materialCode,BigDecimal unitPrice,BigDecimal materialCount, Date materialDate,BigDecimal materialBalance,BigDecimal bookBalance,BigDecimal payBalance,BigDecimal returnBalance,BigDecimal discountBalance,String payType,Date payDate,String isDefault,String operatorBy,Date date,String remark){
+    /**
+     * 正常来料/销售使用
+     * @param id
+     * @param businessId
+     * @param factoryCode
+     * @param billNo
+     * @param customerCode
+     * @param materialCode
+     * @param unitPrice
+     * @param materialCount
+     * @param materialDate
+     * @param materialBalance
+     * @param isDefault
+     * @param operatorBy
+     * @param date
+     * @param remark
+     */
+    public AddPayBySystemDTO(Long id,Long businessId,String factoryCode,String billNo,String customerCode,String materialCode,Date materialDate,BigDecimal unitPrice,BigDecimal materialCount, BigDecimal materialBalance,String isDefault,String operatorBy,Date date,String remark){
         this.id = id;
         this.businessId = businessId;
+        this.factoryCode = factoryCode;
+        this.billNo = billNo;
         this.customerCode = customerCode;
         this.materialCode = materialCode;
         this.unitPrice = unitPrice;
         this.materialCount = materialCount;
         this.materialDate = materialDate;
         this.materialBalance= materialBalance;
-        this.bookBalance= bookBalance;
-        this.payBalance= payBalance;
-        this.returnBalance = returnBalance;
-        this.discountBalance = discountBalance;
-        this.payType =payType;
-        this.payDate = payDate;
+        this.isDefault = isDefault;
+        this.createBy = operatorBy;
+        this.operatorBy = operatorBy;
+        this.remark = remark;
+    }
+
+    /**
+     * 退货使用
+     * @param id
+     * @param businessId
+     * @param factoryCode
+     * @param billNo
+     * @param customerCode
+     * @param materialCode
+     * @param materialDate
+     * @param isDefault
+     * @param operatorBy
+     * @param date
+     * @param remark
+     * @param returnUnitPrice
+     * @param returnCount
+     * @param returnBalance
+     */
+    public AddPayBySystemDTO(Long id,Long businessId,String factoryCode,String billNo,String customerCode,String materialCode,Date materialDate,String isDefault,String operatorBy,Date date,String remark,BigDecimal returnUnitPrice,BigDecimal returnCount, BigDecimal returnBalance){
+        this.id = id;
+        this.businessId = businessId;
+        this.factoryCode = factoryCode;
+        this.billNo = billNo;
+        this.customerCode = customerCode;
+        this.materialCode = materialCode;
+        this.returnUnitPrice = returnUnitPrice;
+        this.returnCount = returnCount;
+        this.materialDate = materialDate;
+        this.returnBalance= returnBalance;
         this.isDefault = isDefault;
         this.createBy = operatorBy;
         this.operatorBy = operatorBy;

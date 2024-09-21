@@ -64,5 +64,7 @@ public interface CustomerPayDetailService  {
 
     UpdateUnitPriceOutDTO updateUnitPrice(UpdateUnitPriceDTO dto);
 
+    EditBookBalanceOutDTO editBookBalance(EditBookBalanceDTO dto);
+
 }
 

@@ -1,6 +1,7 @@
 package com.example.project.demos.web.dto.list;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.example.project.demos.web.utils.LocalDateConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -12,16 +13,17 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
+@ExcelIgnoreUnannotated
 public class CustomerPayDetailInfo {
     /**
      * 自增主键
      */
-    @ExcelIgnore
+    
     @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "自增主键")
     private Long id;
 
-    @ExcelIgnore
+    
     @JsonSerialize(using = ToStringSerializer.class)
     @ApiModelProperty(value = "各业务主键")
     private Long businessId;
@@ -29,10 +31,17 @@ public class CustomerPayDetailInfo {
     /**
      * 来料/销售日期
      */
-    @ExcelProperty(value = "来料/销售日期",converter = LocalDateConverter.class)
-    @ApiModelProperty(value = "来料/销售日期")
+    @ExcelProperty(value = "日期",converter = LocalDateConverter.class)
+    @ApiModelProperty(value = "日期")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date materialDate;
+
+    @ExcelProperty(value = "厂区")
+    @ApiModelProperty(value = "厂区")
+    private String factoryName;
+    @ExcelProperty(value = "单据号")
+    @ApiModelProperty(value = "单据号")
+    private String billNo;
 
     /**
      * 客户编号
@@ -75,12 +84,20 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "物料金额")
     private BigDecimal materialBalance;
 
+
     /**
-     * 打款金额
+     * 退回数量
      */
-    @ExcelProperty(value = "打款金额")
-    @ApiModelProperty(value = "打款金额")
-    private BigDecimal payBalance;
+    @ExcelProperty(value = "退回数量")
+    @ApiModelProperty(value = "退回数量")
+    private BigDecimal returnCount;
+
+    /**
+     * 退回单价
+     */
+    @ExcelProperty(value = "退回单价")
+    @ApiModelProperty(value = "退回单价")
+    private BigDecimal returnUnitPrice;
     /**
      * 退回金额
      */
@@ -88,9 +105,26 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
 
-    @ExcelProperty(value = "折扣金额")
-    @ApiModelProperty(value = "折扣金额")
-    private BigDecimal discountBalance;
+    /**
+     * 税金
+     */
+    @ExcelProperty(value = "税金")
+    @ApiModelProperty(value = "税金")
+    private BigDecimal taxBalance;
+
+    /**
+     * 其他金额
+     */
+    @ExcelProperty(value = "其他金额")
+    @ApiModelProperty(value = "其他金额")
+    private BigDecimal otherBalance;
+
+    /**
+     * 打款金额
+     */
+    @ExcelProperty(value = "打款金额")
+    @ApiModelProperty(value = "打款金额")
+    private BigDecimal payBalance;
 
     /**
      * 账面余额
@@ -99,17 +133,15 @@ public class CustomerPayDetailInfo {
     @ApiModelProperty(value = "账面余额")
     private BigDecimal bookBalance;
 
-    @ExcelProperty(value = "打款日期",converter = LocalDateConverter.class)
+/*    @ExcelProperty(value = "打款日期",converter = LocalDateConverter.class)
     @ApiModelProperty(value = "打款日期")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date payDate;
+    private Date payDate;*/
 
     @ExcelProperty(value = "运费")
     @ApiModelProperty(value = "运费")
     private BigDecimal freight;
 
-
-    @ExcelIgnore
     @ApiModelProperty(value = "经办人英文名")
     private String operatorBy;
 
@@ -127,21 +159,30 @@ public class CustomerPayDetailInfo {
     /**
      * 付款类型  0-入款 1-出款
      */
-    @ExcelIgnore
+    
     @ApiModelProperty(value = "付款类型  0-入款 1-出款")
     private String payType;
-    @ExcelIgnore
+    
     @ApiModelProperty(value = "付款类型")
     private String payTypeName;
 
 
-    @ExcelIgnore
+    
     @ApiModelProperty(value = "是否默认值 Y-是；N-否  前端固定值N")
     private String isDefault;
+
+    @ApiModelProperty(value = "厂区编号")
+    private String factoryCode;
+
+
+
+
+
+
     /**
      * 创建者
      */
-    @ExcelIgnore
+    
     @ApiModelProperty(value = "创建者英文名")
     private String createBy;
     @ExcelProperty(value = "创建者名字")
@@ -157,7 +198,7 @@ public class CustomerPayDetailInfo {
     /**
      * 更新者
      */
-    @ExcelIgnore
+    
     @ApiModelProperty(value = "更新者英文名")
     private String updateBy;
     @ExcelProperty(value = "更新者名字")

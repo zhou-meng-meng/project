@@ -44,8 +44,10 @@ public class AddDTO {
     @ApiModelProperty(value = "退回金额")
     private BigDecimal returnBalance;
 
-    @ApiModelProperty(value = "折扣金额")
-    private BigDecimal discountBalance;
+    @ApiModelProperty(value = "税金")
+    private BigDecimal taxBalance;
+    @ApiModelProperty(value = "其他金额")
+    private BigDecimal otherBalance;
 
     @ApiModelProperty(value = "经办人英文名")
     private String operatorBy;

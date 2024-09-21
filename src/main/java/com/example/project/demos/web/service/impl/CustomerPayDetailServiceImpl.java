@@ -1,10 +1,13 @@
 package com.example.project.demos.web.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
+import com.example.project.demos.web.dto.list.SysFactoryInfo;
+import com.example.project.demos.web.dto.list.SysStorehouseInfo;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.*;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
@@ -54,6 +57,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
     @Autowired
     private SalesCustomerPayService salesCustomerPayService;
 
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
+
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
@@ -73,8 +81,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate(),pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerPayDetailInfo> list = page.toList();
+                //赋值厂区名称
+                list = formatFactoryName(list);
                 //出参赋值 集合和合计字段
                 outDTO = formatSumObject(list,outDTO);
+
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -103,12 +114,13 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         BigDecimal materialBalance = dto.getMaterialBalance();
         BigDecimal returnBalance = dto.getReturnBalance();
         BigDecimal payBalance = dto.getPayBalance();
-        BigDecimal discountBalance = dto.getDiscountBalance();
+        BigDecimal taxBalance = dto.getTaxBalance();
+        BigDecimal otherBalance = dto.getOtherBalance();
         try{
             CustomerPayDetailEntity newEntity = BeanCopyUtils.copy(dto,CustomerPayDetailEntity.class);
             //需要获取该客户最新一笔来往账信息
             CustomerPayDetailEntity entity = customerPayDetailDao.selectLatestPayDetail(dto.getCustomerCode());
-            //账面金额=上次账面余额-总金额+退回金额+打款金额+折扣金额
+            //账面金额=上次账面余额-总金额+退回金额+打款金额-税金-其他金额
             if(ObjectUtil.isNull(materialBalance)){
                 materialBalance = new BigDecimal(0);
             }
@@ -118,11 +130,15 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             if(ObjectUtil.isNull(payBalance)){
                 payBalance = new BigDecimal(0);
             }
-            if(ObjectUtil.isNull(discountBalance)){
-                discountBalance = new BigDecimal(0);
+            if(ObjectUtil.isNull(taxBalance)){
+                taxBalance = new BigDecimal(0);
             }
-            BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance).add(discountBalance);
-            log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"+"+discountBalance+"=" +bookBalance);
+            if(ObjectUtil.isNull(otherBalance)){
+                otherBalance = new BigDecimal(0);
+            }
+            BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance).subtract(taxBalance).subtract(otherBalance);
+            log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"-"+taxBalance +"-"+otherBalance+" = " +bookBalance);
+            newEntity.setMaterialDate(dto.getPayDate());
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(user.getUserLogin());
             newEntity.setCreateTime(date);
@@ -139,7 +155,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance+",折扣金额:"+discountBalance;
+        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance+",税金:"+taxBalance+",其他金额:"+otherBalance;
         sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -197,6 +213,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
     }
 
 
+    /**
+     * 去掉往来账修改按钮  改为只修改附件
+     * @param dto 实例对象
+     * @return
+     */
     @Override
     public EditOutDTO update(EditDTO dto) {
         EditOutDTO outDTO = new EditOutDTO();
@@ -259,6 +280,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         return outDTO;
     }
 
+    /**
+     * 去掉往来账删除按钮
+     * @param dto 主键
+     * @return
+     */
     @Override
     public DeleteByIdOutDTO deleteById(DeleteByIdDTO dto) {
         DeleteByIdOutDTO outDTO = new DeleteByIdOutDTO();
@@ -318,6 +344,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         List<CustomerPayDetailInfo> list = new ArrayList<>();
         try {
             list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName(),dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
+            list = formatFactoryName(list);
             list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
@@ -365,12 +392,12 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             log.info("修改后金额-修改前金额:"+tollAmount +" - " + preTollAmount +" = " + substract);
 
             CustomerPayDetailEntity entity = customerPayDetailDao.selectById(id);
-            entity.setUnitPrice(dto.getUnitPrice());
             entity.setUpdateBy(user.getUserLogin());
             entity.setUpdateTime(date);
             entity.setRemark(dto.getRemark());
             if(fuctionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode()) || fuctionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode()) || fuctionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode()) ){
-                log.info("来料入库、销售出库、业务员下单，更新物料金额");
+                log.info("来料入库、销售出库、业务员下单，更新单价和物料金额");
+                entity.setUnitPrice(dto.getUnitPrice());
                 entity.setMaterialBalance(dto.getTollAmount());
                 if(substract.compareTo(new BigDecimal("0")) > 0){
                     log.info("更新当前往来账记录的单价和物料金额");
@@ -388,7 +415,8 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                     edit = false;
                 }
             }else if (fuctionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode()) || fuctionId.equals(FunctionTypeEnums.SALES_RETURN.getCode()) || fuctionId.equals(FunctionTypeEnums.SALERS_ORDER_RETURN.getCode())){
-                log.info("供货方退回、销售客户退回、业务员下单退回，更新退回金额");
+                log.info("供货方退回、销售客户退回、业务员下单退回，更新退回单价和退回金额");
+                entity.setReturnUnitPrice(dto.getUnitPrice());
                 entity.setReturnBalance(dto.getTollAmount());
                 if(substract.compareTo(new BigDecimal("0")) > 0){
                     log.info("更新当前往来账记录的单价和退回金额");
@@ -494,6 +522,41 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         return outDTO;
     }
 
+    @Override
+    public EditBookBalanceOutDTO editBookBalance(EditBookBalanceDTO dto) {
+        log.info("维护客户初始化账面余额开始");
+        EditBookBalanceOutDTO outDTO  = new EditBookBalanceOutDTO();
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        try {
+            //往来账明细实体赋值
+            CustomerPayDetailEntity entity = new CustomerPayDetailEntity();
+            //客户编号
+            entity.setCustomerCode(dto.getCustomerCode());
+            //账面余额
+            entity.setBookBalance(dto.getBookBalance());
+            entity.setOperatorBy(user.getUserLogin());
+            entity.setCreateBy(user.getUserLogin());
+            entity.setCreateTime(date);
+            entity.setMaterialDate(date);
+            entity.setRemark(dto.getRemark());
+            customerPayDetailDao.insert(entity);
+        }catch (Exception e){
+            //异常情况   赋值错误码和错误值
+            log.info("维护客户初始化账面余额异常:"+e.getMessage());
+            errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
+            errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
+        }
+        String info = "客户编号:"+dto.getCustomerCode()+",客户名称:"+dto.getCustomerName()+",账面余额:"+dto.getBookBalance()+",备注:"+dto.getRemark();
+        sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_INITE_BALANCE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
+        outDTO.setErrorCode(errorCode);
+        outDTO.setErrorMsg(errortMsg);
+        log.info("维护客户初始化账面余额结束");
+        return outDTO;
+    }
+
     /**
      * 菜单列表获取数量合计和金额合计
      * @param list
@@ -501,49 +564,100 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
      * @return
      */
     private QueryByPageOutDTO formatSumObject(List<CustomerPayDetailInfo> list, QueryByPageOutDTO outDTO){
+
         //合计物料数量
         BigDecimal sumCount = new BigDecimal("0");
+        //合计单价
+        BigDecimal sumUnitPrice = new BigDecimal("0");
         //合计物料金额
         BigDecimal sumMaterialAmt = new BigDecimal("0");
-        //合计打款金额
-        BigDecimal sumPayAmt = new BigDecimal("0");
+
+        //合计退回数量
+        BigDecimal sumReturnCount = new BigDecimal("0");
+        //合计退回单价
+        BigDecimal sumReturnUnitPrice = new BigDecimal("0");
         //合计退回金额
         BigDecimal sumReturnAmt = new BigDecimal("0");
-        //合计折扣金额
-        BigDecimal sumDiscountAmt = new BigDecimal("0");
+
+        //合计税金
+        BigDecimal sumTaxAmt = new BigDecimal("0");
+        //合计其他金额
+        BigDecimal sumOtherAmt = new BigDecimal("0");
+        //合计打款金额
+        BigDecimal sumPayAmt = new BigDecimal("0");
+        //合计运费
+        BigDecimal sumFreightAmt = new BigDecimal("0");
+
         for(CustomerPayDetailInfo info: list){
             BigDecimal count = info.getMaterialCount();
             if(count == null){
                 count = new BigDecimal("0");
             }
+            BigDecimal unitPrice = info.getUnitPrice();
+            if(unitPrice == null){
+                unitPrice = new BigDecimal("0");
+            }
             BigDecimal materialAmt = info.getMaterialBalance();
             if(materialAmt == null){
                 materialAmt = new BigDecimal("0");
             }
-            BigDecimal payAmt = info.getPayBalance();
-            if(payAmt == null){
-                payAmt = new BigDecimal("0");
+
+            BigDecimal returnCount = info.getReturnCount();
+            if(returnCount == null){
+                returnCount = new BigDecimal("0");
+            }
+            BigDecimal returnUnitPrice = info.getReturnUnitPrice();
+            if(returnUnitPrice == null){
+                returnUnitPrice = new BigDecimal("0");
             }
             BigDecimal returnAmt = info.getReturnBalance();
             if(returnAmt == null){
                 returnAmt = new BigDecimal("0");
             }
-            BigDecimal discountAmt = info.getDiscountBalance();
-            if(discountAmt == null){
-                discountAmt = new BigDecimal("0");
+
+            BigDecimal taxAmt = info.getTaxBalance();
+            if(taxAmt == null){
+                taxAmt = new BigDecimal("0");
             }
+            BigDecimal otherAmt = info.getOtherBalance();
+            if(otherAmt == null){
+                otherAmt = new BigDecimal("0");
+            }
+            BigDecimal payAmt = info.getPayBalance();
+            if(payAmt == null){
+                payAmt = new BigDecimal("0");
+            }
+            BigDecimal freightAmt = info.getFreight();
+            if(freightAmt == null){
+                freightAmt = new BigDecimal("0");
+            }
+
+            //销售/来料金额
             sumCount = sumCount.add(count);
+            sumUnitPrice = sumUnitPrice.add(unitPrice);
             sumMaterialAmt = sumMaterialAmt.add(materialAmt);
-            sumPayAmt = sumPayAmt.add(payAmt);
+            //退回金额
+            sumReturnCount = sumReturnCount.add(returnCount);
+            sumReturnUnitPrice = sumReturnUnitPrice.add(returnUnitPrice);
             sumReturnAmt = sumReturnAmt.add(returnAmt);
-            sumDiscountAmt = sumDiscountAmt.add(discountAmt);
+
+            //税金、其他金额 打款金额  运费
+            sumTaxAmt = sumTaxAmt.add(taxAmt);
+            sumOtherAmt = sumOtherAmt.add(otherAmt);
+            sumPayAmt = sumPayAmt.add(payAmt);
+            sumFreightAmt = sumFreightAmt.add(freightAmt);
         }
         outDTO.setCustomerPayDetailInfoList(list);
         outDTO.setSumCount(sumCount);
+        outDTO.setSumUnitPrice(sumUnitPrice);
         outDTO.setSumMaterialAmt(sumMaterialAmt);
-        outDTO.setSumPayAmt(sumPayAmt);
+        outDTO.setSumReturnCount(sumReturnCount);
+        outDTO.setSumReturnUnitPrice(sumReturnUnitPrice);
         outDTO.setSumReturnAmt(sumReturnAmt);
-        outDTO.setSumDiscountAmt(sumDiscountAmt);
+        outDTO.setSumTaxAmt(sumTaxAmt);
+        outDTO.setSumOtherAmt(sumOtherAmt);
+        outDTO.setSumPayAmt(sumPayAmt);
+        outDTO.setSumFreightAmt(sumFreightAmt);
         return outDTO;
     }
 
@@ -555,50 +669,134 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
     private List<CustomerPayDetailInfo> formatSumObjectForExport(List<CustomerPayDetailInfo> list){
         //合计物料数量
         BigDecimal sumCount = new BigDecimal("0");
+        //合计单价
+        BigDecimal sumUnitPrice = new BigDecimal("0");
         //合计物料金额
         BigDecimal sumMaterialAmt = new BigDecimal("0");
-        //合计打款金额
-        BigDecimal sumPayAmt = new BigDecimal("0");
+
+        //合计退回数量
+        BigDecimal sumReturnCount = new BigDecimal("0");
+        //合计退回单价
+        BigDecimal sumReturnUnitPrice = new BigDecimal("0");
         //合计退回金额
         BigDecimal sumReturnAmt = new BigDecimal("0");
-        //合计折扣金额
-        BigDecimal sumDiscountAmt = new BigDecimal("0");
+
+        //合计税金
+        BigDecimal sumTaxAmt = new BigDecimal("0");
+        //合计其他金额
+        BigDecimal sumOtherAmt = new BigDecimal("0");
+        //合计打款金额
+        BigDecimal sumPayAmt = new BigDecimal("0");
+        //合计运费
+        BigDecimal sumFreightAmt = new BigDecimal("0");
+
         for(CustomerPayDetailInfo info: list){
             BigDecimal count = info.getMaterialCount();
             if(count == null){
                 count = new BigDecimal("0");
             }
+            BigDecimal unitPrice = info.getUnitPrice();
+            if(unitPrice == null){
+                unitPrice = new BigDecimal("0");
+            }
             BigDecimal materialAmt = info.getMaterialBalance();
             if(materialAmt == null){
                 materialAmt = new BigDecimal("0");
             }
-            BigDecimal payAmt = info.getPayBalance();
-            if(payAmt == null){
-                payAmt = new BigDecimal("0");
+
+            BigDecimal returnCount = info.getReturnCount();
+            if(returnCount == null){
+                returnCount = new BigDecimal("0");
+            }
+            BigDecimal returnUnitPrice = info.getReturnUnitPrice();
+            if(returnUnitPrice == null){
+                returnUnitPrice = new BigDecimal("0");
             }
             BigDecimal returnAmt = info.getReturnBalance();
             if(returnAmt == null){
                 returnAmt = new BigDecimal("0");
             }
-            BigDecimal discountAmt = info.getDiscountBalance();
-            if(discountAmt == null){
-                discountAmt = new BigDecimal("0");
+
+            BigDecimal taxAmt = info.getTaxBalance();
+            if(taxAmt == null){
+                taxAmt = new BigDecimal("0");
             }
+            BigDecimal otherAmt = info.getOtherBalance();
+            if(otherAmt == null){
+                otherAmt = new BigDecimal("0");
+            }
+            BigDecimal payAmt = info.getPayBalance();
+            if(payAmt == null){
+                payAmt = new BigDecimal("0");
+            }
+            BigDecimal freightAmt = info.getFreight();
+            if(freightAmt == null){
+                freightAmt = new BigDecimal("0");
+            }
+
+            //销售/来料金额
             sumCount = sumCount.add(count);
+            sumUnitPrice = sumUnitPrice.add(unitPrice);
             sumMaterialAmt = sumMaterialAmt.add(materialAmt);
-            sumPayAmt = sumPayAmt.add(payAmt);
+            //退回金额
+            sumReturnCount = sumReturnCount.add(returnCount);
+            sumReturnUnitPrice = sumReturnUnitPrice.add(returnUnitPrice);
             sumReturnAmt = sumReturnAmt.add(returnAmt);
-            sumDiscountAmt = sumDiscountAmt.add(discountAmt);
+
+            //税金、其他金额 打款金额  运费
+            sumTaxAmt = sumTaxAmt.add(taxAmt);
+            sumOtherAmt = sumOtherAmt.add(otherAmt);
+            sumPayAmt = sumPayAmt.add(payAmt);
+            sumFreightAmt = sumFreightAmt.add(freightAmt);
         }
         CustomerPayDetailInfo info = new CustomerPayDetailInfo();
         info.setUnitName("合计:");
         info.setMaterialCount(sumCount);
+        info.setUnitPrice(sumUnitPrice);
         info.setMaterialBalance(sumMaterialAmt);
-        info.setPayBalance(sumPayAmt);
+        info.setReturnCount(sumReturnCount);
+        info.setReturnUnitPrice(sumReturnUnitPrice);
         info.setReturnBalance(sumReturnAmt);
-        info.setDiscountBalance(sumDiscountAmt);
+        info.setTaxBalance(sumTaxAmt);
+        info.setOtherBalance(sumOtherAmt);
+        info.setPayBalance(sumPayAmt);
+        info.setFreight(sumFreightAmt);
         list.add(info);
         return list;
     }
+
+    private List<CustomerPayDetailInfo> formatFactoryName(List<CustomerPayDetailInfo> list){
+        log.info("开始赋值厂区/仓库名称");
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(CustomerPayDetailInfo info : list){
+                String factoryCode = info.getFactoryCode();
+                if(null != factoryCode && !"".equals(factoryCode)){
+                    if(Constants.FACTORY_CODE_PREFIX.equals(factoryCode.substring(0,1))){
+                        //工厂
+                        for(SysFactoryInfo fInfo : factoryInfoList){
+                            if(factoryCode.equals(fInfo.getCode())){
+                                info.setFactoryName(fInfo.getName());
+                            }
+                        }
+                    }else{
+                        //仓库
+                        for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                            if(factoryCode.equals(sInfo.getCode())){
+                                info.setFactoryName(sInfo.getName());
+                            }
+                        }
+                    }
+                }else{
+                    // factoryCode is null
+                }
+            }
+
+        }
+        return list;
+    }
+
 
 }

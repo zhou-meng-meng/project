@@ -66,10 +66,7 @@ public class CustomerPayDetailEntity implements Serializable {
 	 * 打款金额
 	 */
 	private BigDecimal payBalance;
-	/**
-	 * 退回金额
-	 */
-	private BigDecimal returnBalance;
+
 	/**
 	 * 折扣金额
 	 */
@@ -88,6 +85,39 @@ public class CustomerPayDetailEntity implements Serializable {
 	private Date payDate;
 	private String operatorBy;
 	private String isDefault;
+
+	private String factoryCode;
+	private String billNo;
+
+	/**
+	 * 退货相关
+	 */
+
+	/**
+	 * 退回数量
+	 */
+	private BigDecimal returnCount;
+
+	/**
+	 * 退回单价
+	 */
+	private BigDecimal returnUnitPrice;
+	/**
+	 * 退回金额
+	 */
+	private BigDecimal returnBalance;
+
+	/**
+	 * 税金
+	 */
+	private BigDecimal taxBalance;
+
+	/**
+	 * 其他金额
+	 */
+	private BigDecimal otherBalance;
+
+
 	/**
 	 * 创建人/经办人
 	 */

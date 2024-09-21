@@ -16,12 +16,18 @@
         <result property="freight" column="freight"/>
         <result property="materialDate" column="material_date"/>
         <result property="payBalance" column="pay_balance"/>
-        <result property="returnBalance" column="return_balance"/>
         <result property="discountBalance" column="discount_balance"/>
         <result property="operatorBy" column="operator_by"/>
         <result property="payType" column="pay_type"/>
         <result property="payDate" column="pay_date"/>
         <result property="isDefault" column="is_default"/>
+        <result property="factoryCode" column="factory_code"/>
+        <result property="billNo" column="bill_no"/>
+        <result property="returnCount" column="return_count"/>
+        <result property="returnUnitPrice" column="return_unit_price"/>
+        <result property="returnBalance" column="return_balance"/>
+        <result property="taxBalance" column="tax_balance"/>
+        <result property="otherBalance" column="other_balance"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -49,9 +55,15 @@
         t.discount_balance,
         t.pay_type,
         t.pay_date,
-        t.return_balance,
         t.is_default,
         t.operator_by,
+        t.factory_code,
+        t.bill_no,
+        t.return_count,
+        t.return_unit_price,
+        t.return_balance,
+        t.tax_balance,
+        t.other_balance,
         u2.user_name AS operatorByName,
         t.create_by,
         u.user_name AS createByName,
@@ -116,8 +128,14 @@
                t.pay_balance,
                t.discount_balance,
                t.pay_type,
-               t.return_balance,
                t.is_default,
+               t.return_count,
+               t.return_unit_price,
+               t.return_balance,
+               t.tax_balance,
+               t.other_balance,
+               t.factory_code,
+               t.bill_no,
                t.remark  from customer_pay_detail t
              where   t.customer_code = #{customerCode} order  by  t.id  desc  limit 0,1
     </select>
@@ -162,9 +180,15 @@
             t.discount_balance,
             t.pay_type,
             t.pay_date,
-            t.return_balance,
             t.is_default,
             t.operator_by,
+            t.factory_code,
+            t.bill_no,
+            t.return_count,
+            t.return_unit_price,
+            t.return_balance,
+            t.tax_balance,
+            t.other_balance,
             u2.user_name AS operatorByName,
             t.create_by,
             u.user_name AS createByName,

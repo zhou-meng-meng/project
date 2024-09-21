@@ -104,6 +104,19 @@ public class CustomerPayDetailController {
         return outDTO;
     }
 
+    /**
+     * 账面余额维护
+     *
+     * @param dto 实体
+     * @return 账面余额维护结果
+     */
+    @PostMapping("/editBookBalance")
+    @ApiOperation("账面余额维护")
+    public EditBookBalanceOutDTO editBookBalance(@RequestBody EditBookBalanceDTO dto) {
+        EditBookBalanceOutDTO outDTO = customerPayDetailService.editBookBalance(dto);
+        return outDTO;
+    }
+
 
 }
 
