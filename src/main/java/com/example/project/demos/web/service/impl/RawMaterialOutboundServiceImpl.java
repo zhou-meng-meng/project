@@ -2,6 +2,7 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.list.RawMaterialOutboundInfo;
@@ -140,12 +141,16 @@ public class RawMaterialOutboundServiceImpl  implements RawMaterialOutboundServi
             entity.setCreateTime(date);
             log.info("系统计算平均价格");
             //由系统计算该物料进料时的平均单价，带入此字段，录入员不可见，总公司可见
+            log.info("获取平均价格");
             BigDecimal unitPrice = rawMaterialIncomeDao.getAvgUnitPriceOfMaterial(dto.getMaterialCode());
-            //计算总价格
+            if(ObjectUtil.isNull(unitPrice)){
+                unitPrice = new BigDecimal(0);
+            }
+            log.info("计算总价格");
             BigDecimal tollAmount = unitPrice.multiply(dto.getCount());
             entity.setUnitPrice(unitPrice);
             entity.setTollAmount(tollAmount);
-            //生成单据号
+            log.info("生成单据号");
             entity.setBillNo(getBillNoList(user));
             int i = rawMaterialOutboundDao.insert(entity);
             //修改库存 减少
