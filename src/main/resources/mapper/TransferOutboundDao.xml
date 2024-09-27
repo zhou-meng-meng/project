@@ -81,8 +81,8 @@
         <if test="transfer.confirmState != null and transfer.confirmState != ''">
             and t.confirm_state =  #{transfer.confirmState}
         </if>
-        <if test="transfer.outCode != null and transfer.outCode != ''">
-            and t.out_code =  #{transfer.outCode}
+        <if test="transfer.inCode != null and transfer.inCode != ''">
+            and t.in_code =  #{transfer.inCode}
         </if>
         <if test="transfer.outCode != null and transfer.outCode != ''">
             and t.out_code =  #{transfer.outCode}
@@ -115,6 +115,12 @@
         </if>
         <if test="confirmState != null and confirmState != ''">
             and t.confirm_state   #{confirmState}
+        </if>
+        <if test="inCode != null and inCode != ''">
+            and t.in_code =  #{inCode}
+        </if>
+        <if test="outCode != null and outCode != ''">
+            and t.out_code =  #{transfer.outCode}
         </if>
         <if test="billNo != null and billNo != ''">
             and t.bill_no =  #{billNo}
@@ -220,8 +226,8 @@
         <if test="transfer.confirmState != null and transfer.confirmState != ''">
             and t.confirm_state =  #{transfer.confirmState}
         </if>
-        <if test="transfer.outCode != null and transfer.outCode != ''">
-            and t.out_code =  #{transfer.outCode}
+        <if test="transfer.inCode != null and transfer.inCode != ''">
+            and t.in_code =  #{transfer.inCode}
         </if>
         <if test="transfer.outCode != null and transfer.outCode != ''">
             and t.out_code =  #{transfer.outCode}

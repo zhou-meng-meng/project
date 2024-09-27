@@ -5,7 +5,9 @@ import lombok.Data;
 
 @Data
 public class QueryFileInfoEditListDTO {
-    @ApiModelProperty(value = "业务主键")
-    private Long businessId;
+    @ApiModelProperty(value = "主键")
+    private Long id;
+    @ApiModelProperty(value = "页面类型1-往来账列表   null-其他")
+    private String pageType;
 
 }

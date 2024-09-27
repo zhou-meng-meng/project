@@ -38,6 +38,8 @@
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
         LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
         left join material_info  m  on  m.code = t.material_code
+        left join customer_supply  p on t.customer_code = p.code
+        left join customer_sale  s on t.customer_code = s.code
         where  1=1  and t.approve_user = #{queue.approveUser}
         <if test="queue.beginDate != null and queue.beginDate != ''">
             and t.submit_time    <![CDATA[ >= ]]> #{queue.beginDate}
@@ -48,6 +50,9 @@
         <if test="queue.submitUserName != null and queue.submitUserName != ''">
             and u2.user_name    like concat('%', #{queue.submitUserName}, '%')
         </if>
+        <if test="queue.customerName != null and queue.customerName != ''">
+            and (p.name like concat('%', #{queue.customerName}, '%')  or s.name like concat('%', #{queue.customerName}, '%') )
+        </if>
         order  by  t.submit_time   desc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
@@ -55,6 +60,8 @@
     <select id="count" resultType="java.lang.Integer">
         SELECT count(1)  FROM	approve_operation_queue t
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
+        left join customer_supply  p on t.customer_code = p.code
+        left join customer_sale  s on t.customer_code = s.code
         where  1=1  and t.approve_user = #{approveUser}
         <if test="beginDate != null and beginDate != ''">
             and t.submit_time    <![CDATA[ >= ]]> #{beginDate}
@@ -64,6 +71,9 @@
         </if>
         <if test="submitUserName != null and submitUserName != ''">
             and u2.user_name    like concat('%', #{submitUserName}, '%')
+        </if>
+        <if test="customerName != null and customerName != ''">
+            and (p.name like concat('%', #{customerName}, '%')  or s.name like concat('%', #{customerName}, '%') )
         </if>
     </select>
 

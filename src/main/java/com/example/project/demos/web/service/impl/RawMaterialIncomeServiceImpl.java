@@ -77,7 +77,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -124,7 +124,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -175,7 +175,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
             }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -222,7 +222,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -252,7 +252,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -329,7 +329,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
             list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

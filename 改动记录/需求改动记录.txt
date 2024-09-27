@@ -1,20 +1,41 @@
+8、2024-09-25 缺陷：
+ 8、1 往来账初始化余额填写备注时后端拼接：初始化三个字
+      已完成
+ 8.2 附件相关的 queryFileInfoEditList和 queryFileInfoList 的入参   原businessId 全部改为 id（当前数据的id） 和 新增pageType （页面类型1-往来账列表   null-其他）
+      后端已完成
+ 8.3 待审核页面添加客户名称查询条件  customerName
+      后端已完成
+ 8.4 审核时的操作日志，内容里面添加上单据号和客户名称
+      后端已完成
+ 8.5 记录打印单据次数
+ 8.6 查询条件新增：来料入库添加入库方inCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+                产量入库添加添加入库方inCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+                原材料出库添加添加出库方 outCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+                销售出库添加添加出库方 outCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+                调拨出库添加添加调出方outCode和调入方inCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+                供货方退回管理添加添加入库方inCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+                销售客户退回管理添加添加入库方inCode，调用querySysFactoryAndStorePopList方法，弹窗展示，入参type为空  后端已添加
+ 8.9 所有serviceImpl的catch里面异常使用log.error
+     已完成
+
 7、2024-09-20 微信提出
  7.1 往来账的重新设计，去掉删除按钮，修改按钮为只修改附件信息；
      往来账明细表添加字段：factory_code厂区编号  bill_no单据号  return_count退回数量  return_unit_price退回单价  tax_balance税金  other_balance 其他金额
-     已完成
+     已上线  已完成
  7.2 有附加的页面列表添加修改附件按钮，只有总公司审核员显示和操作，前端页面设计为统一的；
-     已完成
+     已上线  已完成
  7.3 打印单据添加出库人  司机  收货方   空白
-     已完成
+     已上线  已完成
  7.4 往来账首页列表添加初始化按钮；初始化客户账面余额；
-     已完成
+     已上线  已完成
  7.5 原材料出库，计算单价时报错， 待确认赋值
+     已上线置0解决
 
 6、2024-09-12 微信提出
  6.1 往来账明细的物料金额合计不展示；备注字段展示各业务提交时输入的备注信息；运费调到打款日期后面，销售日期调整到客户名称前面
-     已完成   后端已上线
+     已上线  已完成   后端已上线
  6.2 原材料出库、销售客户退回列表添加开始日期和结束日期查询条件，
-     已完成   后端已上线
+     已上线  已完成   后端已上线
 
 5、2024-09-09 微信群提出改动
  5.1 往来账首页添加导出按钮；

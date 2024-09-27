@@ -22,7 +22,7 @@ public class QueryByPageDTO {
     private String materialName;
 
     @ApiModelProperty(value = "物料开始日期")
-    private String startDate;
+    private String beginDate;
 
     @ApiModelProperty(value = "物料结束日期")
     private String endDate;

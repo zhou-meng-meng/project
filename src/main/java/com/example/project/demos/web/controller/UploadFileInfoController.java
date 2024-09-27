@@ -52,7 +52,7 @@ public class UploadFileInfoController {
     @PostMapping("/queryFileInfoEditList")
     @ApiOperation("编辑页面查询列表(不分页)")
     public QueryFileInfoEditListOutDTO queryFileInfoEditList(@RequestBody QueryFileInfoEditListDTO dto) {
-        QueryFileInfoEditListOutDTO outDTO = this.uploadFileInfoService.queryFileInfoEditList(dto.getBusinessId());
+        QueryFileInfoEditListOutDTO outDTO = this.uploadFileInfoService.queryFileInfoEditList(dto);
         return outDTO;
     }
 

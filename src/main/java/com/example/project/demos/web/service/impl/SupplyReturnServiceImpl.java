@@ -74,7 +74,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -101,7 +101,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 log.info("当前登录人属于总公司，可以查看所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                dto.setOutCode(user.getDeptId());
+                dto.setInCode(user.getDeptId());
             }
             //先用查询条件查询总条数
             long total = this.supplyReturnDao.count(dto);
@@ -120,7 +120,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -169,7 +169,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
             }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -215,7 +215,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -245,7 +245,7 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -312,14 +312,14 @@ public class SupplyReturnServiceImpl  implements SupplyReturnService {
                 log.info("当前登录人属于总公司，可以查看所有数据");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区的数据");
-                dto.setOutCode(user.getDeptId());
+                dto.setInCode(user.getDeptId());
             }
             list = supplyReturnDao.queryListForExport(dto);
             list = setSupplyReturnObject(list,user);
             list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

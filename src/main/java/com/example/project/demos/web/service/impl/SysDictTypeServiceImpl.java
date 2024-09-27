@@ -49,7 +49,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             outDTO = BeanUtil.copyProperties(sysDictTypeEntity, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -84,7 +84,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -114,7 +114,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
                 int i = sysDictTypeDao.insert(entity);
             }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -139,7 +139,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             entity.setUpdateTime(date);
             int i = sysDictTypeDao.updateById(entity);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -165,7 +165,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
             //删除下属字典数据
             int j = sysDictDataDao.deleteByType(entity.getDictType());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -201,7 +201,7 @@ public class SysDictTypeServiceImpl  implements SysDictTypeService {
                 map.put(type,keyValueInfoList);
             }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }

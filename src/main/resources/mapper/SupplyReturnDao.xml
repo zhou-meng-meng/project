@@ -94,8 +94,8 @@
         <if test="return.approveState != null and return.approveState != ''">
             and t.approve_state   = #{return.approveState}
         </if>
-        <if test="return.outCode != null and return.outCode != ''">
-            and t.out_code   = #{return.outCode}
+        <if test="return.inCode != null and return.inCode != ''">
+            and t.out_code   = #{return.inCode}
         </if>
         order  by  t.id  desc
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -127,8 +127,8 @@
         <if test="approveState != null and approveState != ''">
             and t.approve_state   = #{approveState}
         </if>
-        <if test="outCode != null and outCode != ''">
-            and t.out_code   = #{outCode}
+        <if test="inCode != null and inCode != ''">
+            and t.out_code   = #{inCode}
         </if>
     </select>
 
@@ -246,8 +246,8 @@
         <if test="return.approveState != null and return.approveState != ''">
             and t.approve_state   = #{return.approveState}
         </if>
-        <if test="return.outCode != null and return.outCode != ''">
-            and t.out_code   = #{return.outCode}
+        <if test="return.inCode != null and return.inCode != ''">
+            and t.out_code   = #{return.inCode}
         </if>
         order  by  t.id  desc
     </select>

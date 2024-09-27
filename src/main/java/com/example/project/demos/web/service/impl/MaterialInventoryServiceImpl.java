@@ -109,7 +109,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
             }
         } catch (Exception e) {
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -144,7 +144,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
             }
         } catch (Exception e) {
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -211,7 +211,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
                 storeName = sInfo.getName();
             }
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -246,7 +246,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
                 errortMsg = ErrorCodeEnums.HAVE_NO_AUTHORITY.getDesc();
             }
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -300,7 +300,7 @@ public class MaterialInventoryServiceImpl implements MaterialInventoryService {
             }
         } catch (Exception e) {
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             throw new RuntimeException(e);
         }
         return returnList;

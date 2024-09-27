@@ -26,7 +26,7 @@ public interface UploadFileInfoService  {
 
     int updateByBusinessId(Long businessId, List<UploadFileId> idList);
 
-    QueryFileInfoEditListOutDTO queryFileInfoEditList(Long businessId);
+    QueryFileInfoEditListOutDTO queryFileInfoEditList(QueryFileInfoEditListDTO dto);
 
 
 }

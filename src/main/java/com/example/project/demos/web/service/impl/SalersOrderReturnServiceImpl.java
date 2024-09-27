@@ -70,7 +70,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -115,7 +115,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -153,7 +153,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
                 approveOperationQueueDao.insertBatch(queueEntityList);
             }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -178,7 +178,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             entity.setUpdateTime(date);
             int i = salersOrderReturnDao.updateById(entity);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -203,7 +203,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -315,7 +315,7 @@ public class SalersOrderReturnServiceImpl implements SalersOrderReturnService {
             list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

@@ -23,6 +23,7 @@ public interface UploadFileInfoDao extends BaseMapperPlus<UploadFileInfoDao, Upl
     int updateByBusinessId(@Param(value = "businessId") Long businessId,@Param(value = "idList") List<Long> idList);
 
     List<UploadFileInfo> selectUploadFileInfoListByPage(@Param(value = "busiIdList") List<Long> busiIdList, @Param("pageable") Pageable pageable);
+    List<UploadFileInfoEntity> selectUploadFileInfoList(@Param(value = "busiIdList") List<Long> busiIdList);
 
     int countUploadFileInfoList(@Param(value = "busiIdList") List<Long> busiIdList);
 

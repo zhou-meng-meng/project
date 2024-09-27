@@ -131,7 +131,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
             }
             outDTO.setFileIdList(idList);
         }catch (Exception e){
-            log.info("e:"+e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.UPLOAD_FILE_ERROR.getCode();
             errortMsg = ErrorCodeEnums.UPLOAD_FILE_ERROR.getDesc();
             log.info("删除原附件信息");
@@ -151,19 +151,22 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         try {
             List<Long> busiIdList = new ArrayList<>();
             //页面传参的各业务主键   区分从往来账页面和从其他业务页面  往来账页面需要展示对应业务的附件
-            busiIdList.add(dto.getBusinessId());
+            busiIdList.add(dto.getId());
             if(ObjectUtil.isNotNull(dto.getPageType()) && "1".equals(dto.getPageType())){
                 log.info("往来账页面查询附件列表");
                 //dto的busineeId是往来账记录的主键，需要根据这个主键获取对应的业务主键:business_id
-                CustomerPayDetailEntity entity =customerPayDetailDao.selectById(dto.getBusinessId());
+                CustomerPayDetailEntity entity =customerPayDetailDao.selectById(dto.getId());
                 if(ObjectUtil.isNotNull(entity)){
                     //这是往来账表对应的业务主键  比如 来料 销售等
-                    Long busiId = entity.getBusinessId();
-                    if(ObjectUtil.isNotNull(busiId)){
-                        busiIdList.add(busiId);
+                    Long businessId = entity.getBusinessId();
+                    if(ObjectUtil.isNotNull(businessId)){
+                        busiIdList.add(businessId);
                     }else{
                         busiIdList.add(999999L);
                     }
+                }else{
+                    log.info("entity is null");
+                    busiIdList.add(999999L);
                 }
             }else{
                 log.info("非往来账页面查询附件列表");
@@ -185,7 +188,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -215,7 +218,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 errortMsg = ErrorCodeEnums.UPLOAD_FILE_NOT_EXISTS.getDesc();
             }
         }catch (IOException e){
-            log.info("下载文件异常:"+e.getMessage());
+            log.error("下载文件异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -287,17 +290,40 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
 
     /**
      * 各业务的编辑页面 获取文件的id  文件名  base64 文件类型
-     * @param businessId
+     * @param dto
      * @return
      */
     @Override
-    public QueryFileInfoEditListOutDTO queryFileInfoEditList(Long businessId) {
+    public QueryFileInfoEditListOutDTO queryFileInfoEditList(QueryFileInfoEditListDTO dto) {
         log.info("获取附件列表queryFileInfoEditList开始");
         String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         QueryFileInfoEditListOutDTO outDTO = new QueryFileInfoEditListOutDTO();
+        List<Long> busiIdList = new ArrayList<>();
+        //先将主键ID放上
+        busiIdList.add(dto.getId());
+        if(ObjectUtil.isNotNull(dto.getPageType()) && "1".equals(dto.getPageType())){
+            log.info("往来账页面查询附件列表");
+            //dto的busineeId是往来账记录的主键，需要根据这个主键获取对应的业务主键:business_id
+            CustomerPayDetailEntity entity =customerPayDetailDao.selectById(dto.getId());
+            if(ObjectUtil.isNotNull(entity)){
+                //这是往来账表对应的业务主键  比如 来料 销售等
+                Long businessId = entity.getBusinessId();
+                if(ObjectUtil.isNotNull(businessId)){
+                    busiIdList.add(businessId);
+                }else{
+                    busiIdList.add(999999L);
+                }
+            }else{
+                log.info("entity is null");
+                busiIdList.add(999999L);
+            }
+        }else{
+            log.info("非往来账页面查询附件列表");
+        }
+
         log.info("获取该业务和附件的配置信息");
-        List<UploadFileInfoEntity> list = uploadFileInfoDao.queryByParam(businessId);
+        List<UploadFileInfoEntity> list = uploadFileInfoDao.selectUploadFileInfoList(busiIdList);
         List<UploadFileEditInfo> fileInfoList = new ArrayList<>();
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             for(UploadFileInfoEntity entity : list){
@@ -307,14 +333,14 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                     if(file.exists()){
                         byte[] fileByte = Files.readAllBytes(Paths.get(entity.getFilePath()));
                         base64Str = Base64.getEncoder().encodeToString(fileByte);
-                        UploadFileEditInfo info = BeanCopyUtils.copy(entity,UploadFileEditInfo.class);
-                        info.setBase64Str(base64Str);
-                        fileInfoList.add(info);
+                        UploadFileEditInfo editInfo = BeanCopyUtils.copy(entity,UploadFileEditInfo.class);
+                        editInfo.setBase64Str(base64Str);
+                        fileInfoList.add(editInfo);
                     }else{
                         log.info(entity.getFilePath() +" 文件不存在");
                     }
                 }catch (IOException e){
-                    log.info("获取base64异常:"+e.getMessage());
+                    log.error("获取base64异常:"+e.getMessage());
                 }
             }
         }else{

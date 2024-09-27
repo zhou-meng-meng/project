@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class QueryFileInfoListDTO {
-    @ApiModelProperty(value = "业务主键")
+    @ApiModelProperty(value = "主键")
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long businessId;
+    private Long id;
 
     @ApiModelProperty(value = "页面类型1-往来账列表   null-其他")
     private String pageType;

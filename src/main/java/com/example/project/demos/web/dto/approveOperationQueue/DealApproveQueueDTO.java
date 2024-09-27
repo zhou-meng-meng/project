@@ -38,9 +38,10 @@ public class DealApproveQueueDTO {
     @ApiModelProperty(value = "审核意见")
     private String opinion;
 
+    @ApiModelProperty(value = "单据号")
+    private String billNo;
 
-
-
-
+    @ApiModelProperty(value = "客户名称")
+    private String customerName;
 
 }

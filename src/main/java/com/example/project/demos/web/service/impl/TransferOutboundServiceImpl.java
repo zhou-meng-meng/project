@@ -70,7 +70,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -96,6 +96,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setInCode(user.getDeptId());
                 dto.setOutCode(user.getDeptId());
             }
             //先用查询条件查询总条数
@@ -118,7 +119,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -176,7 +177,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
             }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -206,7 +207,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -233,7 +234,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -288,6 +289,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setInCode(user.getDeptId());
                 dto.setOutCode(user.getDeptId());
             }
             list = transferOutboundDao.queryListForExport(dto);
@@ -300,7 +302,7 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             list.add(info);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

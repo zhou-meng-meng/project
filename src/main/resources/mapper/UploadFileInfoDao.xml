@@ -52,6 +52,15 @@
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
+    <select id="selectUploadFileInfoList" resultMap="uploadFileInfoMap">
+        select t.id,t.business_id,t.file_original_name,t.file_full_name,t.file_type,t.file_path,t.function_id   from  upload_file_info  t
+        where 1=1 and business_id in
+        <foreach item="busiId" collection="busiIdList" open="(" separator="," close=")">
+            #{busiId}
+        </foreach>
+        order  by  t.create_time  desc
+    </select>
+
     <select id="countUploadFileInfoList" resultType="java.lang.Integer">
         select count(1) from  upload_file_info  t
         where 1=1 and business_id in

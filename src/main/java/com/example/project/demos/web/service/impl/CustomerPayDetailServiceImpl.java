@@ -71,14 +71,14 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         try {
             //先用查询条件查询总条数
-            long total = this.customerPayDetailDao.count(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
+            long total = this.customerPayDetailDao.count(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getBeginDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
             outDTO.setTurnPageTotalNum(Integer.parseInt(String.valueOf(total)));
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
                 PageRequest pageRequest = new PageRequest(dto.getTurnPageBeginPos()-1,dto.getTurnPageShowNum());
                 //开始分页查询
-                Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate(),pageRequest), pageRequest, total);
+                Page<CustomerPayDetailInfo> page = new PageImpl<>(this.customerPayDetailDao.selectCustomerPayDetailInfoListByPage(dto.getCustomerCode(),dto.getCustomerName(), dto.getMaterialName(),dto.getBeginDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate(),pageRequest), pageRequest, total);
                 //获取分页数据
                 List<CustomerPayDetailInfo> list = page.toList();
                 //赋值厂区名称
@@ -89,7 +89,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -139,6 +139,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             BigDecimal bookBalance = entity.getBookBalance().subtract(materialBalance).add(returnBalance).add(payBalance).subtract(taxBalance).subtract(otherBalance);
             log.info("新的账面余额:"+entity.getBookBalance() + "-" + materialBalance + "+" + returnBalance +"+" +  payBalance +"-"+taxBalance +"-"+otherBalance+" = " +bookBalance);
             newEntity.setMaterialDate(dto.getPayDate());
+            newEntity.setPayDate(dto.getPayDate());
             newEntity.setBookBalance(bookBalance );
             newEntity.setCreateBy(user.getUserLogin());
             newEntity.setCreateTime(date);
@@ -150,12 +151,12 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录操作日志
-        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance+",税金:"+taxBalance+",其他金额:"+otherBalance;
+        String info = "客户名称:"+dto.getCustomerName()+",打款金额:"+payBalance+",退回金额:"+returnBalance+",税金:"+taxBalance+",其他金额:"+otherBalance+",打款日期:"+dto.getPayDate();
         sysLogService.insertSysLog(FunctionTypeEnums.CUSTOMER_PAY_DETAIL.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
@@ -268,7 +269,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(entity1.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -322,7 +323,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -343,12 +344,12 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         Date date = new Date();
         List<CustomerPayDetailInfo> list = new ArrayList<>();
         try {
-            list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName(),dto.getMaterialName(),dto.getStartDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
+            list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName(),dto.getMaterialName(),dto.getBeginDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
             list = formatFactoryName(list);
             list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -513,7 +514,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info("异常:"+e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -541,11 +542,11 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             entity.setCreateBy(user.getUserLogin());
             entity.setCreateTime(date);
             entity.setMaterialDate(date);
-            entity.setRemark(dto.getRemark());
+            entity.setRemark("初始化-"+dto.getRemark());
             customerPayDetailDao.insert(entity);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info("维护客户初始化账面余额异常:"+e.getMessage());
+            log.error("维护客户初始化账面余额异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

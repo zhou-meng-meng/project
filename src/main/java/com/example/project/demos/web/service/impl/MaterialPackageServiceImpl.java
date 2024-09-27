@@ -67,7 +67,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             outDTO.setDetailInfoList(detailInfoList);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -115,7 +115,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -167,7 +167,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
         }
         log.info("装袋表queryByParam结束");
         return result;
@@ -188,7 +188,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             log.info("添加装袋明细表");
             materialPackageDetailService.insertBatch(entity.getId(),dto.getDetailInfoList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -217,7 +217,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             log.info("重新插入装袋表明细");
             materialPackageDetailService.insertBatch(entity.getId(),dto.getDetailInfoList());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -241,7 +241,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
             log.info("删除装袋明细");
             materialPackageDetailService.deleteByPackageId(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }

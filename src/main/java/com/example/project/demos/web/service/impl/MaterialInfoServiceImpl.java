@@ -45,7 +45,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             outDTO = BeanUtil.copyProperties(MaterialInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -80,7 +80,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -109,7 +109,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             materialInfo.setCreateTime(date);
             int i = materialInfoDao.insert(materialInfo);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -134,7 +134,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             materialInfo.setUpdateTime(date);
             int i = materialInfoDao.updateById(materialInfo);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -156,7 +156,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
         try{
             int i = materialInfoDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -182,7 +182,7 @@ public class MaterialInfoServiceImpl  implements MaterialInfoService {
             list = materialInfoDao.queryListForExport(entity,dto.getSupplyerName());
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

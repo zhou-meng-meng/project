@@ -40,6 +40,12 @@ public class QueryByPageDTO {
     private String confirmState;
 
     /**
+     * 调入方编号
+     */
+    @ApiModelProperty(value = "调入方编号")
+    private String inCode;
+
+    /**
      * 调出方编号
      */
     @ApiModelProperty(value = "调出方编号")

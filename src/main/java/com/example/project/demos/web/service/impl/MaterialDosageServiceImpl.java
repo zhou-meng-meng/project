@@ -49,7 +49,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             outDTO = BeanUtil.copyProperties(materialDosageInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -97,7 +97,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -121,7 +121,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             entity.setCreateTime(date);
             int i = materialDosageDao.insert(entity);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -148,7 +148,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             entity.setUpdateTime(date);
             int i = materialDosageDao.updateById(entity);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -171,7 +171,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
         try{
             int i = materialDosageDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -214,7 +214,7 @@ public class MaterialDosageServiceImpl  implements MaterialDosageService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

@@ -56,7 +56,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
             outDTO.setMenuList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -102,7 +102,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -119,6 +119,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String roleTypeInfo="";
         try{
             SysRoleEntity entity = BeanCopyUtils.copy(dto,SysRoleEntity.class);
             entity.setCreateBy(user.getUserLogin());
@@ -128,16 +129,16 @@ public class SysRoleServiceImpl  implements SysRoleService {
             sysRoleMenuService.insertBatch(dto.getRoleId(),dto.getMenuList());
             //插入角色权限类型表
             sysRoleAuthorityTypeService.insertBatch(dto.getRoleId(),dto.getAuthorityType());
+            //循环获取权限说明
+            for(String type : dto.getAuthorityType()){
+                roleTypeInfo = roleTypeInfo+" " + RoleAuthorityTypeEnums.getDescByCode(type);
+            }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
-        //循环获取权限说明
-        String roleTypeInfo="";
-        for(String type : dto.getAuthorityType()){
-            roleTypeInfo = roleTypeInfo+" " + RoleAuthorityTypeEnums.getDescByCode(type);
-        }
+
         //记录操作日志
         String info = "角色编码:"+ dto.getRoleId() +",角色名称:"+dto.getRoleName()+",权限:"+roleTypeInfo;
         sysLogService.insertSysLog(FunctionTypeEnums.SYS_ROLE.getCode(), OperationTypeEnums.OPERATION_TYPE_ADD.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(), Constants.SYSTEM_CODE);
@@ -153,6 +154,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        String roleTypeInfo="";
         try{
             SysRoleEntity entity = BeanCopyUtils.copy(dto,SysRoleEntity.class);
             entity.setUpdateBy(user.getUserLogin());
@@ -166,15 +168,14 @@ public class SysRoleServiceImpl  implements SysRoleService {
             sysRoleAuthorityTypeService.deleteByRoleId(dto.getRoleId());
             //插入角色权限类型表
             sysRoleAuthorityTypeService.insertBatch(dto.getRoleId(),dto.getAuthorityType());
+            //循环获取权限说明
+            for(String type : dto.getAuthorityType()){
+                roleTypeInfo = roleTypeInfo+" " + RoleAuthorityTypeEnums.getDescByCode(type);
+            }
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
-        }
-        //循环获取权限说明
-        String roleTypeInfo="";
-        for(String type : dto.getAuthorityType()){
-            roleTypeInfo = roleTypeInfo+" " + RoleAuthorityTypeEnums.getDescByCode(type);
         }
         //记录操作日志
         String info = "角色编码:"+ dto.getRoleId() +",角色名称:"+dto.getRoleName()+",权限:"+roleTypeInfo;
@@ -207,7 +208,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
             //删除角色权限类型表
             sysRoleAuthorityTypeService.deleteByRoleId(entity.getRoleId());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
