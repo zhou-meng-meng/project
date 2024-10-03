@@ -43,8 +43,6 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
     private SalesReturnService salesReturnService;
     @Autowired
     private SalersOrderService salersOrderService;
-    @Resource
-    private SalesReturnDao salesReturnDao;
     @Autowired
     private SysUserService sysUserService;
     @Resource
@@ -166,10 +164,10 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     }
                     List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),outCode);
                     if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
-                        //生成待确认流水
+                        log.info("生成待确认流水");
                         ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
                         confirmOperationFlowDao.insert(flowEntity);
-                        //生成待确认队列
+                        log.info("生成待确认队列");
                         List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
                         for(SysUserEntity userEntity : userList){
                             ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
@@ -201,10 +199,10 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                     }
                     List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),inCode);
                     if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
-                        //生成待确认流水
+                        log.info("生成待确认流水");
                         ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,businessId, FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getOperationFlowId(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_PASSED.getCode(),dto.getOpinion(), ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
                         confirmOperationFlowDao.insert(flowEntity);
-                        //生成待确认队列
+                        log.info("生成待确认队列");
                         List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
                         for(SysUserEntity userEntity : userList){
                             ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),businessId,userEntity.getUserLogin(),FunctionTypeEnums.SALERS_ORDER_RETURN.getCode(),entity.getSubmitUser(),entity.getSubmitTime(),user.getUserLogin(),date);
@@ -238,7 +236,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
         //记录审核日志
-        String info = "业务类型:"+FunctionTypeEnums.getDescByCode(entity.getFunctionId())+"单据号:"+dto.getBillNo()+"客户名称:"+dto.getCustomerName()+",审核结果:"+ ApproveConfirmResultEnums.getDescByCode(dto.getResult()) +",审核意见:"+dto.getOpinion();
+        String info = "业务类型:"+FunctionTypeEnums.getDescByCode(entity.getFunctionId())+", 单据号:"+dto.getBillNo()+", 客户名称:"+dto.getCustomerName()+",审核结果:"+ ApproveConfirmResultEnums.getDescByCode(dto.getResult()) +",审核意见:"+dto.getOpinion();
         int i =sysLogService.insertSysLog(FunctionTypeEnums.APPROVE_OPERATION_FLOW.getCode(), OperationTypeEnums.OPERATION_TYPE_APPROVE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(), user.getToken(),Constants.SYSTEM_CODE);
         log.info("审核提交结束");
         outDTO.setErrorCode(errorCode);
