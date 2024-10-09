@@ -51,6 +51,9 @@ public class QueryByPageDTO {
     @ApiModelProperty(value = "调出方编号")
     private String outCode;
 
+    @ApiModelProperty(value = "类型1-查看所有  2-查看自己厂区数据")
+    private String type;
+
     /**
      * 翻页数据起始位置:1
      */

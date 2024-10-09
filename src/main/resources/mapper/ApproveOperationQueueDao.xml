@@ -53,7 +53,7 @@
         <if test="queue.customerName != null and queue.customerName != ''">
             and (p.name like concat('%', #{queue.customerName}, '%')  or s.name like concat('%', #{queue.customerName}, '%') )
         </if>
-        order  by  t.submit_time   desc
+        order  by  t.submit_time   asc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

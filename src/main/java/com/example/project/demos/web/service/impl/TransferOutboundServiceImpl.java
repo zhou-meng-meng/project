@@ -94,8 +94,10 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
                 log.info("当前登录人属于总公司，可查看所有");
+                dto.setType("1");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setType("2");
                 dto.setInCode(user.getDeptId());
                 dto.setOutCode(user.getDeptId());
             }
@@ -287,8 +289,10 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
             log.info("userType:"+userType);
             if(userType.equals(UserTypeEnums.USER_TYPE_COMPANY.getCode())){
                 log.info("当前登录人属于总公司，可查看所有");
+                dto.setType("1");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区或仓库");
+                dto.setType("2");
                 dto.setInCode(user.getDeptId());
                 dto.setOutCode(user.getDeptId());
             }

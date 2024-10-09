@@ -81,11 +81,14 @@
         <if test="transfer.confirmState != null and transfer.confirmState != ''">
             and t.confirm_state =  #{transfer.confirmState}
         </if>
-        <if test="transfer.inCode != null and transfer.inCode != ''">
+        <if test='transfer.type != null and transfer.type == "1" and transfer.inCode != null and transfer.inCode != "" '>
             and t.in_code =  #{transfer.inCode}
         </if>
-        <if test="transfer.outCode != null and transfer.outCode != ''">
+        <if test='transfer.type != null and transfer.type == "1" and transfer.outCode != null and transfer.outCode != "" '>
             and t.out_code =  #{transfer.outCode}
+        </if>
+        <if test='transfer.type != null and transfer.type == "2" '>
+            and ( t.in_code =  #{transfer.inCode} or  t.out_code =  #{transfer.outCode} )
         </if>
         <if test="transfer.billNo != null and transfer.billNo != ''">
             and t.bill_no =  #{transfer.billNo}
@@ -116,11 +119,14 @@
         <if test="confirmState != null and confirmState != ''">
             and t.confirm_state   #{confirmState}
         </if>
-        <if test="inCode != null and inCode != ''">
+        <if test='type != null and type == "1" and inCode != null and inCode != "" '>
             and t.in_code =  #{inCode}
         </if>
-        <if test="outCode != null and outCode != ''">
+        <if test='type != null and type == "1" and outCode != null and outCode != "" '>
             and t.out_code =  #{outCode}
+        </if>
+        <if test='type != null and type == "2" '>
+            and ( t.in_code =  #{inCode} or  t.out_code =  #{outCode} )
         </if>
         <if test="billNo != null and billNo != ''">
             and t.bill_no =  #{billNo}
@@ -226,11 +232,14 @@
         <if test="transfer.confirmState != null and transfer.confirmState != ''">
             and t.confirm_state =  #{transfer.confirmState}
         </if>
-        <if test="transfer.inCode != null and transfer.inCode != ''">
+        <if test='transfer.type != null and transfer.type == "1" and transfer.inCode != null and transfer.inCode != "" '>
             and t.in_code =  #{transfer.inCode}
         </if>
-        <if test="transfer.outCode != null and transfer.outCode != ''">
+        <if test='transfer.type != null and transfer.type == "1" and transfer.outCode != null and transfer.outCode != "" '>
             and t.out_code =  #{transfer.outCode}
+        </if>
+        <if test='transfer.type != null and transfer.type == "2" '>
+            and ( t.in_code =  #{transfer.inCode} or  t.out_code =  #{transfer.outCode} )
         </if>
         <if test="transfer.billNo != null and transfer.billNo != ''">
             and t.bill_no =  #{transfer.billNo}
