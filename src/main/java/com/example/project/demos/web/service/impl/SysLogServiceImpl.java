@@ -88,7 +88,7 @@ public class SysLogServiceImpl implements SysLogService {
             entity.setToken(token);
             i = sysLogDao.insert(entity);
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error(e.getMessage());
         }
         log.info("生成操作日志结束");
         return i;

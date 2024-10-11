@@ -2,8 +2,6 @@ package com.example.project.demos.web.service;
 
 
 import com.example.project.demos.web.dto.sysLog.*;
-
-import java.net.UnknownHostException;
 import java.util.Date;
 
 /**
@@ -17,10 +15,10 @@ public interface SysLogService  {
     /**
      * 分页查询
      *
-     * @param queryByPageDTO 筛选条件
+     * @param dto 筛选条件
      * @return 查询结果
      */
-    QueryByPageOutDTO queryByPage(QueryByPageDTO queryByPageDTO);
+    QueryByPageOutDTO queryByPage(QueryByPageDTO dto);
 
     int insertSysLog(String functionId, String operationType, String userCode, Date operationTime,String operationInfo,String operationResult,String operationMsg,String ip,String token,String remark);
 }

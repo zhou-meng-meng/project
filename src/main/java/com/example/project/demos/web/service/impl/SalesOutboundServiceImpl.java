@@ -444,7 +444,7 @@ public class SalesOutboundServiceImpl  implements SalesOutboundService {
         }
         //记录操作日志
         String info =  "导出Excel操作";
-        sysLogService.insertSysLog(FunctionTypeEnums.SALERS_ORDER.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+        sysLogService.insertSysLog(FunctionTypeEnums.SALES_OUTBOUND.getCode(), OperationTypeEnums.OPERATION_TYPE_EXPORT.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
         log.info("销售出库queryListForExport结束");
         return list;
     }

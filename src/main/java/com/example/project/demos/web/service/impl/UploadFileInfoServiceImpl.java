@@ -3,18 +3,21 @@ package com.example.project.demos.web.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.project.demos.web.constant.Constants;
-import com.example.project.demos.web.dao.CustomerPayDetailDao;
-import com.example.project.demos.web.dao.UploadFileInfoDao;
+import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.list.UploadFileEditInfo;
 import com.example.project.demos.web.dto.list.UploadFileId;
 import com.example.project.demos.web.dto.list.UploadFileInfo;
+import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.dto.uploadFileInfo.*;
-import com.example.project.demos.web.entity.CustomerPayDetailEntity;
-import com.example.project.demos.web.entity.UploadFileInfoEntity;
+import com.example.project.demos.web.entity.*;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
-import com.example.project.demos.web.service.UploadFileInfoService;
+import com.example.project.demos.web.enums.FunctionTypeEnums;
+import com.example.project.demos.web.enums.OperationTypeEnums;
+import com.example.project.demos.web.handler.RequestHolder;
+import com.example.project.demos.web.service.*;
 import com.example.project.demos.web.utils.BeanCopyUtils;
 import com.example.project.demos.web.utils.PageRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,9 +42,24 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
 
     @Autowired
     private UploadFileInfoDao uploadFileInfoDao;
+    @Resource
+    private RawMaterialOutboundDao rawMaterialOutboundDao;
+    @Autowired
+    private SysLogService sysLogService;
+    @Autowired
+    private RawMaterialIncomeDao rawMaterialIncomeDao;
 
     @Autowired
     private CustomerPayDetailDao customerPayDetailDao;
+    @Resource
+    private SalesOutboundDao salesOutboundDao;
+    @Resource
+    private TransferOutboundDao transferOutboundDao;
+    @Resource
+    private SupplyReturnDao supplyReturnDao;
+    @Resource
+    private SalesReturnDao salesReturnDao;
+
 
     @Value("${upload.filePath}")
     public String filePath;
@@ -54,6 +74,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         UploadFileInfoOutDTO outDTO = new UploadFileInfoOutDTO();
         List<UploadFileId> idList = new ArrayList<>();
+        log.info("dto:"+ JSON.toJSONString(dto));
         try{
             if(ObjectUtil.isNotNull(businessId)){
                 log.info("businessId is not null,先获取原配置");
@@ -73,6 +94,8 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 }else{
                     log.info("没有附件配置信息");
                 }
+                //开始更新各业务的备注信息
+                updateRemarkByBusinessId( businessId,dto.getFunctionId(),dto.getRemark());
             }else{
                 log.info("businessId is null");
             }
@@ -140,6 +163,83 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         outDTO.setErrorCode(errorCode);
         outDTO.setErrorMsg(errortMsg);
         return outDTO;
+    }
+
+    /**
+     * 根据businessId  修改各业务的备注信息
+     * @param id
+     */
+    private void updateRemarkByBusinessId(Long id,String functionId,String remark){
+        log.info("开始修改各业务的备注信息");
+        String errorCode= ErrorCodeEnums.SYS_SUCCESS_FLAG.getCode();
+        String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
+        Date date = new Date();
+        UserLoginOutDTO user = RequestHolder.getUserInfo();
+        if(ObjectUtil.isNotNull(functionId)){
+            boolean f = true;
+            log.info("functionId:"+functionId+","+FunctionTypeEnums.getDescByCode(functionId));
+            if(functionId.equals(FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode())){
+                log.info("来料入库开始更新备注操作");
+                RawMaterialIncomeEntity entity = rawMaterialIncomeDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = rawMaterialIncomeDao.updateById(entity);
+            } else if(functionId.equals(FunctionTypeEnums.RAW_MATERIAL_OUTBOUND.getCode())){
+                log.info("原材料出库开始更新备注操作");
+                RawMaterialOutboundEntity entity = rawMaterialOutboundDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = rawMaterialOutboundDao.updateById(entity);
+            }else if(functionId.equals(FunctionTypeEnums.SALES_OUTBOUND.getCode())){
+                log.info("销售出库开始更新备注操作");
+                SalesOutboundEntity entity = salesOutboundDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = salesOutboundDao.updateById(entity);
+            }else if(functionId.equals(FunctionTypeEnums.TRANSFER_OUTBOUND.getCode())){
+                log.info("调拨出库开始更新备注操作");
+                TransferOutboundEntity entity = transferOutboundDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = transferOutboundDao.updateById(entity);
+            }else if(functionId.equals(FunctionTypeEnums.SUPPLY_RETURN.getCode())){
+                log.info("供货方退回开始更新备注操作");
+                SupplyReturnEntity entity = supplyReturnDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = supplyReturnDao.updateById(entity);
+            }else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())){
+                log.info("销售客户退回开始更新备注操作");
+                SalesReturnEntity entity = salesReturnDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = salesReturnDao.updateById(entity);
+            }else if(functionId.equals(FunctionTypeEnums.CUSTOMER_PAY_DETAIL.getCode())){
+                log.info("往来账明细开始更新备注操作");
+                CustomerPayDetailEntity entity = customerPayDetailDao.selectById(id);
+                entity.setRemark(entity.getRemark()+"。"+remark);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                int i = customerPayDetailDao.updateById(entity);
+            }else{
+                log.info("没有匹配的业务");
+                f = false;
+            }
+            if(f){
+                //记录日志
+                String info = "附件修改，备注:"+remark;
+                sysLogService.insertSysLog(functionId, OperationTypeEnums.OPERATION_TYPE_FILE_UPDATE.getCode(),user.getUserLogin(),date,info,errorCode,errortMsg,user.getLoginIp(),user.getToken(),Constants.SYSTEM_CODE);
+            }
+        }else{
+            log.info("functionId is null");
+        }
+        log.info("修改各业务的备注信息结束");
     }
 
     @Override

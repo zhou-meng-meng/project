@@ -19,7 +19,8 @@ public enum OperationTypeEnums {
     OPERATION_TYPE_UPDATE_PWD("9","修改密码"),
     OPERATION_TYPE_RESET_PWD("10","重置密码"),
     OPERATION_TYPE_CHARGE_OFF("11","冲销"),
-    OPERATION_TYPE_INITE_BALANCE("12","初始化账面余额");
+    OPERATION_TYPE_INITE_BALANCE("12","初始化账面余额"),
+    OPERATION_TYPE_FILE_UPDATE("13","附件修改");
 
     private String code;
     private String desc;

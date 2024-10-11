@@ -7,7 +7,5 @@ public class UploadFileInfoDTO {
     private String loginUser;
     private String functionId;
     private Long businessId;
-
-
-
+    private String remark;
 }
