@@ -251,10 +251,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         //token
         String token = IdUtil.simpleUUID();
         String ipAddress ="";
-        String userId = dto.getUserLogin();
+        String userLogin = dto.getUserLogin();
         try{
             log.info("用户登录-userLogin开始");
-            String userLogin = dto.getUserLogin();
             String password = dto.getPassword();
             log.info("userLogin:"+userLogin);
             log.info("password:"+password);
@@ -268,7 +267,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
                 errorCode= ErrorCodeEnums.LOGIN_ERROR.getCode();
                 errortMsg= ErrorCodeEnums.LOGIN_ERROR.getDesc();
             }else{
-                userId = info.getUserId();
                 //赋值部门名称
                 List<SysUserInfo> list = new ArrayList<>();
                 list.add(info);
@@ -325,7 +323,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
         outDTO.setToken(token);
         //记录操作日志
         String info = "登录名:"+dto.getUserLogin();
-        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_LOGIN.getCode(),userId,date,info,errorCode,errortMsg,ipAddress,token,Constants.SYSTEM_CODE);
+        sysLogService.insertSysLog(FunctionTypeEnums.SYS_USER.getCode(), OperationTypeEnums.OPERATION_TYPE_LOGIN.getCode(),userLogin,date,info,errorCode,errortMsg,ipAddress,token,Constants.SYSTEM_CODE);
         return outDTO;
     }
 

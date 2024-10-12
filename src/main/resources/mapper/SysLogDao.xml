@@ -23,7 +23,7 @@
         t.function_id,
         t.operation_type,
         t.user_code,
-        u.user_name as userName,
+        IFNULL(u.user_name,t.user_code) as userName,
         t.operation_time,
         t.operation_info,
         t.operation_result,
