@@ -228,7 +228,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 entity.setUpdateTime(date);
                 int i = customerPayDetailDao.updateById(entity);
             }else{
-                log.info("没有匹配的业务");
+                log.info("没有匹配的业务，不执行更新备注操作");
                 f = false;
             }
             if(f){
