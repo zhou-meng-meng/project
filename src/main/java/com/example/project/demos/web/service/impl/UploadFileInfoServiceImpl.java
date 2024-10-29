@@ -119,7 +119,6 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 log.info("fileFullName:"+fileFullName);
                 String path  = filePath + month ;
                 log.info("path:"+path);
-                log.info("文件上传至服务器开始");
                 //创建文件夹
                 File folder = new File(path);
                 if (!folder.exists()) {
@@ -128,7 +127,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
                 }else{
                     log.info("文件夹:"+path +" 已存在");
                 }
-                // 文件上传至服务器
+                log.info("文件上传至服务器开始");
                 try {
                     log.info("正在上传");
                     file.transferTo(new File(path, fileFullName));
@@ -166,8 +165,11 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
     }
 
     /**
-     * 根据businessId  修改各业务的备注信息
+     * 根据businessId 修改各业务的备注信息
      * @param id
+     * @param functionId
+     * @param remark
+     * 不能根据functionId调用各自业务的service,会出现重复调用依赖的错误，只能直接调用各自的dao层
      */
     private void updateRemarkByBusinessId(Long id,String functionId,String remark){
         log.info("开始修改各业务的备注信息");
@@ -175,6 +177,9 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
         String errortMsg= ErrorCodeEnums.SYS_SUCCESS_FLAG.getDesc();
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
+        if(ObjectUtil.isNull(remark)){
+            remark = "";
+        }
         if(ObjectUtil.isNotNull(functionId)){
             boolean f = true;
             log.info("functionId:"+functionId+","+FunctionTypeEnums.getDescByCode(functionId));
