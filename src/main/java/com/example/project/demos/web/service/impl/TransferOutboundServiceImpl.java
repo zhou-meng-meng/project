@@ -201,13 +201,42 @@ public class TransferOutboundServiceImpl  implements TransferOutboundService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            TransferOutboundEntity entity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
-            entity.setUpdateBy(user.getUserLogin());
-            entity.setUpdateTime(date);
-            log.info("插入调拨出库表");
-            int i = transferOutboundDao.updateById(entity);
-            //开始处理附件信息
-            uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
+            log.info("获取调入方具有确认权限的人");
+            String userType = "";
+            String inCode = dto.getInCode();
+            if("F".equals(inCode.substring(0,1))){
+                log.info("调入方为厂区");
+                userType = UserTypeEnums.USER_TYPE_FACTORY.getCode();
+            }else{
+                log.info("调入方为仓库");
+                userType = UserTypeEnums.USER_TYPE_STORE.getCode();
+            }
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(userType, RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_CONFIRM.getCode(),dto.getInCode());
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                TransferOutboundEntity entity = BeanCopyUtils.copy(dto,TransferOutboundEntity.class);
+                entity.setUpdateBy(user.getUserLogin());
+                entity.setUpdateTime(date);
+                log.info("插入调拨出库表");
+                int i = transferOutboundDao.updateById(entity);
+                //开始处理附件信息
+                uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
+                log.info("删除提交的原待确认记录");
+                confirmOperationQueueDao.deleteByBusinessId(dto.getId());
+                confirmOperationFlowDao.deleteByBusinessId(dto.getId());
+                log.info("重新生成待确认流水和待确认队列");
+                ConfirmOperationFlowEntity flowEntity = new ConfirmOperationFlowEntity(null,entity.getId(), FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),null,user.getUserLogin(),date,null,null,null,null, ConfirmStateEnums.CONFIRM_STATE_UNDO.getCode(),Constants.SYSTEM_CODE);
+                confirmOperationFlowDao.insert(flowEntity);
+                //生成待确认队列
+                List<ConfirmOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ConfirmOperationQueueEntity queueEntity = new ConfirmOperationQueueEntity(null,flowEntity.getId(),entity.getId(),userEntity.getUserLogin(),FunctionTypeEnums.TRANSFER_OUTBOUND.getCode(),user.getUserLogin(),date,null,null);
+                    queueEntityList.add(queueEntity);
+                }
+                confirmOperationQueueDao.insertBatch(queueEntityList);
+            }else{
+                errorCode = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.CONFIRM_USER_NOT_EXIST.getDesc();
+            }
         }catch (Exception e){
             log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();

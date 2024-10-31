@@ -158,11 +158,14 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                     ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),userEntity.getUserLogin(),dto.getCustomerCode(),dto.getMaterialCode(),dto.getReturnCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
                     queueEntityList.add(queueEntity);
                 }
+                approveOperationQueueDao.insertBatch(queueEntityList);
                 log.info("处理增加库存操作");
                 i = materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getReturnCount(),"add",date);
-                approveOperationQueueDao.insertBatch(queueEntityList);
                 //开始处理附件信息
                 uploadFileInfoService.updateByBusinessId(entity.getId(),dto.getFileIdList());
+            }else{
+                errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
             }
         }catch (Exception e){
             log.error("异常:"+e.getMessage());
@@ -185,32 +188,52 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
         Date date = new Date();
         UserLoginOutDTO user = RequestHolder.getUserInfo();
         try{
-            //原数据
-            SalesReturnEntity entity = salesReturnDao.selectById(dto.getId());
-            SalesReturnEntity newEntity = BeanCopyUtils.copy(dto,SalesReturnEntity.class);
-            newEntity.setUpdateBy(user.getUserLogin());
-            newEntity.setUpdateTime(date);
-            int i = salesReturnDao.updateById(newEntity);
-            log.info("处理库存操作");
-            //修改了数量  要更新库存
-            BigDecimal count = entity.getReturnCount();
-            log.info("原数量:"+count.toString());
-            BigDecimal updateCount = dto.getReturnCount();
-            log.info("修改后数量:"+updateCount.toString());
-            BigDecimal num = updateCount.subtract(count);
-            log.info("修改后数量-原数量:"+num);
-            if(num.compareTo(new BigDecimal(0)) > 0){
-                log.info("修改数量大于原数量，需要增加:"+num+"的库存");
-                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"add",date);
-            }else if(num.compareTo(new BigDecimal(0)) < 0){
-                num  = num.multiply(new BigDecimal(-1));
-                log.info("修改数量小于原数量，需要减少:"+num+"的库存");
-                materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"reduce",date);
+            log.info("查询总公司具有审核权限的人员");
+            List<SysUserEntity> userList = sysUserService.queryUserListByRoleType(UserTypeEnums.USER_TYPE_COMPANY.getCode(), RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_AUTH.getCode(),"");
+            if(CollectionUtil.isNotEmpty(userList) && userList.size() > 0){
+                //原数据
+                SalesReturnEntity entity = salesReturnDao.selectById(dto.getId());
+                SalesReturnEntity newEntity = BeanCopyUtils.copy(dto,SalesReturnEntity.class);
+                newEntity.setUpdateBy(user.getUserLogin());
+                newEntity.setUpdateTime(date);
+                int i = salesReturnDao.updateById(newEntity);
+                log.info("处理库存操作");
+                //修改了数量  要更新库存
+                BigDecimal count = entity.getReturnCount();
+                log.info("原数量:"+count.toString());
+                BigDecimal updateCount = dto.getReturnCount();
+                log.info("修改后数量:"+updateCount.toString());
+                BigDecimal num = updateCount.subtract(count);
+                log.info("修改后数量-原数量:"+num);
+                if(num.compareTo(new BigDecimal(0)) > 0){
+                    log.info("修改数量大于原数量，需要增加:"+num+"的库存");
+                    materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"add",date);
+                }else if(num.compareTo(new BigDecimal(0)) < 0){
+                    num  = num.multiply(new BigDecimal(-1));
+                    log.info("修改数量小于原数量，需要减少:"+num+"的库存");
+                    materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), num,"reduce",date);
+                }else{
+                    log.info("修改数量等于原数量，不需要更新库存");
+                }
+                //开始处理附件信息
+                uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
+                log.info("删除提交的待审核记录");
+                approveOperationFlowDao.deleteByBusinessId(dto.getId());
+                approveOperationQueueDao.deleteByBusinessId(dto.getId());
+                log.info("重新生成审核流水记录");
+                ApproveOperationFlowEntity flowEntity = new ApproveOperationFlowEntity(null,entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),user.getUserLogin(),date,ApproveStateEnums.APPROVE_STATE_UNAUTH.getCode(),Constants.SYSTEM_CODE);
+                approveOperationFlowDao.insert(flowEntity);
+                log.info("重新生成审核队列记录");
+                List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
+                for(SysUserEntity userEntity : userList){
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.SALES_RETURN.getCode(),userEntity.getUserLogin(),dto.getCustomerCode(),dto.getMaterialCode(),dto.getReturnCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                    queueEntityList.add(queueEntity);
+                }
+                approveOperationQueueDao.insertBatch(queueEntityList);
             }else{
-                log.info("修改数量等于原数量，不需要更新库存");
+                errorCode = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getCode();
+                errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
             }
-            //开始处理附件信息
-            uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
             log.error("异常:"+e.getMessage());
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
