@@ -1,6 +1,7 @@
 package com.example.project.demos.web.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.project.demos.web.dto.list.CustomerPayInfo;
 import com.example.project.demos.web.dto.list.SalesCustomerPayInfo;
 import com.example.project.demos.web.dto.salesCustomerPay.QueryByPageDTO;
 import com.example.project.demos.web.entity.SalesCustomerPayEntity;
@@ -38,5 +39,5 @@ public interface SalesCustomerPayDao extends BaseMapper<SalesCustomerPayEntity> 
     int updateShowFlagByCustomerCode(@Param("showFlag") String showFlag,
                                      @Param("updateBy") String updateBy,
                                      @Param("customerCode") String customerCode);
-	
+	List<CustomerPayInfo> querySalesCustomer();
 }

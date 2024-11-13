@@ -201,4 +201,10 @@
         where customer_code = #{customerCode}
     </update>
 
+    <select id="querySupplyCustomer" resultType="com.example.project.demos.web.dto.list.CustomerPayInfo">
+        select s.code as customerCode ,s.name as   customerName from  supply_customer_pay   t
+        left join   customer_supply  s  on s.code = t.customer_code
+        where   t.show_flag = '0'  order  by t.customer_code
+    </select>
+
 </mapper>

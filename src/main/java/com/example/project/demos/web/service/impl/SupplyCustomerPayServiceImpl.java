@@ -1,18 +1,22 @@
 package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dao.CustomerPayDetailDao;
 import com.example.project.demos.web.dao.SupplyCustomerPayDao;
+import com.example.project.demos.web.dao.SysFactoryDao;
+import com.example.project.demos.web.dao.SysStorehouseDao;
 import com.example.project.demos.web.dto.customerPayDetail.UpdateUnitPriceDTO;
-import com.example.project.demos.web.dto.list.RawMaterialIncomeInfo;
-import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.supplyCustomerPay.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.SupplyCustomerPayEntity;
+import com.example.project.demos.web.entity.SysFactoryEntity;
+import com.example.project.demos.web.entity.SysStorehouseEntity;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
 import com.example.project.demos.web.enums.FunctionTypeEnums;
 import com.example.project.demos.web.enums.OperationTypeEnums;
-import com.example.project.demos.web.enums.RoleAuthorityTypeEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.SupplyCustomerPayService;
 import com.example.project.demos.web.service.SysLogService;
@@ -25,9 +29,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 此功能的数据 在来料入库审核时系统添加，不涉及增删改
@@ -40,6 +42,11 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
     private SupplyCustomerPayDao supplyCustomerPayDao;
     @Autowired
     private SysLogService sysLogService;
+
+    @Resource
+    private SysFactoryDao sysFactoryDao;
+    @Resource
+    private SysStorehouseDao sysStorehouseDao;
 
     @Override
     public QueryByIdOutDTO queryById(Long id) {
@@ -187,6 +194,42 @@ public class SupplyCustomerPayServiceImpl  implements SupplyCustomerPayService {
         info.setIncomeCount(sumCount);
         info.setTollAmount(sumAmt);
         list.add(info);
+        return list;
+    }
+
+
+
+
+    private List<CustomerPayDetailInfo> formatFactoryName(List<CustomerPayDetailInfo> list){
+        log.info("开始赋值厂区/仓库名称");
+        if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
+            //获取厂区和仓库集合
+            List<SysFactoryInfo> factoryInfoList = sysFactoryDao.selectSysFactoryInfoList(new SysFactoryEntity());
+            List<SysStorehouseInfo> sysStorehouseInfoList = sysStorehouseDao.selectStorehouseInfoList(new SysStorehouseEntity());
+            for(CustomerPayDetailInfo info : list){
+                String factoryCode = info.getFactoryCode();
+                if(null != factoryCode && !"".equals(factoryCode)){
+                    if(Constants.FACTORY_CODE_PREFIX.equals(factoryCode.substring(0,1))){
+                        //工厂
+                        for(SysFactoryInfo fInfo : factoryInfoList){
+                            if(factoryCode.equals(fInfo.getCode())){
+                                info.setFactoryName(fInfo.getName());
+                            }
+                        }
+                    }else{
+                        //仓库
+                        for(SysStorehouseInfo sInfo : sysStorehouseInfoList){
+                            if(factoryCode.equals(sInfo.getCode())){
+                                info.setFactoryName(sInfo.getName());
+                            }
+                        }
+                    }
+                }else{
+                    // factoryCode is null
+                }
+            }
+
+        }
         return list;
     }
 

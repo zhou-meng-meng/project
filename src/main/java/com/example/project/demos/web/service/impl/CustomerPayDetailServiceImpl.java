@@ -2,12 +2,12 @@ package com.example.project.demos.web.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.example.project.demos.web.constant.Constants;
 import com.example.project.demos.web.dao.*;
 import com.example.project.demos.web.dto.customerPayDetail.*;
-import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
-import com.example.project.demos.web.dto.list.SysFactoryInfo;
-import com.example.project.demos.web.dto.list.SysStorehouseInfo;
+import com.example.project.demos.web.dto.list.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.entity.*;
 import com.example.project.demos.web.enums.ErrorCodeEnums;
@@ -16,20 +16,26 @@ import com.example.project.demos.web.enums.OperationTypeEnums;
 import com.example.project.demos.web.enums.SysEnums;
 import com.example.project.demos.web.handler.RequestHolder;
 import com.example.project.demos.web.service.*;
-import com.example.project.demos.web.utils.BeanCopyUtils;
-import com.example.project.demos.web.utils.DataUtils;
-import com.example.project.demos.web.utils.DateUtils;
-import com.example.project.demos.web.utils.PageRequest;
+import com.example.project.demos.web.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.util.*;
 
 @Slf4j
 @Service("customerPayDetailService")
@@ -64,6 +70,14 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
     @Resource
     private SysStorehouseDao sysStorehouseDao;
 
+    @Resource
+    private SupplyCustomerPayDao supplyCustomerPayDao;
+    @Resource
+    private SalesCustomerPayDao salesCustomerPayDao;
+
+    //zip压缩包的路径
+    @Value("${downloadZip.zipPath}")
+    public String zipPath;
 
     @Override
     public QueryByPageOutDTO queryByPage(QueryByPageDTO dto) {
@@ -349,7 +363,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         try {
             list = customerPayDetailDao.queryListForExport(dto.getCustomerCode(),dto.getCustomerName(),dto.getMaterialName(),dto.getBeginDate(),dto.getEndDate(),dto.getPayStartDate(),dto.getPayEndDate());
             list = formatFactoryName(list);
-            list = formatSumObjectForExport(list);
+            list = DataUtils.formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
             log.error("异常:"+e.getMessage());
@@ -665,109 +679,164 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         return outDTO;
     }
 
-    /**
-     * 导出最后一行增加合计列
-     * @param list
-     * @return
-     */
-    private List<CustomerPayDetailInfo> formatSumObjectForExport(List<CustomerPayDetailInfo> list){
-        //合计物料数量
-        BigDecimal sumCount = new BigDecimal("0");
-        //合计单价
-        BigDecimal sumUnitPrice = new BigDecimal("0");
-        //合计物料金额
-        BigDecimal sumMaterialAmt = new BigDecimal("0");
 
-        //合计退回数量
-        BigDecimal sumReturnCount = new BigDecimal("0");
-        //合计退回单价
-        BigDecimal sumReturnUnitPrice = new BigDecimal("0");
-        //合计退回金额
-        BigDecimal sumReturnAmt = new BigDecimal("0");
-
-        //合计税金
-        BigDecimal sumTaxAmt = new BigDecimal("0");
-        //合计其他金额
-        BigDecimal sumOtherAmt = new BigDecimal("0");
-        //合计打款金额
-        BigDecimal sumPayAmt = new BigDecimal("0");
-        //合计运费
-        BigDecimal sumFreightAmt = new BigDecimal("0");
-
-        for(CustomerPayDetailInfo info: list){
-            BigDecimal count = info.getMaterialCount();
-            if(count == null){
-                count = new BigDecimal("0");
-            }
-            BigDecimal unitPrice = info.getUnitPrice();
-            if(unitPrice == null){
-                unitPrice = new BigDecimal("0");
-            }
-            BigDecimal materialAmt = info.getMaterialBalance();
-            if(materialAmt == null){
-                materialAmt = new BigDecimal("0");
-            }
-
-            BigDecimal returnCount = info.getReturnCount();
-            if(returnCount == null){
-                returnCount = new BigDecimal("0");
-            }
-            BigDecimal returnUnitPrice = info.getReturnUnitPrice();
-            if(returnUnitPrice == null){
-                returnUnitPrice = new BigDecimal("0");
-            }
-            BigDecimal returnAmt = info.getReturnBalance();
-            if(returnAmt == null){
-                returnAmt = new BigDecimal("0");
-            }
-
-            BigDecimal taxAmt = info.getTaxBalance();
-            if(taxAmt == null){
-                taxAmt = new BigDecimal("0");
-            }
-            BigDecimal otherAmt = info.getOtherBalance();
-            if(otherAmt == null){
-                otherAmt = new BigDecimal("0");
-            }
-            BigDecimal payAmt = info.getPayBalance();
-            if(payAmt == null){
-                payAmt = new BigDecimal("0");
-            }
-            BigDecimal freightAmt = info.getFreight();
-            if(freightAmt == null){
-                freightAmt = new BigDecimal("0");
-            }
-
-            //销售/来料金额
-            sumCount = sumCount.add(count);
-            sumUnitPrice = sumUnitPrice.add(unitPrice);
-            sumMaterialAmt = sumMaterialAmt.add(materialAmt);
-            //退回金额
-            sumReturnCount = sumReturnCount.add(returnCount);
-            sumReturnUnitPrice = sumReturnUnitPrice.add(returnUnitPrice);
-            sumReturnAmt = sumReturnAmt.add(returnAmt);
-
-            //税金、其他金额 打款金额  运费
-            sumTaxAmt = sumTaxAmt.add(taxAmt);
-            sumOtherAmt = sumOtherAmt.add(otherAmt);
-            sumPayAmt = sumPayAmt.add(payAmt);
-            sumFreightAmt = sumFreightAmt.add(freightAmt);
+    @Override
+    public void downPoliceZip(ExportPayDetailBakDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        log.info("开始导出往来账明细备份zip,先删除服务器tempDir文件夹和其中的excel和zip文件");
+        boolean b = FileDownloadUtils.deleteDir(new File(zipPath ));
+        if (!b) {
+            log.info("tempDir文件夹及其中的临时Excel和zip文件删除失败");
         }
-        CustomerPayDetailInfo info = new CustomerPayDetailInfo();
-        info.setUnitName("合计:");
-        info.setMaterialCount(sumCount);
-        info.setUnitPrice(sumUnitPrice);
-        info.setMaterialBalance(sumMaterialAmt);
-        info.setReturnCount(sumReturnCount);
-        info.setReturnUnitPrice(sumReturnUnitPrice);
-        info.setReturnBalance(sumReturnAmt);
-        info.setTaxBalance(sumTaxAmt);
-        info.setOtherBalance(sumOtherAmt);
-        info.setPayBalance(sumPayAmt);
-        info.setFreight(sumFreightAmt);
-        list.add(info);
-        return list;
+        log.info("删除tempDir文件夹和其中的excel和zip文件完成");
+        //zip压缩包不加汉字  防止乱码
+        String zipName = "";
+        Map<String,List<CustomerPayDetailInfoForExport>> payMaps = new LinkedHashMap<>();
+
+        //生成Excel的文件夹路径
+        String tempDir = zipPath + LocalDate.now() + "/";
+        List<CustomerPayInfo> customerPayInfos = new ArrayList<>();
+        String functionId = dto.getFunctionId();
+        if(functionId.equals(FunctionTypeEnums.SUPPLY_COUSTOMER_PAY.getCode())){
+            log.info("开始获取供应商客户");
+            zipName = DateUtils.dateTime(new Date())+"Supply";
+            customerPayInfos = supplyCustomerPayDao.querySupplyCustomer();
+        }else{
+            zipName = DateUtils.dateTime(new Date())+"Sales";
+            log.info("开始获取销售客户");
+            customerPayInfos = salesCustomerPayDao.querySalesCustomer();
+        }
+        //将导出的数据转成多个excel
+        List<String> fileNameList = new ArrayList<>();
+        for(CustomerPayInfo info : customerPayInfos){
+            String name = info.getCustomerCode()+"-"+info.getCustomerName();
+            String customerName = info.getCustomerName();
+            fileNameList.add(name);
+            log.info("开始获取客户:{} 的往来账明细列表", info.getCustomerName());
+            List<CustomerPayDetailInfo> payDetailInfos =  customerPayDetailDao.queryListForExport(info.getCustomerCode(),null,null,null,null,null,null);
+            payDetailInfos = formatFactoryName(payDetailInfos);
+            List<CustomerPayDetailInfoForExport> exportList = DataUtils.formatForBakExport(payDetailInfos,customerName);
+            payMaps.put(name,exportList);
+        }
+        log.info("payMaps加工结束");
+        List<File> files = this.getStoreOrderExcels(tempDir, payMaps, fileNameList);
+        log.info("开始压缩zip");
+        String generateFileName = FileDownloadUtils.generateFile(tempDir, "zip", zipPath, zipName);
+        log.info("开始下载压缩包");
+        FileInputStream inputStream = null;
+        BufferedInputStream bis = null;
+        File file = new File(generateFileName);
+        try {
+            String filename = file.getName();
+            /*String userAgent = request.getHeader("User-Agent");
+            log.info("针对IE或者以IE为内核的浏览器处理");
+            if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
+                filename = java.net.URLEncoder.encode(filename, "UTF-8");
+            } else {
+                log.info("非IE浏览器的处理：");
+                filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
+            }*/
+            log.info("filename:{}",filename);
+            response.setHeader("Content-disposition", String.format("attachment; filename=\"%s\"", filename));
+            response.setContentType("application/download");
+            response.setCharacterEncoding("UTF-8");
+            inputStream = new FileInputStream(file);
+            byte[] buffer = new byte[4096];
+            bis = new BufferedInputStream(inputStream);
+            OutputStream os = response.getOutputStream();
+            int i = bis.read(buffer);
+            while (i != -1) {
+                os.write(buffer, 0, i);
+                i = bis.read(buffer);
+            }
+        } catch (Exception e) {
+            log.error("异常:"+e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bis != null) {
+                    try {
+                        bis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (null != inputStream) {
+                    inputStream.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
     }
+
+
+    /**
+     * 将导出的数据转成多个excel
+     *
+     * @param tempDir      路径
+     * @param fileNameList 文件名
+     * @return List<File>
+     * @throws IOException 异常
+     */
+    private List<File> getStoreOrderExcels(String tempDir,  Map<String,List<CustomerPayDetailInfoForExport>> payMaps, List<String> fileNameList) throws IOException {
+        FileDownloadUtils.createFile(tempDir);
+        //存在多个文件
+        List<File> files = new ArrayList<>();
+        String path;
+        for (int i = 0; i < fileNameList.size(); i++) {
+            path = this.getStoreOrderExcel(fileNameList.get(i), payMaps.get(fileNameList.get(i)), tempDir);
+            //excel添加到files中
+            files.add(new File(path));
+        }
+        return files;
+    }
+
+    /**
+     * @param fileName    文件名
+     * @param list    map数组
+     * @param tempDir 路径
+     * @return String
+     * @throws IOException 异常
+     */
+    public String getStoreOrderExcel(String fileName, List<CustomerPayDetailInfoForExport> list, String tempDir) throws IOException {
+        // 通过工具类创建writer，默认创建xls格式
+        ExcelWriter writer = ExcelUtil.getWriter();
+        writer.addHeaderAlias("materialDate", "日期");
+        writer.addHeaderAlias("factoryName", "厂区");
+        writer.addHeaderAlias("billNo", "单据号");
+        writer.addHeaderAlias("customerCode", "客户编号");
+        writer.addHeaderAlias("customerName", "客户名称");
+        writer.addHeaderAlias("materialCode", "物料编号");
+        writer.addHeaderAlias("materialName", "物料名称");
+        writer.addHeaderAlias("modelName", "型号");
+        writer.addHeaderAlias("unitName", "单位");
+        writer.addHeaderAlias("unitPrice", "单价");
+        writer.addHeaderAlias("materialCount", "数量");
+        writer.addHeaderAlias("materialBalance", "物料金额");
+        writer.addHeaderAlias("returnCount", "退回数量");
+        writer.addHeaderAlias("returnUnitPrice", "退回单价");
+        writer.addHeaderAlias("returnBalance", "退回金额");
+        writer.addHeaderAlias("taxBalance", "税金");
+        writer.addHeaderAlias("otherBalance", "其他金额");
+        writer.addHeaderAlias("payBalance", "打款金额");
+        writer.addHeaderAlias("bookBalance", "账面余额");
+        writer.addHeaderAlias("freight", "运费");
+        writer.addHeaderAlias("operatorByName", "经办人名字");
+        writer.addHeaderAlias("remark", "备注");
+        writer.addHeaderAlias("createByName", "创建者名字");
+        writer.addHeaderAlias("createTime", "创建时间");
+        writer.addHeaderAlias("updateByName", "更新者名字");
+        writer.addHeaderAlias("updateTime", "更新时间");
+
+        writer.write(list, true);
+        String path = tempDir + LocalDate.now() + "_" + fileName + ".xls";
+        log.info("生成一个excel:{}",path);
+        FileOutputStream outputStream = new FileOutputStream(path);
+        writer.flush(outputStream, true);
+        writer.close();
+        return path;
+    }
+
 
     private List<CustomerPayDetailInfo> formatFactoryName(List<CustomerPayDetailInfo> list){
         log.info("开始赋值厂区/仓库名称");

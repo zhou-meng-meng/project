@@ -1,6 +1,9 @@
 package com.example.project.demos.web.utils;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.example.project.demos.web.constant.Constants;
+import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
+import com.example.project.demos.web.dto.list.CustomerPayDetailInfoForExport;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 import com.example.project.demos.web.enums.RoleAuthorityTypeEnums;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +39,11 @@ public class DataUtils {
         return sb.toString();
     }
 
+    /**
+     * 格式化单据号
+     * @param list
+     * @return
+     */
     public static String formatBillNo(List<String> list){
         StringBuffer sb = new StringBuffer();
         try{
@@ -58,6 +68,11 @@ public class DataUtils {
         return sb.toString();
     }
 
+    /**
+     * 测试使用
+     * @param filePath
+     * @return
+     */
     public static String getFileMD5(String filePath){
         String md5 ="";
         BigInteger bi = null;
@@ -91,6 +106,11 @@ public class DataUtils {
         return sb.toString();
     }
 
+    /**
+     * 判断是否有单价权限
+     * @param userLoginOutDTO
+     * @return
+     */
     public static boolean getIsPrice(UserLoginOutDTO userLoginOutDTO){
         boolean isPrice = false;
         List<String> typeList = userLoginOutDTO.getAuthorityType();
@@ -103,5 +123,263 @@ public class DataUtils {
         }
         return isPrice;
     }
+
+    /**
+     * 往来账首页  导出全部的往来账备份  只需要导出的字段 并格式化时间字段
+     * @param infoList
+     * @return
+     */
+    public static List<CustomerPayDetailInfoForExport> formatForBakExport(List<CustomerPayDetailInfo> infoList,String customerName) throws Exception {
+        List<CustomerPayDetailInfoForExport> list = new ArrayList<>();
+        try{
+            //合计物料数量
+            BigDecimal sumCount = new BigDecimal("0");
+            //合计单价
+            BigDecimal sumUnitPrice = new BigDecimal("0");
+            //合计物料金额
+            BigDecimal sumMaterialAmt = new BigDecimal("0");
+
+            //合计退回数量
+            BigDecimal sumReturnCount = new BigDecimal("0");
+            //合计退回单价
+            BigDecimal sumReturnUnitPrice = new BigDecimal("0");
+            //合计退回金额
+            BigDecimal sumReturnAmt = new BigDecimal("0");
+
+            //合计税金
+            BigDecimal sumTaxAmt = new BigDecimal("0");
+            //合计其他金额
+            BigDecimal sumOtherAmt = new BigDecimal("0");
+            //合计打款金额
+            BigDecimal sumPayAmt = new BigDecimal("0");
+            //合计运费
+            BigDecimal sumFreightAmt = new BigDecimal("0");
+
+            for(CustomerPayDetailInfo info : infoList){
+                CustomerPayDetailInfoForExport export = new CustomerPayDetailInfoForExport();
+                if(ObjectUtil.isNotNull(info.getMaterialDate())){
+                    export.setMaterialDate(DateUtils.parseDateToStr(Constants.YYYY_MM_DD,info.getMaterialDate()));
+                }
+                export.setFactoryName(info.getFactoryName());
+                export.setBillNo(info.getBillNo());
+                export.setCustomerCode(info.getCustomerCode());
+                export.setCustomerName(customerName);
+                export.setMaterialCode(info.getMaterialCode());
+                export.setMaterialName(info.getMaterialName());
+                export.setModelName(info.getModelName());
+                export.setUnitName(info.getUnitName());
+                export.setUnitPrice(info.getUnitPrice());
+                export.setMaterialCount(info.getMaterialCount());
+                export.setMaterialBalance(info.getMaterialBalance());
+                export.setReturnBalance(info.getReturnBalance());
+                export.setReturnUnitPrice(info.getReturnUnitPrice());
+                export.setReturnCount(info.getReturnCount());
+                export.setTaxBalance(info.getTaxBalance());
+                export.setOtherBalance(info.getOtherBalance());
+                export.setPayBalance(info.getPayBalance());
+                export.setBookBalance(info.getBookBalance());
+                export.setFreight(info.getFreight());
+                export.setOperatorByName(info.getOperatorByName());
+                export.setRemark(info.getRemark());
+                export.setCreateByName(info.getCreateByName());
+                if(ObjectUtil.isNotNull(info.getCreateTime())){
+                    export.setCreateTime(DateUtils.parseDateToStr(Constants.YYYY_MM_DD_HH_MM_SS,info.getCreateTime()));
+                }
+                export.setUpdateByName(info.getUpdateByName());
+                if(ObjectUtil.isNotNull(info.getUpdateTime())){
+                    export.setUpdateTime(DateUtils.parseDateToStr(Constants.YYYY_MM_DD_HH_MM_SS,info.getUpdateTime()));
+                }
+                //导出的list集合
+                list.add(export);
+
+                //开始处理合计字段
+                BigDecimal count = info.getMaterialCount();
+                if(count == null){
+                    count = new BigDecimal("0");
+                }
+                BigDecimal unitPrice = info.getUnitPrice();
+                if(unitPrice == null){
+                    unitPrice = new BigDecimal("0");
+                }
+                BigDecimal materialAmt = info.getMaterialBalance();
+                if(materialAmt == null){
+                    materialAmt = new BigDecimal("0");
+                }
+
+                BigDecimal returnCount = info.getReturnCount();
+                if(returnCount == null){
+                    returnCount = new BigDecimal("0");
+                }
+                BigDecimal returnUnitPrice = info.getReturnUnitPrice();
+                if(returnUnitPrice == null){
+                    returnUnitPrice = new BigDecimal("0");
+                }
+                BigDecimal returnAmt = info.getReturnBalance();
+                if(returnAmt == null){
+                    returnAmt = new BigDecimal("0");
+                }
+
+                BigDecimal taxAmt = info.getTaxBalance();
+                if(taxAmt == null){
+                    taxAmt = new BigDecimal("0");
+                }
+                BigDecimal otherAmt = info.getOtherBalance();
+                if(otherAmt == null){
+                    otherAmt = new BigDecimal("0");
+                }
+                BigDecimal payAmt = info.getPayBalance();
+                if(payAmt == null){
+                    payAmt = new BigDecimal("0");
+                }
+                BigDecimal freightAmt = info.getFreight();
+                if(freightAmt == null){
+                    freightAmt = new BigDecimal("0");
+                }
+
+                //销售/来料金额
+                sumCount = sumCount.add(count);
+                sumUnitPrice = sumUnitPrice.add(unitPrice);
+                sumMaterialAmt = sumMaterialAmt.add(materialAmt);
+                //退回金额
+                sumReturnCount = sumReturnCount.add(returnCount);
+                sumReturnUnitPrice = sumReturnUnitPrice.add(returnUnitPrice);
+                sumReturnAmt = sumReturnAmt.add(returnAmt);
+
+                //税金、其他金额 打款金额  运费
+                sumTaxAmt = sumTaxAmt.add(taxAmt);
+                sumOtherAmt = sumOtherAmt.add(otherAmt);
+                sumPayAmt = sumPayAmt.add(payAmt);
+                sumFreightAmt = sumFreightAmt.add(freightAmt);
+
+            }
+            //添加最后一行合计列
+            CustomerPayDetailInfoForExport sumInfo = new CustomerPayDetailInfoForExport();
+            sumInfo.setUnitName("合计:");
+            sumInfo.setMaterialCount(sumCount);
+            sumInfo.setUnitPrice(sumUnitPrice);
+            sumInfo.setMaterialBalance(sumMaterialAmt);
+            sumInfo.setReturnCount(sumReturnCount);
+            sumInfo.setReturnUnitPrice(sumReturnUnitPrice);
+            sumInfo.setReturnBalance(sumReturnAmt);
+            sumInfo.setTaxBalance(sumTaxAmt);
+            sumInfo.setOtherBalance(sumOtherAmt);
+            sumInfo.setPayBalance(sumPayAmt);
+            sumInfo.setFreight(sumFreightAmt);
+            list.add(sumInfo);
+        }catch (Exception e){
+            log.info("异常:"+e.getMessage());
+            throw new Exception(e.getMessage());
+        }
+        return list;
+    }
+
+
+    /**
+     * 导出最后一行增加合计列  往来账明细列表 导出单个客户 使用
+     * @param list
+     * @return
+     */
+    public static List<CustomerPayDetailInfo> formatSumObjectForExport(List<CustomerPayDetailInfo> list){
+        //合计物料数量
+        BigDecimal sumCount = new BigDecimal("0");
+        //合计单价
+        BigDecimal sumUnitPrice = new BigDecimal("0");
+        //合计物料金额
+        BigDecimal sumMaterialAmt = new BigDecimal("0");
+
+        //合计退回数量
+        BigDecimal sumReturnCount = new BigDecimal("0");
+        //合计退回单价
+        BigDecimal sumReturnUnitPrice = new BigDecimal("0");
+        //合计退回金额
+        BigDecimal sumReturnAmt = new BigDecimal("0");
+
+        //合计税金
+        BigDecimal sumTaxAmt = new BigDecimal("0");
+        //合计其他金额
+        BigDecimal sumOtherAmt = new BigDecimal("0");
+        //合计打款金额
+        BigDecimal sumPayAmt = new BigDecimal("0");
+        //合计运费
+        BigDecimal sumFreightAmt = new BigDecimal("0");
+
+        for(CustomerPayDetailInfo info: list){
+            BigDecimal count = info.getMaterialCount();
+            if(count == null){
+                count = new BigDecimal("0");
+            }
+            BigDecimal unitPrice = info.getUnitPrice();
+            if(unitPrice == null){
+                unitPrice = new BigDecimal("0");
+            }
+            BigDecimal materialAmt = info.getMaterialBalance();
+            if(materialAmt == null){
+                materialAmt = new BigDecimal("0");
+            }
+
+            BigDecimal returnCount = info.getReturnCount();
+            if(returnCount == null){
+                returnCount = new BigDecimal("0");
+            }
+            BigDecimal returnUnitPrice = info.getReturnUnitPrice();
+            if(returnUnitPrice == null){
+                returnUnitPrice = new BigDecimal("0");
+            }
+            BigDecimal returnAmt = info.getReturnBalance();
+            if(returnAmt == null){
+                returnAmt = new BigDecimal("0");
+            }
+
+            BigDecimal taxAmt = info.getTaxBalance();
+            if(taxAmt == null){
+                taxAmt = new BigDecimal("0");
+            }
+            BigDecimal otherAmt = info.getOtherBalance();
+            if(otherAmt == null){
+                otherAmt = new BigDecimal("0");
+            }
+            BigDecimal payAmt = info.getPayBalance();
+            if(payAmt == null){
+                payAmt = new BigDecimal("0");
+            }
+            BigDecimal freightAmt = info.getFreight();
+            if(freightAmt == null){
+                freightAmt = new BigDecimal("0");
+            }
+
+            //销售/来料金额
+            sumCount = sumCount.add(count);
+            sumUnitPrice = sumUnitPrice.add(unitPrice);
+            sumMaterialAmt = sumMaterialAmt.add(materialAmt);
+            //退回金额
+            sumReturnCount = sumReturnCount.add(returnCount);
+            sumReturnUnitPrice = sumReturnUnitPrice.add(returnUnitPrice);
+            sumReturnAmt = sumReturnAmt.add(returnAmt);
+
+            //税金、其他金额 打款金额  运费
+            sumTaxAmt = sumTaxAmt.add(taxAmt);
+            sumOtherAmt = sumOtherAmt.add(otherAmt);
+            sumPayAmt = sumPayAmt.add(payAmt);
+            sumFreightAmt = sumFreightAmt.add(freightAmt);
+        }
+        CustomerPayDetailInfo info = new CustomerPayDetailInfo();
+        info.setUnitName("合计:");
+        info.setMaterialCount(sumCount);
+        info.setUnitPrice(sumUnitPrice);
+        info.setMaterialBalance(sumMaterialAmt);
+        info.setReturnCount(sumReturnCount);
+        info.setReturnUnitPrice(sumReturnUnitPrice);
+        info.setReturnBalance(sumReturnAmt);
+        info.setTaxBalance(sumTaxAmt);
+        info.setOtherBalance(sumOtherAmt);
+        info.setPayBalance(sumPayAmt);
+        info.setFreight(sumFreightAmt);
+        list.add(info);
+        return list;
+    }
+
+
+
+
 
 }

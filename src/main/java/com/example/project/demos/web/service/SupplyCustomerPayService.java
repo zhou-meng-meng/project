@@ -5,6 +5,7 @@ import com.example.project.demos.web.dto.list.SupplyCustomerPayInfo;
 import com.example.project.demos.web.dto.supplyCustomerPay.*;
 import com.example.project.demos.web.dto.sysUser.UserLoginOutDTO;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -36,5 +37,6 @@ public interface SupplyCustomerPayService {
     List<SupplyCustomerPayInfo> queryListForExport(QueryByPageDTO dto);
 
     int updateUnitPrice(UpdateUnitPriceDTO dto, Date date, UserLoginOutDTO user);
+
 }
 

@@ -2,7 +2,11 @@ package com.example.project.demos.web.service;
 
 import com.example.project.demos.web.dto.customerPayDetail.*;
 import com.example.project.demos.web.dto.list.CustomerPayDetailInfo;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ResponseEntity;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -65,6 +69,8 @@ public interface CustomerPayDetailService  {
     UpdateUnitPriceOutDTO updateUnitPrice(UpdateUnitPriceDTO dto);
 
     EditBookBalanceOutDTO editBookBalance(EditBookBalanceDTO dto);
+
+    void downPoliceZip(ExportPayDetailBakDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }
 
