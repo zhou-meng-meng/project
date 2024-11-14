@@ -59,7 +59,7 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
             }
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -93,7 +93,7 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -117,7 +117,7 @@ public class SalesCustomerPayServiceImpl implements SalesCustomerPayService {
             list = formatSumObjectForExport(user,list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }

@@ -50,6 +50,10 @@ logging:
 upload:
   filePath: /home/wms/app/uploadFiles/
 
+#往来账明细压缩包
+downloadZip:
+  zipPath: /home/wms/tempDir/
+
 #token过期时间 单位：分钟
 token:
   expir: 5

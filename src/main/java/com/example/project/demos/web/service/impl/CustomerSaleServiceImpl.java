@@ -65,7 +65,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             outDTO.setAccountRelList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -109,7 +109,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -142,7 +142,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -174,7 +174,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             list = customerSaleDao.queryListForExport(dto);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -248,7 +248,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                 }
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -277,7 +277,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             //重新插入账号对应关系
             customerAccountRelService.savaBatch(entity.getId(),dto.getList());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -304,7 +304,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
             approveOperationFlowDao.deleteByBusinessId(dto.getId());
             approveOperationQueueDao.deleteByBusinessId(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

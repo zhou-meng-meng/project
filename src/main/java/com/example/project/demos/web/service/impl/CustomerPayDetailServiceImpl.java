@@ -98,7 +98,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -160,7 +160,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(newEntity.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -279,7 +279,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             //开始处理附件信息
             uploadFileInfoService.updateByBusinessId(entity1.getId(),dto.getFileIdList());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -333,7 +333,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -359,7 +359,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             list = DataUtils.formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -524,7 +524,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -734,7 +734,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
                 i = bis.read(buffer);
             }
         } catch (Exception e) {
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             e.printStackTrace();
         } finally {
             try {

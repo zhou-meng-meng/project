@@ -75,7 +75,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -121,7 +121,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -168,7 +168,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -235,7 +235,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
                 errortMsg = ErrorCodeEnums.AUTH_USER_NOT_EXIST.getDesc();
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -266,7 +266,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             log.info("开始删除附件信息");
             uploadFileInfoService.deleteFileByBusinessId(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -351,7 +351,7 @@ public class SalesReturnServiceImpl  implements SalesReturnService {
             list = formatSumObjectForExport(list);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

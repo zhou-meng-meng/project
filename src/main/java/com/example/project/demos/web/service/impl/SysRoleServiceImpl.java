@@ -56,7 +56,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
             outDTO.setMenuList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -102,7 +102,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -134,7 +134,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
                 roleTypeInfo = roleTypeInfo+" " + RoleAuthorityTypeEnums.getDescByCode(type);
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -173,7 +173,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
                 roleTypeInfo = roleTypeInfo+" " + RoleAuthorityTypeEnums.getDescByCode(type);
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -208,7 +208,7 @@ public class SysRoleServiceImpl  implements SysRoleService {
             //删除角色权限类型表
             sysRoleAuthorityTypeService.deleteByRoleId(entity.getRoleId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

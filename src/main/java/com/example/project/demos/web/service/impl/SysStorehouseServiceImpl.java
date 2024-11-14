@@ -45,7 +45,7 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
             outDTO = BeanUtil.copyProperties(sysStorehouseInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -80,7 +80,7 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -110,7 +110,7 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
                 int i = sysStorehouseDao.insert(entity);
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -135,7 +135,7 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
             entity.setUpdateTime(date);
             int i = sysStorehouseDao.updateById(entity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -157,7 +157,7 @@ public class SysStorehouseServiceImpl  implements SysStorehouseService {
         try{
             int i = sysStorehouseDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

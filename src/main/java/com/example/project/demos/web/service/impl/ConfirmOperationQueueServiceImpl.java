@@ -57,7 +57,7 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
             //outDTO.setFunctionName(FunctionTypeEnums.getDescByCode(info.getFunctionId()));
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -95,7 +95,7 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -113,7 +113,7 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
         try{
             int i = confirmOperationQueueDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -161,7 +161,7 @@ public class ConfirmOperationQueueServiceImpl  implements ConfirmOperationQueueS
             log.info("删除确认队列");
             int i =confirmOperationQueueDao.deleteByFlowId(entity.getConfirmFlowId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

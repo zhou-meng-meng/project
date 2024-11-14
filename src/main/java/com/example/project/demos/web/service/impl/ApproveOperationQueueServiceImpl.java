@@ -72,7 +72,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             outDTO = BeanUtil.copyProperties(ApproveOperationQueueInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -108,7 +108,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -231,7 +231,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             log.info("删除审核队列");
             int i =approveOperationQueueDao.deleteByFlowId(entity.getOperationFlowId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -267,7 +267,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
             outDTO.setApproveNum(approveOperationQueueDao.queryApproveUnDoNum(user.getUserLogin()));
             outDTO.setConfirmNum(confirmOperationQueueDao.queryConfirmUnDoNum(user.getUserLogin()));
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

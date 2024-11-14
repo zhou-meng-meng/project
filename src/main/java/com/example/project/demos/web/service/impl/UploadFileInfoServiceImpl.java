@@ -153,7 +153,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
             }
             outDTO.setFileIdList(idList);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.UPLOAD_FILE_ERROR.getCode();
             errortMsg = ErrorCodeEnums.UPLOAD_FILE_ERROR.getDesc();
             log.info("删除原附件信息");
@@ -293,7 +293,7 @@ public class UploadFileInfoServiceImpl   implements UploadFileInfoService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

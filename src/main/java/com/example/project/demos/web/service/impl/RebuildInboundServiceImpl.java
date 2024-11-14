@@ -65,7 +65,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             outDTO = BeanUtil.copyProperties(list.get(0), QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -110,7 +110,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -136,7 +136,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             //修改库存
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getRebuildCount(),"add",date);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -181,7 +181,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
                 log.info("修改数量等于原数量，不需要增加库存");
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -207,7 +207,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             int i = rebuildInboundDao.deleteById(dto.getId());
             materialInventoryService.updateStockInventory(entity.getMaterialCode(), entity.getInCode(), entity.getRebuildCount(),"reduce",date);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -247,7 +247,7 @@ public class RebuildInboundServiceImpl implements RebuildInboundService {
             list.add(sumInfo);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

@@ -57,7 +57,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             outDTO.setAccountRelList(list);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -93,7 +93,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -126,7 +126,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             AddPayBySystemDTO addDTO = new AddPayBySystemDTO(null,null,null,null,code,null,date,null,null,null,SysEnums.SYS_YES_FLAG.getCode(),user.getUserLogin(),date,"默认往来账");
             customerPayDetailService.addPayBySystem(addDTO);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -155,7 +155,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             //重新插入账号对应关系
             customerAccountRelService.savaBatch(entity.getId(), dto.getList());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -179,7 +179,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             //删除该客户账户
             customerAccountRelService.deleteRelByCustomerCode(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -205,7 +205,7 @@ public class CustomerSupplyServiceImpl  implements CustomerSupplyService {
             list = customerSupplyDao.queryListForExport(entity);
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }

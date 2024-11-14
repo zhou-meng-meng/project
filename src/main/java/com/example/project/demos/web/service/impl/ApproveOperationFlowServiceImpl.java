@@ -36,7 +36,7 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
             outDTO = BeanUtil.copyProperties(ApproveOperationFlowInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -75,7 +75,7 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -94,7 +94,7 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
             ApproveOperationFlowEntity approveOperationFlowEntity = BeanCopyUtils.copy(dto,ApproveOperationFlowEntity.class);
             int i = approveOperationFlowDao.insert(approveOperationFlowEntity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -114,7 +114,7 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
             ApproveOperationFlowEntity.setUpdateTime(new Date());
             int i = approveOperationFlowDao.updateById(ApproveOperationFlowEntity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -131,7 +131,7 @@ public class ApproveOperationFlowServiceImpl  implements ApproveOperationFlowSer
         try{
             int i = approveOperationFlowDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }

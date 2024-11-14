@@ -75,7 +75,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             outDTO.setProducerInfoList(producerInfoList);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -141,7 +141,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -182,7 +182,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             //修改库存
             materialInventoryService.updateStockInventory(dto.getMaterialCode(), dto.getInCode(), dto.getIncomeNum(),"add",date);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -241,7 +241,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
                 log.info("修改数量等于原数量，不需要增加库存");
             }
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -268,7 +268,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             log.info("删除员工产量信息");
             productionMaterialIncomeDetailDao.deleteByIncomeId(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -332,7 +332,7 @@ public class ProductionMaterialIncomeServiceImpl  implements ProductionMaterialI
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }

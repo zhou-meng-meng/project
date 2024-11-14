@@ -49,7 +49,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
             outDTO = BeanUtil.copyProperties(entity, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -84,7 +84,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -107,7 +107,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
             entity.setCreateTime(date);
             int i = sysMenuDao.insert(entity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = ErrorCodeEnums.SYS_FAIL_FLAG.getDesc();
         }
@@ -132,7 +132,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
             entity.setUpdateTime(date);
             int i = sysMenuDao.updateById(entity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -154,7 +154,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
         try{
             int i = sysMenuDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -188,7 +188,7 @@ public class SysMenuServiceImpl  implements SysMenuService {
             List<SysMenuInfo> menuTrees = buildMenuTree(menuInfoList);
             list = menuTrees.stream().map(SysMenuTreeInfo::new).collect(Collectors.toList());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }

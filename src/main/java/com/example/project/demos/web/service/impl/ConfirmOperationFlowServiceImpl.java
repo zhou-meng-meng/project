@@ -38,7 +38,7 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
             outDTO = BeanUtil.copyProperties(ConfirmOperationFlowInfo, QueryByIdOutDTO.class);
         }catch(Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -85,7 +85,7 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
             }
         }catch (Exception e){
             //异常情况   赋值错误码和错误值
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -106,7 +106,7 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
             ConfirmOperationFlowEntity.setCreateTime(new Date());
             int i = confirmOperationFlowDao.insert(ConfirmOperationFlowEntity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -126,7 +126,7 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
             ConfirmOperationFlowEntity.setUpdateTime(new Date());
             int i = confirmOperationFlowDao.updateById(ConfirmOperationFlowEntity);
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
@@ -143,7 +143,7 @@ public class ConfirmOperationFlowServiceImpl  implements ConfirmOperationFlowSer
         try{
             int i = confirmOperationFlowDao.deleteById(dto.getId());
         }catch (Exception e){
-            log.error("异常:"+e.getMessage());
+            log.error("异常:"+e);
             errorCode = ErrorCodeEnums.SYS_FAIL_FLAG.getCode();
             errortMsg = e.getMessage();
         }
