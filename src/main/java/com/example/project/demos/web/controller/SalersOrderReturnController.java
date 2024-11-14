@@ -1,6 +1,5 @@
 package com.example.project.demos.web.controller;
 
-import com.example.project.demos.web.dto.list.SalersOrderInfo;
 import com.example.project.demos.web.dto.list.SalersOrderReturnInfo;
 import com.example.project.demos.web.dto.salersOrderReturn.*;
 import com.example.project.demos.web.service.SalersOrderReturnService;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.annotation.Resource;
 import java.util.List;
 

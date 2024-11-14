@@ -6,14 +6,11 @@ import com.example.project.demos.web.service.CustomerPayDetailService;
 import com.example.project.demos.web.utils.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -123,8 +120,8 @@ public class CustomerPayDetailController {
 
     @PostMapping("/exportPayDetailBak")
     @ApiOperation("导出客户往来账明细备份")
-    public void exportPayDetailBak(@RequestBody ExportPayDetailBakDTO dto, HttpServletRequest request, HttpServletResponse response ) throws Exception {
-        customerPayDetailService.downPoliceZip(dto, request,  response);
+    public void exportPayDetailBak(@RequestBody ExportPayDetailBakDTO dto, HttpServletResponse response ) throws Exception {
+        customerPayDetailService.downPayDetailBakZip(dto,  response);
     }
 
 

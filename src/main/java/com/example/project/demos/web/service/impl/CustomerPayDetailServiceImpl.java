@@ -20,20 +20,13 @@ import com.example.project.demos.web.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -681,7 +674,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
 
     @Override
-    public void downPoliceZip(ExportPayDetailBakDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void downPayDetailBakZip(ExportPayDetailBakDTO dto, HttpServletResponse response) throws Exception {
         log.info("开始导出往来账明细备份zip,先删除服务器tempDir文件夹和其中的excel和zip文件");
         boolean b = FileDownloadUtils.deleteDir(new File(zipPath ));
         if (!b) {
@@ -727,14 +720,6 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
         File file = new File(generateFileName);
         try {
             String filename = file.getName();
-            /*String userAgent = request.getHeader("User-Agent");
-            log.info("针对IE或者以IE为内核的浏览器处理");
-            if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
-                filename = java.net.URLEncoder.encode(filename, "UTF-8");
-            } else {
-                log.info("非IE浏览器的处理：");
-                filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
-            }*/
             log.info("filename:{}",filename);
             response.setHeader("Content-disposition", String.format("attachment; filename=\"%s\"", filename));
             response.setContentType("application/download");

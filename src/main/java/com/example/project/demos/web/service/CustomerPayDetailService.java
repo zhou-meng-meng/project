@@ -70,7 +70,7 @@ public interface CustomerPayDetailService  {
 
     EditBookBalanceOutDTO editBookBalance(EditBookBalanceDTO dto);
 
-    void downPoliceZip(ExportPayDetailBakDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    void downPayDetailBakZip(ExportPayDetailBakDTO dto,  HttpServletResponse response) throws Exception;
 
 }
 
