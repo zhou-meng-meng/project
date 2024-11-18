@@ -675,7 +675,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     @Override
     public void downPayDetailBakZip(ExportPayDetailBakDTO dto, HttpServletResponse response) throws Exception {
-        log.info("开始导出往来账明细备份zip,先删除服务器tempDir文件夹和其中的excel和zip文件");
+        log.info("开始导出往来账明细备份zip,先删除服务器tempDir文件夹及其中的excel和zip文件");
         boolean b = FileDownloadUtils.deleteDir(new File(zipPath ));
         if (!b) {
             log.info("tempDir文件夹及其中的临时Excel和zip文件删除失败");
@@ -778,7 +778,7 @@ public class CustomerPayDetailServiceImpl  implements CustomerPayDetailService {
 
     /**
      * @param fileName    文件名
-     * @param list    map数组
+     * @param list    数据集合
      * @param tempDir 路径
      * @return String
      * @throws IOException 异常

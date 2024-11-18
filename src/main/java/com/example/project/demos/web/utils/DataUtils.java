@@ -267,7 +267,7 @@ public class DataUtils {
             sumInfo.setFreight(sumFreightAmt);
             list.add(sumInfo);
         }catch (Exception e){
-            log.info("异常:"+e.getMessage());
+            log.info("异常:"+e);
             throw new Exception(e.getMessage());
         }
         return list;
@@ -377,9 +377,5 @@ public class DataUtils {
         list.add(info);
         return list;
     }
-
-
-
-
 
 }
