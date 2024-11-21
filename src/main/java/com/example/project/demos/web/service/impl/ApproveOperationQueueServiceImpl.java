@@ -145,7 +145,7 @@ public class ApproveOperationQueueServiceImpl  implements ApproveOperationQueueS
                 log.info("销售客户维护操作");
                 customerSaleService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),date);
             } else if(functionId.equals(FunctionTypeEnums.SALES_RETURN.getCode())) {
-                log.info("仓库/厂区退回的，审核通过后结束");
+                log.info("销售客户退回（仓库/厂区退回的），审核通过后结束");
                 salesReturnService.updateApprove(businessId,dto.getResult(),dto.getOpinion(),user.getUserLogin(),dto.getUnitPrice(),dto.getTollAmount(),date,dto.getInCode(),dto.getFreight());
             } else if (functionId.equals(FunctionTypeEnums.SALERS_ORDER.getCode())) {
                 log.info("业务员下单，更新业务员下单表");

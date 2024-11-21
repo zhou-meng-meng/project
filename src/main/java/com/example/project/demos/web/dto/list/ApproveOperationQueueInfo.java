@@ -78,6 +78,14 @@ public class ApproveOperationQueueInfo implements Serializable {
 	@ApiModelProperty(value = "提交时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date submitTime;
+
+	/**
+	 * 录入页选择的来料/销售日期
+	 */
+	@ApiModelProperty(value = "来料/销售日期")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date enterDate;
+
 	/**
 	 * 备注
 	 */

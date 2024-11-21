@@ -25,10 +25,10 @@ public interface SysStorehouseDao extends BaseMapper<SysStorehouseEntity> {
     /**
      * 统计总行数
      *
-     * @param queryByPageDTO 查询条件
+     * @param dto 查询条件
      * @return 总行数
      */
-    int count(QueryByPageDTO queryByPageDTO);
+    int count(QueryByPageDTO dto);
 
     SysStorehouseInfo selectSysStorehouseInfoById(Long id);
     SysStorehouseInfo selectSysStorehouseInfoByCode(String code);

@@ -16,6 +16,7 @@
         <result property="submitUser" column="submit_user"/>
         <result property="submitTime" column="submit_time"/>
         <result property="remark" column="remark"/>
+        <result property="enterDate" column="enter_date"/>
     </resultMap>
 
     <select id="selectApproveOperationQueueInfoListByPage" resultType="com.example.project.demos.web.dto.list.ApproveOperationQueueInfo">
@@ -33,7 +34,8 @@
         t.submit_user,
         u2.user_name AS submitUserName,
         t.submit_time,
-        t.remark
+        t.remark,
+        t.enter_date
         FROM	approve_operation_queue t
         LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
         LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user
@@ -53,7 +55,7 @@
         <if test="queue.customerName != null and queue.customerName != ''">
             and (p.name like concat('%', #{queue.customerName}, '%')  or s.name like concat('%', #{queue.customerName}, '%') )
         </if>
-        order  by  t.submit_time   asc
+        order  by  t.enter_date   asc
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
@@ -92,7 +94,8 @@
             t.submit_user,
             u2.user_name AS submitUserName,
             t.submit_time,
-            t.remark
+            t.remark,
+            t.enter_date
         FROM	approve_operation_queue t
                     LEFT JOIN sys_user u2 ON u2.user_login = t.submit_user
                     LEFT JOIN sys_user u3 ON u3.user_login = t.approve_user

@@ -161,7 +161,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 log.info("生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                 for(SysUserEntity userEntity : userList){
-                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),dto.getSupplyerCode(),dto.getMaterialCode(),dto.getCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),dto.getSupplyerCode(),dto.getMaterialCode(),dto.getCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE,dto.getMaterialBuytime());
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
@@ -233,7 +233,7 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 log.info("重新生成审核队列记录");
                 List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                 for(SysUserEntity userEntity : userList){
-                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),dto.getSupplyerCode(),dto.getMaterialCode(),dto.getCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE);
+                    ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null,flowEntity.getId(), entity.getId(),FunctionTypeEnums.RAW_MATERIAL_INCOME.getCode(),userEntity.getUserLogin(),dto.getSupplyerCode(),dto.getMaterialCode(),dto.getCount(),user.getUserLogin(),date,Constants.SYSTEM_CODE,dto.getMaterialBuytime());
                     queueEntityList.add(queueEntity);
                 }
                 approveOperationQueueDao.insertBatch(queueEntityList);
@@ -371,8 +371,10 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
         List<String> typeList = userInfo.getAuthorityType();
         if(typeList.contains(RoleAuthorityTypeEnums.ROLE_AUTHORITY_TYPE_PRICE.getCode())){
             isPrice = true;
+            log.info("有单价权限，不处理");
         }else{
             isPrice = false;
+            log.info("没有单价权限，将单价和总金额置为0");
         }
         if(CollectionUtil.isNotEmpty(list) && list.size() > 0){
             //获取厂区和仓库集合
@@ -402,9 +404,9 @@ public class RawMaterialIncomeServiceImpl  implements RawMaterialIncomeService {
                 }
                 //处理单价和总金额权限
                 if(isPrice){
-                    log.info("有单价权限，不处理");
+                    //log.info("有单价权限，不处理");
                 }else{
-                    log.info("没有单价权限，将单价和总金额置为0");
+                    //log.info("没有单价权限，将单价和总金额置为0");
                     info.setUnitPrice("0");
                     info.setTollAmount(new BigDecimal(0));
                 }

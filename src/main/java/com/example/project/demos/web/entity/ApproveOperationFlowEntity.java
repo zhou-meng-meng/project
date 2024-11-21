@@ -79,6 +79,7 @@ public class ApproveOperationFlowEntity implements Serializable {
 	 */
 	private String remark;
 
+
 	/**
 	 * 新增使用
 	 * @param businessId

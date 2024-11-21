@@ -68,9 +68,14 @@ public class ApproveOperationQueueEntity implements Serializable {
 	private String remark;
 
 	/**
+	 * 录入页面选择的来料/销售时间
+	 */
+	private Date enterDate;
+
+	/**
 	 * 新增使用
 	 */
-	public ApproveOperationQueueEntity(Long id,Long operationFlowId,Long businessId,String functionId,String approveUser,String customerCode,String materialCode,BigDecimal materialCount,String submitUser,Date submitTime,String remark){
+	public ApproveOperationQueueEntity(Long id,Long operationFlowId,Long businessId,String functionId,String approveUser,String customerCode,String materialCode,BigDecimal materialCount,String submitUser,Date submitTime,String remark,Date enterDate){
 		this.id = id;
 		this.operationFlowId = operationFlowId;
 		this.businessId = businessId;
@@ -82,6 +87,7 @@ public class ApproveOperationQueueEntity implements Serializable {
 		this.submitUser = submitUser;
 		this.submitTime = submitTime;
 		this.remark = remark;
+		this.enterDate = enterDate;
 	}
 
 }

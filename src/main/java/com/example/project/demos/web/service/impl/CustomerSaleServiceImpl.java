@@ -241,7 +241,7 @@ public class CustomerSaleServiceImpl implements CustomerSaleService {
                     log.info("生成审核队列记录");
                     List<ApproveOperationQueueEntity> queueEntityList = new ArrayList<>();
                     for (SysUserEntity userEntity : userList) {
-                        ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null, flowEntity.getId(), entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), userEntity.getUserLogin(),code,null,null, user.getUserLogin(), date, Constants.SYSTEM_CODE);
+                        ApproveOperationQueueEntity queueEntity = new ApproveOperationQueueEntity(null, flowEntity.getId(), entity.getId(), FunctionTypeEnums.CUSTOMER_SALE.getCode(), userEntity.getUserLogin(),code,null,null, user.getUserLogin(), date, Constants.SYSTEM_CODE,new Date());
                         queueEntityList.add(queueEntity);
                     }
                     approveOperationQueueDao.insertBatch(queueEntityList);
