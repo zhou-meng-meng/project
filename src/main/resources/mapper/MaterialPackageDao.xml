@@ -69,9 +69,7 @@
             and t.machine_code    =#{package.machineCode}
         </if>
         order  by  t.package_date  desc
-        <if test="pageable != null and pageable.offset != null and pageable.pageSize != null and pageable.offset != '' and pageable.pageSize != ''">
-            limit #{pageable.offset}, #{pageable.pageSize}
-        </if>
+        limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Integer">

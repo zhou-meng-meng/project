@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Mapper
 public interface MaterialPackageDao extends BaseMapper<MaterialPackageEntity> {
-    List<MaterialPackageInfo> selectMaterialPackageInfoListByPage(@Param("package") QueryByPageDTO queryByPageDTO, @Param("pageable") Pageable pageable);
+    List<MaterialPackageInfo> selectMaterialPackageInfoListByPage(@Param("package") QueryByPageDTO dto, @Param("pageable") Pageable pageable);
 
     /**
      * 统计总行数
