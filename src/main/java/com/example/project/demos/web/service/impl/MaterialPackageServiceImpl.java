@@ -126,7 +126,7 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
     }
 
     @Override
-    public List<MaterialPackageExportDTO> queryByParam(QueryByPageDTO queryByPageDTO) {
+    public List<MaterialPackageExportDTO> queryByParam(QueryByPageDTO dto) {
         List<MaterialPackageExportDTO> result = new ArrayList<>(16);
         log.info("装袋表queryByParam开始");
         try {
@@ -138,15 +138,15 @@ public class MaterialPackageServiceImpl  implements MaterialPackageService {
                 log.info("当前登录人属于总公司，可查看所有");
             }else{
                 log.info("当前登录人不属于总公司，只能查看所属厂区");
-                queryByPageDTO.setFactoryCode(user.getDeptId());
+                dto.setFactoryCode(user.getDeptId());
             }
             //先用查询条件查询总条数
-            long total = this.materialPackageDao.count(queryByPageDTO);
+            long total = this.materialPackageDao.count(dto);
             //存在数据的   继续查询
             if(total != 0L){
                 //分页信息
                 //获取分页数据
-                List<MaterialPackageInfo> list = this.materialPackageDao.selectMaterialPackageInfoListByPage(queryByPageDTO, null);
+                List<MaterialPackageInfo> list = this.materialPackageDao.selectMaterialPackageInfoList(dto);
                 //获取每个装袋表的物料明细集合
                 for(MaterialPackageInfo info : list){
                     List<MaterialPackageDetailInfo> detailInfoList = materialPackageDetailService.queryByPackageId(info.getId());
