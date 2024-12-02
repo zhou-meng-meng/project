@@ -42,9 +42,9 @@ public class MaterialPackageDetailServiceImpl  implements MaterialPackageDetailS
             entity.setPackageId(packageId);
             entity.setMaterialCode(info.getMaterialCode());
             entity.setPotWeight(info.getPotWeight());
-            entityList.add(entity);
             entity.setCreateBy(user.getUserLogin());
             entity.setCreateTime(new Date());
+            entityList.add(entity);
         }
         boolean f = materialPackageDetailDao.insertBatch(entityList);
         return f;
