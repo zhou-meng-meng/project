@@ -29,6 +29,10 @@ public class SysUserInfo implements Serializable {
 	@ExcelIgnore
 	@JsonSerialize(using = ToStringSerializer.class)
 	private Long id;
+
+
+	private Integer count;
+
 	/**
 	 * 用户工号
 	 */
